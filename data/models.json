@@ -1,0 +1,62 @@
+{
+  "model-1770017328240": {
+    "id": "model-1770017328240",
+    "name": "千问-plus",
+    "model": "qwen-plus",
+    "apiKey": "sk-cf3e8d2a060d47ad983c089c1ae47e29",
+    "baseUrl": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+    "enableMultiTurn": true,
+    "enableStreaming": true,
+    "enableThinking": true,
+    "enableWebSearch": false,
+    "enableWebScraping": false,
+    "enabled": true,
+    "createdAt": "2026-02-02T07:29:35.673Z",
+    "updatedAt": "2026-02-03T04:31:29.870Z"
+  },
+  "model-1770101187607": {
+    "id": "model-1770101187607",
+    "name": "kimi-k2.5",
+    "model": "kimi-k2.5",
+    "apiKey": "4b8d9d2f-0341-4743-8d35-2284db2e478b",
+    "baseUrl": "https://ark.cn-beijing.volces.com/api/coding/v3",
+    "enableMultiTurn": true,
+    "enableStreaming": true,
+    "enableThinking": false,
+    "enableWebSearch": false,
+    "enableWebScraping": false,
+    "enabled": true,
+    "createdAt": "2026-02-03T06:48:45.885Z",
+    "updatedAt": "2026-02-03T06:48:47.420Z"
+  },
+  "model-1770101797685": {
+    "id": "model-1770101797685",
+    "name": "GLM-4.7",
+    "model": "glm-4.7",
+    "apiKey": "4b8d9d2f-0341-4743-8d35-2284db2e478b",
+    "baseUrl": "https://ark.cn-beijing.volces.com/api/coding/v3",
+    "enableMultiTurn": true,
+    "enableStreaming": true,
+    "enableThinking": false,
+    "enableWebSearch": false,
+    "enableWebScraping": false,
+    "enabled": true,
+    "createdAt": "2026-02-03T06:56:54.763Z",
+    "updatedAt": "2026-02-03T06:56:56.341Z"
+  },
+  "model-1770703248800": {
+    "id": "model-1770703248800",
+    "name": "千问-flash",
+    "model": "qwen-flash",
+    "apiKey": "sk-cf3e8d2a060d47ad983c089c1ae47e29",
+    "baseUrl": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+    "enableMultiTurn": true,
+    "enableStreaming": true,
+    "enableThinking": false,
+    "enableWebSearch": false,
+    "enableWebScraping": false,
+    "enabled": true,
+    "createdAt": "2026-02-10T06:02:17.638Z",
+    "updatedAt": "2026-02-10T06:02:19.027Z"
+  }
+}

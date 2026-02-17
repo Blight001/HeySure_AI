@@ -1,0 +1,1474 @@
+{
+  "id": "be56adc5-a6c8-45c7-aab5-6c907051b05e",
+  "name": "测试AI控基础脚本",
+  "description": "",
+  "version": "1.0.0",
+  "nodes": [
+    {
+      "id": "node_1770313403696_579bsf03i",
+      "type": "aiChat",
+      "position": {
+        "x": 211,
+        "y": 245.67857142857144
+      },
+      "data": {
+        "label": "千问-plus",
+        "modelId": "model-1770017328240",
+        "model": "qwen-plus",
+        "value": "{\n  \"0\": \"press\",\n  \"1\": \"W\"\n}",
+        "layout": "default",
+        "messages": [],
+        "usage": {
+          "prompt_tokens": 91,
+          "completion_tokens": 16,
+          "total_tokens": 107
+        },
+        "tokenStats": {
+          "currentTokens": 107,
+          "totalTokens": 321,
+          "promptTokens": 273,
+          "completionTokens": 48,
+          "requestCount": 3
+        },
+        "useMemory": false,
+        "savedAt": "2026-02-11T11:50:03.575Z",
+        "isTriggering": false,
+        "status": "completed"
+      },
+      "inputs": [
+        {
+          "id": "input",
+          "type": "input",
+          "label": "用户输入"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "output",
+          "type": "output",
+          "label": "AI回复"
+        }
+      ]
+    },
+    {
+      "id": "node_1770313441524_jeb7lb3bk",
+      "type": "textDisplay",
+      "position": {
+        "x": 823.5714285714286,
+        "y": 272.8571428571428
+      },
+      "data": {
+        "label": "文本显示",
+        "icon": "📄",
+        "layout": "default",
+        "value": "YES",
+        "receivedData": "YES",
+        "displayText": "YES",
+        "isExpanded": true,
+        "isTriggering": false,
+        "presetText": "",
+        "status": "completed"
+      },
+      "inputs": [
+        {
+          "id": "input",
+          "type": "input",
+          "label": "输入"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "output",
+          "type": "output",
+          "label": "输出"
+        }
+      ]
+    },
+    {
+      "id": "node_1770314957407_dxtqh3xff",
+      "type": "textDisplay",
+      "position": {
+        "x": 132.85389610389612,
+        "y": 487.08766233766227
+      },
+      "data": {
+        "label": "文本显示",
+        "icon": "📄",
+        "layout": "reversed",
+        "value": "{\n  \"0\": 540,\n  \"1\": 720,\n  \"2\": 500,\n  \"3\": 500,\n  \"4\": 1000,\n  \"5\": \"white\",\n  \"6\": null\n}",
+        "isExpanded": true,
+        "receivedData": "{\n  \"0\": 540,\n  \"1\": 720,\n  \"2\": 500,\n  \"3\": 500,\n  \"4\": 1000,\n  \"5\": \"white\",\n  \"6\": null\n}",
+        "displayText": "{\n  \"0\": 540,\n  \"1\": 720,\n  \"2\": 500,\n  \"3\": 500,\n  \"4\": 1000,\n  \"5\": \"white\",\n  \"6\": null\n}",
+        "isTriggering": false,
+        "status": "completed"
+      },
+      "inputs": [
+        {
+          "id": "input",
+          "type": "input",
+          "label": "输入"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "output",
+          "type": "output",
+          "label": "输出"
+        }
+      ]
+    },
+    {
+      "id": "node_1770538006591_58vobbq4j",
+      "type": "textDisplay",
+      "position": {
+        "x": -206.66666666666666,
+        "y": 450.6666666666666
+      },
+      "data": {
+        "label": "文本显示",
+        "icon": "📄",
+        "layout": "reversed",
+        "value": "在我电脑2K桌面中间显示一个500大小白色的矩形框，注意输出json\n【函数信息】\n函数: 显示屏幕矩形框\n参数:\n  1.矩形框左上角y坐标(必需)\n  2.矩形框左上角x坐标(必需)\n  3.矩形框宽度(必需)\n  4.矩形框高度(必需)\n  5.显示持续时间(毫秒)(可选)=1000\n  6.矩形框颜色(可选)=\"red\"\n  7.子框列表，用于标识关键词等细节部分(可选)=null\n示例:\n{\n  \"0\": null,\n  \"1\": null,\n  \"2\": null,\n  \"3\": null,\n  \"4\": 1000,\n  \"5\": \"red\",\n  \"6\": null\n}\n仅发送 JSON",
+        "receivedData": "在我电脑2K桌面中间显示一个500大小白色的矩形框，注意输出json\n【函数信息】\n函数: 显示屏幕矩形框\n参数:\n  1.矩形框左上角y坐标(必需)\n  2.矩形框左上角x坐标(必需)\n  3.矩形框宽度(必需)\n  4.矩形框高度(必需)\n  5.显示持续时间(毫秒)(可选)=1000\n  6.矩形框颜色(可选)=\"red\"\n  7.子框列表，用于标识关键词等细节部分(可选)=null\n示例:\n{\n  \"0\": null,\n  \"1\": null,\n  \"2\": null,\n  \"3\": null,\n  \"4\": 1000,\n  \"5\": \"red\",\n  \"6\": null\n}\n仅发送 JSON",
+        "isExpanded": true,
+        "isTriggering": false,
+        "presetText": "丝滑移动到1000，500\n【函数信息】\n函数: 统一鼠标控制函数\n参数:\n  1.操作类型 ('move', 'smooth_move', 'click', 'down', 'up', 'get_pos')(必需)\n  2.目标x坐标 (用于 move, smooth_move)(可选)=0\n  3.目标y坐标 (用于 move, smooth_move)(可选)=0\n  4.鼠标按键 'left', 'right', 'middle' (默认 'left')(可选)=\"left\"\n  5.移动间隔 (用于 smooth_move)(可选)=0.01\n示例(按参数顺序):\n{\n  \"0\": null,\n  \"1\": 0,\n  \"2\": 0,\n  \"3\": \"left\",\n  \"4\": 0.01\n}\n仅发送 JSO",
+        "displayText": "在我电脑2K桌面中间显示一个500大小白色的矩形框，注意输出json\n【函数信息】\n函数: 显示屏幕矩形框\n参数:\n  1.矩形框左上角y坐标(必需)\n  2.矩形框左上角x坐标(必需)\n  3.矩形框宽度(必需)\n  4.矩形框高度(必需)\n  5.显示持续时间(毫秒)(可选)=1000\n  6.矩形框颜色(可选)=\"red\"\n  7.子框列表，用于标识关键词等细节部分(可选)=null\n示例:\n{\n  \"0\": null,\n  \"1\": null,\n  \"2\": null,\n  \"3\": null,\n  \"4\": 1000,\n  \"5\": \"red\",\n  \"6\": null\n}\n仅发送 JSON",
+        "status": "completed"
+      },
+      "inputs": [
+        {
+          "id": "input",
+          "type": "input",
+          "label": "输入"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "output",
+          "type": "output",
+          "label": "输出"
+        }
+      ]
+    },
+    {
+      "id": "node_1770538465537_tq6aw3pq1",
+      "type": "switch",
+      "position": {
+        "x": -848.5000000000019,
+        "y": 249.14285714285714
+      },
+      "data": {
+        "label": "开关",
+        "isOn": true,
+        "hasPendingSignal": false,
+        "value": {
+          "button": true
+        },
+        "lastSignalTime": "19:49:05",
+        "isTriggering": false,
+        "status": "completed"
+      },
+      "inputs": [
+        {
+          "id": "input",
+          "type": "input",
+          "label": "输入"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "output",
+          "type": "output",
+          "label": "输出"
+        }
+      ]
+    },
+    {
+      "id": "node_1770538490601_aytfuyy2j",
+      "type": "switch",
+      "position": {
+        "x": -848.8571428571438,
+        "y": 43.03571428571407
+      },
+      "data": {
+        "label": "开关",
+        "isOn": true,
+        "hasPendingSignal": false,
+        "value": {
+          "button": true
+        },
+        "isTriggering": false,
+        "lastSignalTime": "19:49:05",
+        "status": "completed"
+      },
+      "inputs": [
+        {
+          "id": "input",
+          "type": "input",
+          "label": "输入"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "output",
+          "type": "output",
+          "label": "输出"
+        }
+      ]
+    },
+    {
+      "id": "node_1770539320227_lj4nvrq37",
+      "type": "start",
+      "position": {
+        "x": -842.9870129870127,
+        "y": -246.50649350649027
+      },
+      "data": {
+        "label": "开始",
+        "icon": "🟢",
+        "layout": "reversed",
+        "isTriggering": false
+      },
+      "inputs": [],
+      "outputs": [
+        {
+          "id": "output",
+          "type": "output",
+          "label": "输出"
+        }
+      ]
+    },
+    {
+      "id": "node_1770539336100_ovuemi4ag",
+      "type": "end",
+      "position": {
+        "x": 983.340909090906,
+        "y": 539.798701298702
+      },
+      "data": {
+        "label": "结束",
+        "icon": "🔴",
+        "layout": "reversed",
+        "value": "",
+        "isTriggering": false,
+        "status": "idle"
+      },
+      "inputs": [
+        {
+          "id": "input",
+          "type": "input",
+          "label": "输入"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "id": "node_1770545289869_5k4vj1o4a",
+      "type": "aiChat",
+      "position": {
+        "x": 213.63636363636175,
+        "y": -131.4155844155844
+      },
+      "data": {
+        "label": "千问-plus",
+        "modelId": "model-1770017328240",
+        "model": "qwen-plus",
+        "useMemory": false,
+        "messages": [],
+        "value": "{\n  \"0\": \"move\",\n  \"1\": 800,\n  \"2\": 999\n}",
+        "usage": {
+          "prompt_tokens": 190,
+          "completion_tokens": 27,
+          "total_tokens": 217
+        },
+        "tokenStats": {
+          "currentTokens": 217,
+          "totalTokens": 651,
+          "promptTokens": 570,
+          "completionTokens": 81,
+          "requestCount": 3
+        },
+        "isTriggering": false,
+        "savedAt": "2026-02-11T11:50:05.029Z",
+        "status": "completed"
+      },
+      "inputs": [
+        {
+          "id": "input",
+          "type": "input",
+          "label": "用户输入"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "output",
+          "type": "output",
+          "label": "AI回复"
+        }
+      ]
+    },
+    {
+      "id": "node_1770545297980_wjvcdwrz1",
+      "type": "switch",
+      "position": {
+        "x": -845.1688311688335,
+        "y": -124.79220779220755
+      },
+      "data": {
+        "label": "开关",
+        "isOn": true,
+        "hasPendingSignal": false,
+        "value": {
+          "button": true
+        },
+        "isTriggering": false,
+        "lastSignalTime": "19:50:06",
+        "status": "completed"
+      },
+      "inputs": [
+        {
+          "id": "input",
+          "type": "input",
+          "label": "输入"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "output",
+          "type": "output",
+          "label": "输出"
+        }
+      ]
+    },
+    {
+      "id": "node_1770648582198_b0zgik49s",
+      "type": "textDisplay",
+      "position": {
+        "x": -511.3896103896112,
+        "y": 53.83116883116861
+      },
+      "data": {
+        "label": "文本显示",
+        "icon": "📄",
+        "presetText": "在我电脑2K桌面中间显示一个500大小白色的矩形框，注意输出json",
+        "value": {
+          "button": true
+        },
+        "isTriggering": false,
+        "status": "completed"
+      },
+      "inputs": [
+        {
+          "id": "input",
+          "type": "input",
+          "label": "输入"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "output",
+          "type": "output",
+          "label": "输出"
+        }
+      ]
+    },
+    {
+      "id": "node_1770648614953_xdu5dj8e2",
+      "type": "textDisplay",
+      "position": {
+        "x": -513.3333333333343,
+        "y": -114.76190476190497
+      },
+      "data": {
+        "label": "文本显示",
+        "icon": "📄",
+        "isTriggering": false,
+        "presetText": "移动鼠标到800，999",
+        "value": {
+          "button": true
+        },
+        "status": "completed"
+      },
+      "inputs": [
+        {
+          "id": "input",
+          "type": "input",
+          "label": "输入"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "output",
+          "type": "output",
+          "label": "输出"
+        }
+      ]
+    },
+    {
+      "id": "node_1770648620771_6jruy4mid",
+      "type": "textDisplay",
+      "position": {
+        "x": -516.7142857142861,
+        "y": 259.99999999999994
+      },
+      "data": {
+        "label": "文本显示",
+        "icon": "📄",
+        "isTriggering": false,
+        "presetText": "按下键盘W",
+        "value": {
+          "button": true
+        },
+        "status": "completed"
+      },
+      "inputs": [
+        {
+          "id": "input",
+          "type": "input",
+          "label": "输入"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "output",
+          "type": "output",
+          "label": "输出"
+        }
+      ]
+    },
+    {
+      "id": "node_1770703346605_cxzf59pxr",
+      "type": "aiChat",
+      "position": {
+        "x": 214.10714285714286,
+        "y": 41.964285714285715
+      },
+      "data": {
+        "label": "千问-flash",
+        "modelId": "model-1770703248800",
+        "model": "qwen-flash",
+        "useMemory": false,
+        "messages": [],
+        "value": "{\n  \"0\": 540,\n  \"1\": 720,\n  \"2\": 500,\n  \"3\": 500,\n  \"4\": 1000,\n  \"5\": \"white\",\n  \"6\": null\n}",
+        "usage": {
+          "prompt_tokens": 205,
+          "completion_tokens": 61,
+          "total_tokens": 266
+        },
+        "tokenStats": {
+          "currentTokens": 266,
+          "totalTokens": 798,
+          "promptTokens": 615,
+          "completionTokens": 183,
+          "requestCount": 3
+        },
+        "isTriggering": false,
+        "savedAt": "2026-02-11T11:50:04.403Z",
+        "status": "completed"
+      },
+      "inputs": [
+        {
+          "id": "input",
+          "type": "input",
+          "label": "用户输入"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "output",
+          "type": "output",
+          "label": "AI回复"
+        }
+      ]
+    },
+    {
+      "id": "node_1770790755436_0iwip8x1m",
+      "type": "python",
+      "position": {
+        "x": -118.39285714285714,
+        "y": -88.75
+      },
+      "data": {
+        "label": "统一鼠标控制函数",
+        "componentId": "script_1770790739631_control_mouse",
+        "filePath": "D:\\1.STUDY\\1_project\\AI\\HeySure_AI_1.0\\data\\script\\mode/HumanLikeController.py",
+        "functionName": "control_mouse",
+        "unifiedInput": true,
+        "componentInputs": [
+          {
+            "id": "param_0",
+            "name": "action_type",
+            "label": "操作类型 ('move', 'smooth_move', 'click', 'down', 'up', 'get_pos')",
+            "dataType": "any",
+            "required": true,
+            "description": "操作类型 ('move', 'smooth_move', 'click', 'down', 'up', 'get_pos')"
+          },
+          {
+            "id": "param_1",
+            "name": "x",
+            "label": "目标x坐标 (用于 move, smooth_move)",
+            "dataType": "any",
+            "required": false,
+            "defaultValue": 0,
+            "description": "目标x坐标 (用于 move, smooth_move)"
+          },
+          {
+            "id": "param_2",
+            "name": "y",
+            "label": "目标y坐标 (用于 move, smooth_move)",
+            "dataType": "any",
+            "required": false,
+            "defaultValue": 0,
+            "description": "目标y坐标 (用于 move, smooth_move)"
+          },
+          {
+            "id": "param_3",
+            "name": "button",
+            "label": "鼠标按键 'left', 'right', 'middle' (默认 'left')",
+            "dataType": "any",
+            "required": false,
+            "defaultValue": "left",
+            "description": "鼠标按键 'left', 'right', 'middle' (默认 'left')"
+          },
+          {
+            "id": "param_4",
+            "name": "interval",
+            "label": "移动间隔 (用于 smooth_move)",
+            "dataType": "any",
+            "required": false,
+            "defaultValue": 0.01,
+            "description": "移动间隔 (用于 smooth_move)"
+          }
+        ],
+        "componentOutputs": [
+          {
+            "id": "output",
+            "name": "output",
+            "label": "输出结果",
+            "dataType": "any",
+            "required": true,
+            "description": "get_pos 时返回 (x, y)，其他返回 None"
+          }
+        ],
+        "value": "移动鼠标到800，999\n【函数信息】\n函数: 统一鼠标控制函数\n参数:\n  1.操作类型 ('move', 'smooth_move', 'click', 'down', 'up', 'get_pos')(必需)\n  2.目标x坐标 (用于 move, smooth_move)(可选)=0\n  3.目标y坐标 (用于 move, smooth_move)(可选)=0\n  4.鼠标按键 'left', 'right', 'middle' (默认 'left')(可选)=\"left\"\n  5.移动间隔 (用于 smooth_move)(可选)=0.01\n示例:\n{\n  \"0\": null,\n  \"1\": 0,\n  \"2\": 0,\n  \"3\": \"left\",\n  \"4\": 0.01\n}\n仅发送 JSON",
+        "isTriggering": false,
+        "status": "completed"
+      },
+      "inputs": [
+        {
+          "id": "jsonInput",
+          "type": "input",
+          "label": "JSON数据",
+          "dataType": "object"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "output",
+          "type": "output",
+          "label": "输出结果",
+          "dataType": "any"
+        }
+      ]
+    },
+    {
+      "id": "node_1770792056304_cb9sicx54",
+      "type": "python",
+      "position": {
+        "x": 485,
+        "y": 82.14285714285711
+      },
+      "data": {
+        "label": "在屏幕上显示矩形框",
+        "componentId": "script_1770293973941_show_box",
+        "filePath": "D:\\1.STUDY\\1_project\\AI\\HeySure_AI_1.0\\data\\script\\mode/BoxDisplay.py",
+        "functionName": "show_box",
+        "unifiedInput": true,
+        "componentInputs": [
+          {
+            "id": "param_0",
+            "name": "top",
+            "label": "top 参数",
+            "dataType": "any",
+            "required": true,
+            "description": "top 参数"
+          },
+          {
+            "id": "param_1",
+            "name": "left",
+            "label": "left 参数",
+            "dataType": "any",
+            "required": true,
+            "description": "left 参数"
+          },
+          {
+            "id": "param_2",
+            "name": "width",
+            "label": "width 参数",
+            "dataType": "any",
+            "required": true,
+            "description": "width 参数"
+          },
+          {
+            "id": "param_3",
+            "name": "height",
+            "label": "height 参数",
+            "dataType": "any",
+            "required": true,
+            "description": "height 参数"
+          },
+          {
+            "id": "param_4",
+            "name": "duration",
+            "label": "duration 参数",
+            "dataType": "any",
+            "required": false,
+            "defaultValue": 1000,
+            "description": "duration 参数"
+          },
+          {
+            "id": "param_5",
+            "name": "color",
+            "label": "color 参数",
+            "dataType": "any",
+            "required": false,
+            "defaultValue": "red",
+            "description": "color 参数"
+          },
+          {
+            "id": "param_6",
+            "name": "sub_boxes",
+            "label": "sub_boxes 参数",
+            "dataType": "any",
+            "required": false,
+            "defaultValue": null,
+            "description": "sub_boxes 参数"
+          }
+        ],
+        "componentOutputs": [
+          {
+            "id": "output",
+            "name": "output",
+            "label": "输出结果",
+            "dataType": "any",
+            "required": true,
+            "description": "返回值"
+          }
+        ],
+        "value": "OK",
+        "lastExecutionTime": "2026-02-11T17:11:24.393Z",
+        "isTriggering": false,
+        "status": "completed"
+      },
+      "inputs": [
+        {
+          "id": "jsonInput",
+          "type": "input",
+          "label": "JSON数据",
+          "dataType": "object"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "output",
+          "type": "output",
+          "label": "输出结果",
+          "dataType": "any"
+        }
+      ]
+    },
+    {
+      "id": "node_1770801933025_hdxbr90p9",
+      "type": "python",
+      "position": {
+        "x": 490.7142857142857,
+        "y": 289.2857142857143
+      },
+      "data": {
+        "label": "统一键盘控制函数",
+        "componentId": "script_1770793490494_control_keyboard",
+        "filePath": "D:\\1.STUDY\\1_project\\AI\\HeySure_AI_1.0\\data\\script\\mode\\HumanLikeController.py",
+        "functionName": "control_keyboard",
+        "unifiedInput": true,
+        "componentInputs": [
+          {
+            "id": "param_0",
+            "name": "action_type",
+            "label": "操作类型 ('press', 'down', 'up')",
+            "dataType": "any",
+            "required": true,
+            "description": "操作类型 ('press', 'down', 'up')"
+          },
+          {
+            "id": "param_1",
+            "name": "key",
+            "label": "键名 (如 'A', 'ENTER', 'SPACE' 等)",
+            "dataType": "any",
+            "required": false,
+            "defaultValue": null,
+            "description": "键名 (如 'A', 'ENTER', 'SPACE' 等)"
+          }
+        ],
+        "componentOutputs": [
+          {
+            "id": "output",
+            "name": "output",
+            "label": "输出结果",
+            "dataType": "any",
+            "required": true,
+            "description": "返回值"
+          }
+        ],
+        "value": "YES",
+        "lastExecutionTime": "2026-02-11T17:11:24.199Z",
+        "isTriggering": false,
+        "status": "completed"
+      },
+      "inputs": [
+        {
+          "id": "jsonInput",
+          "type": "input",
+          "label": "JSON数据",
+          "dataType": "object"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "output",
+          "type": "output",
+          "label": "输出结果",
+          "dataType": "any"
+        }
+      ]
+    },
+    {
+      "id": "node_1770801986406_yuiwu2eog",
+      "type": "python",
+      "position": {
+        "x": -126.42857142857142,
+        "y": 286.4285714285714
+      },
+      "data": {
+        "label": "统一键盘控制函数",
+        "componentId": "script_1770793490494_control_keyboard",
+        "filePath": "D:\\1.STUDY\\1_project\\AI\\HeySure_AI_1.0\\data\\script\\mode\\HumanLikeController.py",
+        "functionName": "control_keyboard",
+        "unifiedInput": true,
+        "componentInputs": [
+          {
+            "id": "param_0",
+            "name": "action_type",
+            "label": "操作类型 ('press', 'down', 'up')",
+            "dataType": "any",
+            "required": true,
+            "description": "操作类型 ('press', 'down', 'up')"
+          },
+          {
+            "id": "param_1",
+            "name": "key",
+            "label": "键名 (如 'A', 'ENTER', 'SPACE' 等)",
+            "dataType": "any",
+            "required": false,
+            "defaultValue": null,
+            "description": "键名 (如 'A', 'ENTER', 'SPACE' 等)"
+          }
+        ],
+        "componentOutputs": [
+          {
+            "id": "output",
+            "name": "output",
+            "label": "输出结果",
+            "dataType": "any",
+            "required": true,
+            "description": "返回值"
+          }
+        ],
+        "value": "按下键盘W\n【函数信息】\n函数: 统一键盘控制函数\n参数:\n  1.操作类型 ('press', 'down', 'up')(必需)\n  2.键名 (如 'A', 'ENTER', 'SPACE' 等)(可选)=null\n示例:\n{\n  \"0\": null,\n  \"1\": null\n}\n仅发送 JSON",
+        "isTriggering": false,
+        "status": "completed"
+      },
+      "inputs": [
+        {
+          "id": "jsonInput",
+          "type": "input",
+          "label": "JSON数据",
+          "dataType": "object"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "output",
+          "type": "output",
+          "label": "输出结果",
+          "dataType": "any"
+        }
+      ]
+    },
+    {
+      "id": "node_1770802016887_rew7lzyk7",
+      "type": "textDisplay",
+      "position": {
+        "x": 819.2857142857142,
+        "y": 59.28571428571428
+      },
+      "data": {
+        "label": "文本显示",
+        "icon": "📄",
+        "isTriggering": false,
+        "value": "OK",
+        "presetText": "",
+        "receivedData": "OK",
+        "displayText": "OK",
+        "status": "completed"
+      },
+      "inputs": [
+        {
+          "id": "input",
+          "type": "input",
+          "label": "输入"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "output",
+          "type": "output",
+          "label": "输出"
+        }
+      ]
+    },
+    {
+      "id": "node_1770802023942_777zj1d3h",
+      "type": "textDisplay",
+      "position": {
+        "x": 816.4285714285714,
+        "y": -110.71428571428571
+      },
+      "data": {
+        "label": "文本显示",
+        "icon": "📄",
+        "isTriggering": false,
+        "value": "OK",
+        "receivedData": "OK",
+        "displayText": "OK",
+        "presetText": "",
+        "status": "completed"
+      },
+      "inputs": [
+        {
+          "id": "input",
+          "type": "input",
+          "label": "输入"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "output",
+          "type": "output",
+          "label": "输出"
+        }
+      ]
+    },
+    {
+      "id": "node_1770802945599_hsl1luzco",
+      "type": "python",
+      "position": {
+        "x": 497.8571428571428,
+        "y": -87.85714285714285
+      },
+      "data": {
+        "label": "统一鼠标控制函数",
+        "componentId": "script_1770793490494_control_mouse",
+        "filePath": "D:\\1.STUDY\\1_project\\AI\\HeySure_AI_1.0\\data\\script\\mode\\HumanLikeController.py",
+        "functionName": "control_mouse",
+        "unifiedInput": true,
+        "componentInputs": [
+          {
+            "id": "param_0",
+            "name": "action_type",
+            "label": "操作类型 ('move', 'smooth_move', 'click', 'down', 'up', 'get_pos')",
+            "dataType": "any",
+            "required": true,
+            "description": "操作类型 ('move', 'smooth_move', 'click', 'down', 'up', 'get_pos')"
+          },
+          {
+            "id": "param_1",
+            "name": "x",
+            "label": "目标x坐标 (用于 move, smooth_move)",
+            "dataType": "any",
+            "required": false,
+            "defaultValue": 0,
+            "description": "目标x坐标 (用于 move, smooth_move)"
+          },
+          {
+            "id": "param_2",
+            "name": "y",
+            "label": "目标y坐标 (用于 move, smooth_move)",
+            "dataType": "any",
+            "required": false,
+            "defaultValue": 0,
+            "description": "目标y坐标 (用于 move, smooth_move)"
+          },
+          {
+            "id": "param_3",
+            "name": "button",
+            "label": "鼠标按键 'left', 'right', 'middle' (默认 'left')",
+            "dataType": "any",
+            "required": false,
+            "defaultValue": "left",
+            "description": "鼠标按键 'left', 'right', 'middle' (默认 'left')"
+          },
+          {
+            "id": "param_4",
+            "name": "interval",
+            "label": "移动间隔 (用于 smooth_move)",
+            "dataType": "any",
+            "required": false,
+            "defaultValue": 0.01,
+            "description": "移动间隔 (用于 smooth_move)"
+          }
+        ],
+        "componentOutputs": [
+          {
+            "id": "output",
+            "name": "output",
+            "label": "输出结果",
+            "dataType": "any",
+            "required": true,
+            "description": "get_pos 时返回 (x, y)，其他返回 None"
+          }
+        ],
+        "value": "OK",
+        "lastExecutionTime": "2026-02-11T17:11:23.814Z",
+        "isTriggering": false,
+        "status": "completed"
+      },
+      "inputs": [
+        {
+          "id": "jsonInput",
+          "type": "input",
+          "label": "JSON数据",
+          "dataType": "object"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "output",
+          "type": "output",
+          "label": "输出结果",
+          "dataType": "any"
+        }
+      ]
+    },
+    {
+      "id": "node_1770803394979_j3ac9dbc7",
+      "type": "python",
+      "position": {
+        "x": -122.14285714285711,
+        "y": 78.4920634920635
+      },
+      "data": {
+        "label": "显示屏幕矩形框",
+        "componentId": "script_1770803380769_show_box",
+        "filePath": "D:\\1.STUDY\\1_project\\AI\\HeySure_AI_1.0\\data\\script\\mode\\BoxDisplay.py",
+        "functionName": "show_box",
+        "unifiedInput": true,
+        "componentInputs": [
+          {
+            "id": "param_0",
+            "name": "top",
+            "label": "矩形框左上角y坐标",
+            "dataType": "any",
+            "required": true,
+            "description": "矩形框左上角y坐标"
+          },
+          {
+            "id": "param_1",
+            "name": "left",
+            "label": "矩形框左上角x坐标",
+            "dataType": "any",
+            "required": true,
+            "description": "矩形框左上角x坐标"
+          },
+          {
+            "id": "param_2",
+            "name": "width",
+            "label": "矩形框宽度",
+            "dataType": "any",
+            "required": true,
+            "description": "矩形框宽度"
+          },
+          {
+            "id": "param_3",
+            "name": "height",
+            "label": "矩形框高度",
+            "dataType": "any",
+            "required": true,
+            "description": "矩形框高度"
+          },
+          {
+            "id": "param_4",
+            "name": "duration",
+            "label": "显示持续时间(毫秒)",
+            "dataType": "any",
+            "required": false,
+            "defaultValue": 1000,
+            "description": "显示持续时间(毫秒)"
+          },
+          {
+            "id": "param_5",
+            "name": "color",
+            "label": "矩形框颜色",
+            "dataType": "any",
+            "required": false,
+            "defaultValue": "red",
+            "description": "矩形框颜色"
+          },
+          {
+            "id": "param_6",
+            "name": "sub_boxes",
+            "label": "子框列表，用于标识关键词等细节部分",
+            "dataType": "any",
+            "required": false,
+            "defaultValue": null,
+            "description": "子框列表，用于标识关键词等细节部分"
+          }
+        ],
+        "componentOutputs": [
+          {
+            "id": "output",
+            "name": "output",
+            "label": "输出结果",
+            "dataType": "any",
+            "required": true,
+            "description": "返回值"
+          }
+        ],
+        "value": "在我电脑2K桌面中间显示一个500大小白色的矩形框，注意输出json\n【函数信息】\n函数: 显示屏幕矩形框\n参数:\n  1.矩形框左上角y坐标(必需)\n  2.矩形框左上角x坐标(必需)\n  3.矩形框宽度(必需)\n  4.矩形框高度(必需)\n  5.显示持续时间(毫秒)(可选)=1000\n  6.矩形框颜色(可选)=\"red\"\n  7.子框列表，用于标识关键词等细节部分(可选)=null\n示例:\n{\n  \"0\": null,\n  \"1\": null,\n  \"2\": null,\n  \"3\": null,\n  \"4\": 1000,\n  \"5\": \"red\",\n  \"6\": null\n}\n仅发送 JSON",
+        "isTriggering": false,
+        "status": "completed"
+      },
+      "inputs": [
+        {
+          "id": "jsonInput",
+          "type": "input",
+          "label": "JSON数据",
+          "dataType": "object"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "output",
+          "type": "output",
+          "label": "输出结果",
+          "dataType": "any"
+        }
+      ]
+    },
+    {
+      "id": "node_1770809408447_ks0p7r8j1",
+      "type": "simpleTrigger",
+      "position": {
+        "x": -669.2857142857142,
+        "y": -249.28571428571425
+      },
+      "data": {
+        "label": "按钮",
+        "triggerCount": 9,
+        "lastTriggerTime": "19:49:04",
+        "layout": "reversed",
+        "isTriggering": false
+      },
+      "inputs": [],
+      "outputs": [
+        {
+          "id": "output",
+          "type": "output",
+          "label": "信号"
+        }
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge_1770314962545_z0bt49229",
+      "source": "node_1770313403696_579bsf03i",
+      "target": "node_1770314957407_dxtqh3xff",
+      "sourceHandle": "output",
+      "targetHandle": "input",
+      "type": "default",
+      "style": {
+        "stroke": "#64748b",
+        "strokeWidth": 2
+      }
+    },
+    {
+      "id": "edge_1770648746637_9k1oswvrh",
+      "source": "node_1770538490601_aytfuyy2j",
+      "target": "node_1770648582198_b0zgik49s",
+      "sourceHandle": "output",
+      "targetHandle": "input",
+      "type": "default",
+      "style": {
+        "stroke": "#64748b",
+        "strokeWidth": 2
+      }
+    },
+    {
+      "id": "edge_1770649550186_kg0k1oart",
+      "source": "node_1770545297980_wjvcdwrz1",
+      "target": "node_1770648614953_xdu5dj8e2",
+      "sourceHandle": "output",
+      "targetHandle": "input",
+      "type": "default",
+      "style": {
+        "stroke": "#64748b",
+        "strokeWidth": 2
+      }
+    },
+    {
+      "id": "edge_1770702239164_mfpi07zcs",
+      "source": "node_1770538465537_tq6aw3pq1",
+      "target": "node_1770648620771_6jruy4mid",
+      "sourceHandle": "output",
+      "targetHandle": "input",
+      "type": "default",
+      "style": {
+        "stroke": "#64748b",
+        "strokeWidth": 2
+      }
+    },
+    {
+      "id": "edge_1770790758465_q8weichin",
+      "source": "node_1770648614953_xdu5dj8e2",
+      "target": "node_1770790755436_0iwip8x1m",
+      "sourceHandle": "output",
+      "targetHandle": "jsonInput",
+      "type": "default",
+      "style": {
+        "stroke": "#64748b",
+        "strokeWidth": 2
+      }
+    },
+    {
+      "id": "edge_1770790780883_v7dusd0vv",
+      "source": "node_1770790755436_0iwip8x1m",
+      "target": "node_1770545289869_5k4vj1o4a",
+      "sourceHandle": "output",
+      "targetHandle": "input",
+      "type": "default",
+      "style": {
+        "stroke": "#64748b",
+        "strokeWidth": 2
+      }
+    },
+    {
+      "id": "edge_1770791328698_hkl9bew5d",
+      "source": "node_1770539320227_lj4nvrq37",
+      "target": "node_1770545297980_wjvcdwrz1",
+      "sourceHandle": "output",
+      "targetHandle": "input",
+      "type": "default",
+      "style": {
+        "stroke": "#64748b",
+        "strokeWidth": 2
+      }
+    },
+    {
+      "id": "edge_1770791364938_df1udieqk",
+      "source": "node_1770545297980_wjvcdwrz1",
+      "target": "node_1770538490601_aytfuyy2j",
+      "sourceHandle": "input",
+      "targetHandle": "input",
+      "type": "default",
+      "style": {
+        "stroke": "#64748b",
+        "strokeWidth": 2
+      }
+    },
+    {
+      "id": "edge_1770791366678_x9p99xy45",
+      "source": "node_1770538490601_aytfuyy2j",
+      "target": "node_1770538465537_tq6aw3pq1",
+      "sourceHandle": "input",
+      "targetHandle": "input",
+      "type": "default",
+      "style": {
+        "stroke": "#64748b",
+        "strokeWidth": 2
+      }
+    },
+    {
+      "id": "edge_1770791723272_gm3sybp09",
+      "source": "node_1770790755436_0iwip8x1m",
+      "target": "node_1770538006591_58vobbq4j",
+      "sourceHandle": "output",
+      "targetHandle": "input",
+      "type": "default",
+      "style": {
+        "stroke": "#64748b",
+        "strokeWidth": 2
+      }
+    },
+    {
+      "id": "edge_1770801937347_f3b74gggn",
+      "source": "node_1770801933025_hdxbr90p9",
+      "target": "node_1770313441524_jeb7lb3bk",
+      "sourceHandle": "output",
+      "targetHandle": "input",
+      "type": "default",
+      "style": {
+        "stroke": "#64748b",
+        "strokeWidth": 2
+      }
+    },
+    {
+      "id": "edge_1770801989149_bk9hmizri",
+      "source": "node_1770648620771_6jruy4mid",
+      "target": "node_1770801986406_yuiwu2eog",
+      "sourceHandle": "output",
+      "targetHandle": "jsonInput",
+      "type": "default",
+      "style": {
+        "stroke": "#64748b",
+        "strokeWidth": 2
+      }
+    },
+    {
+      "id": "edge_1770801991022_mnzd5cb4o",
+      "source": "node_1770801986406_yuiwu2eog",
+      "target": "node_1770313403696_579bsf03i",
+      "sourceHandle": "output",
+      "targetHandle": "input",
+      "type": "default",
+      "style": {
+        "stroke": "#64748b",
+        "strokeWidth": 2
+      }
+    },
+    {
+      "id": "edge_1770802020203_w4532j6yq",
+      "source": "node_1770792056304_cb9sicx54",
+      "target": "node_1770802016887_rew7lzyk7",
+      "sourceHandle": "output",
+      "targetHandle": "input",
+      "type": "default",
+      "style": {
+        "stroke": "#64748b",
+        "strokeWidth": 2
+      }
+    },
+    {
+      "id": "edge_1770802095636_d05d3ovlr",
+      "source": "node_1770545289869_5k4vj1o4a",
+      "target": "node_1770314957407_dxtqh3xff",
+      "sourceHandle": "output",
+      "targetHandle": "input",
+      "type": "default",
+      "style": {
+        "stroke": "#64748b",
+        "strokeWidth": 2
+      }
+    },
+    {
+      "id": "edge_1770802097498_ogsacize5",
+      "source": "node_1770703346605_cxzf59pxr",
+      "target": "node_1770314957407_dxtqh3xff",
+      "sourceHandle": "output",
+      "targetHandle": "input",
+      "type": "default",
+      "style": {
+        "stroke": "#64748b",
+        "strokeWidth": 2
+      }
+    },
+    {
+      "id": "edge_1770802109925_l2e51j8e4",
+      "source": "node_1770703346605_cxzf59pxr",
+      "target": "node_1770792056304_cb9sicx54",
+      "sourceHandle": "output",
+      "targetHandle": "jsonInput",
+      "type": "default",
+      "style": {
+        "stroke": "#64748b",
+        "strokeWidth": 2
+      }
+    },
+    {
+      "id": "edge_1770802111729_n1tupfy8j",
+      "source": "node_1770313403696_579bsf03i",
+      "target": "node_1770801933025_hdxbr90p9",
+      "sourceHandle": "output",
+      "targetHandle": "jsonInput",
+      "type": "default",
+      "style": {
+        "stroke": "#64748b",
+        "strokeWidth": 2
+      }
+    },
+    {
+      "id": "edge_1770802158185_y1nytlygx",
+      "source": "node_1770802016887_rew7lzyk7",
+      "target": "node_1770313441524_jeb7lb3bk",
+      "sourceHandle": "output",
+      "targetHandle": "output",
+      "type": "default",
+      "style": {
+        "stroke": "#64748b",
+        "strokeWidth": 2
+      }
+    },
+    {
+      "id": "edge_1770802160225_m434a41zh",
+      "source": "node_1770802023942_777zj1d3h",
+      "target": "node_1770802016887_rew7lzyk7",
+      "sourceHandle": "output",
+      "targetHandle": "output",
+      "type": "default",
+      "style": {
+        "stroke": "#64748b",
+        "strokeWidth": 2
+      }
+    },
+    {
+      "id": "edge_1770802173191_ekjk5a5kd",
+      "source": "node_1770313441524_jeb7lb3bk",
+      "target": "node_1770539336100_ovuemi4ag",
+      "sourceHandle": "output",
+      "targetHandle": "input",
+      "type": "default",
+      "style": {
+        "stroke": "#64748b",
+        "strokeWidth": 2
+      }
+    },
+    {
+      "id": "edge_1770802947969_1t6npl3ls",
+      "source": "node_1770545289869_5k4vj1o4a",
+      "target": "node_1770802945599_hsl1luzco",
+      "sourceHandle": "output",
+      "targetHandle": "jsonInput",
+      "type": "default",
+      "style": {
+        "stroke": "#64748b",
+        "strokeWidth": 2
+      }
+    },
+    {
+      "id": "edge_1770802949471_mt8plfpmh",
+      "source": "node_1770802945599_hsl1luzco",
+      "target": "node_1770802023942_777zj1d3h",
+      "sourceHandle": "output",
+      "targetHandle": "input",
+      "type": "default",
+      "style": {
+        "stroke": "#64748b",
+        "strokeWidth": 2
+      }
+    },
+    {
+      "id": "edge_1770803399987_fyi8zxfwv",
+      "source": "node_1770648582198_b0zgik49s",
+      "target": "node_1770803394979_j3ac9dbc7",
+      "sourceHandle": "output",
+      "targetHandle": "jsonInput",
+      "type": "default",
+      "style": {
+        "stroke": "#64748b",
+        "strokeWidth": 2
+      }
+    },
+    {
+      "id": "edge_1770803401111_386ezv5ib",
+      "source": "node_1770803394979_j3ac9dbc7",
+      "target": "node_1770703346605_cxzf59pxr",
+      "sourceHandle": "output",
+      "targetHandle": "input",
+      "type": "default",
+      "style": {
+        "stroke": "#64748b",
+        "strokeWidth": 2
+      }
+    },
+    {
+      "id": "edge_1770803410299_ezq85a4ub",
+      "source": "node_1770803394979_j3ac9dbc7",
+      "target": "node_1770538006591_58vobbq4j",
+      "sourceHandle": "output",
+      "targetHandle": "input",
+      "type": "default",
+      "style": {
+        "stroke": "#64748b",
+        "strokeWidth": 2
+      }
+    },
+    {
+      "id": "edge_1770809410749_pu9vo0ydl",
+      "source": "node_1770809408447_ks0p7r8j1",
+      "target": "node_1770539320227_lj4nvrq37",
+      "sourceHandle": "output",
+      "targetHandle": "output",
+      "type": "default",
+      "style": {
+        "stroke": "#64748b",
+        "strokeWidth": 2
+      }
+    }
+  ],
+  "settings": {
+    "executionMode": "async",
+    "timeout": 300,
+    "retryOnError": false,
+    "maxRetries": 3
+  },
+  "metadata": {
+    "author": "",
+    "tags": [],
+    "isTemplate": false
+  },
+  "createdAt": 1770313379687,
+  "updatedAt": 1771337631092,
+  "viewState": {
+    "zoom": 0.7000000000000001,
+    "pan": {
+      "x": 647.288888888889,
+      "y": 263.22500000000025
+    },
+    "animationSpeed": 0.3,
+    "showGrid": true,
+    "connectionStrokeWidth": 6
+  },
+  "aiConfig": {
+    "selectedModelId": "model-1770017328240",
+    "allowReadFlow": true,
+    "allowAiEdit": true,
+    "allowAiAutoExecution": true
+  },
+  "theme": {
+    "id": "dark",
+    "name": "暗黑主题",
+    "backgroundColor": "#1e1e2e",
+    "gridColor": "#313244",
+    "gridEnabled": true,
+    "connectionColor": "#6c7086",
+    "lineColor": "#89b4fa",
+    "connectionWidth": 2,
+    "connectionStyle": "curve",
+    "nodeBackgroundColor": "#313244",
+    "nodeBorderColor": "#45475a",
+    "nodeBorderWidth": 1,
+    "nodeBorderRadius": 8,
+    "rootNodeColor": "#000000ff",
+    "textColor": "#cdd6f4",
+    "rootTextColor": "#1e1e2e",
+    "fontFamily": "system-ui, -apple-system, sans-serif",
+    "fontSize": 14,
+    "rootFontSize": 16,
+    "lineHeight": 1.5,
+    "shadowEnabled": true,
+    "shadowColor": "rgba(0, 0, 0, 0.3)",
+    "shadowBlur": 8,
+    "shadowOffsetX": 4,
+    "shadowOffsetY": 4
+  }
+}

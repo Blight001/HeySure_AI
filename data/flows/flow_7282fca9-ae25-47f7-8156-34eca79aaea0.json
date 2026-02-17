@@ -1,0 +1,94 @@
+{
+  "id": "7282fca9-ae25-47f7-8156-34eca79aaea0",
+  "name": "打开浏览器",
+  "description": "",
+  "version": "1.0.0",
+  "nodes": [
+    {
+      "id": "node_1770898340773_xqkwj9ciz",
+      "type": "aiChat",
+      "position": {
+        "x": 488,
+        "y": 257
+      },
+      "data": {
+        "label": "千问-plus",
+        "modelId": "model-1770017328240",
+        "model": "qwen-plus",
+        "useMemory": true,
+        "messages": []
+      },
+      "inputs": [
+        {
+          "id": "input",
+          "type": "input",
+          "label": "用户输入"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "output",
+          "type": "output",
+          "label": "AI回复"
+        }
+      ]
+    }
+  ],
+  "edges": [],
+  "settings": {
+    "executionMode": "async",
+    "timeout": 300,
+    "retryOnError": false,
+    "maxRetries": 3
+  },
+  "metadata": {
+    "author": "",
+    "tags": [],
+    "isTemplate": false
+  },
+  "createdAt": 1770898329021,
+  "updatedAt": 1771339128407,
+  "viewState": {
+    "zoom": 0.8999999999999999,
+    "pan": {
+      "x": 42.80000000000007,
+      "y": 157.19999999999982
+    },
+    "animationSpeed": 1.5,
+    "showGrid": true,
+    "connectionStrokeWidth": 2
+  },
+  "aiConfig": {
+    "selectedModelId": "model-1770017328240",
+    "allowReadFlow": true,
+    "allowAiEdit": true,
+    "allowAiAutoExecution": true
+  },
+  "theme": {
+    "id": "dark",
+    "name": "暗黑主题",
+    "backgroundColor": "#1e1e2e",
+    "gridColor": "#313244",
+    "gridEnabled": true,
+    "connectionColor": "#6c7086",
+    "lineColor": "#89b4fa",
+    "connectionWidth": 2,
+    "connectionStyle": "curve",
+    "nodeBackgroundColor": "#313244",
+    "nodeBorderColor": "#45475a",
+    "nodeBorderWidth": 1,
+    "nodeBorderRadius": 8,
+    "rootNodeColor": "#000000ff",
+    "textColor": "#cdd6f4",
+    "rootTextColor": "#1e1e2e",
+    "fontFamily": "system-ui, -apple-system, sans-serif",
+    "fontSize": 14,
+    "rootFontSize": 16,
+    "lineHeight": 1.5,
+    "shadowEnabled": true,
+    "shadowColor": "rgba(0, 0, 0, 0.3)",
+    "shadowBlur": 8,
+    "shadowOffsetX": 4,
+    "shadowOffsetY": 4
+  }
+}

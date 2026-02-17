@@ -1,0 +1,106 @@
+{
+  "id": "script_1770803380769",
+  "name": "屏幕矩形框显示工具",
+  "fileName": "BoxDisplay.py",
+  "savedPath": "D:\\1.STUDY\\1_project\\AI\\HeySure_AI_1.0\\data\\script\\mode\\BoxDisplay.py",
+  "category": "custom",
+  "description": "该脚本提供了一个基于 Tkinter 的屏幕覆盖层功能，用于在屏幕指定位置绘制矩形框。\n    为了避免 GUI 事件循环阻塞主程序或引发线程安全问题，该工具设计为通过子进程独立运行。\n    它既可以作为模块导入调用，也可以通过命令行参数直接运行。\n\n    核心功能:\n    1. show_box(top, left, width, height, ...): \n       - 启动一个独立的 Python 进程来显示矩形框。\n       - 支持设置显示位置、大小、持续时间、颜色以及额外的子框标记。\n       - 使用 JSON 序列化参数并通过命令行传递给子进程。\n\n    2. 独立进程架构:\n       - 避免了 \"Object of type Thread is not JSON serializable\" 等 IPC 问题。\n       - 解决了 Tkinter 在非主线程运行时的 \"CoInitialize\" 或 \"main thread\" 限制。\n       - 确保提示框的显示不会因为主程序的繁忙或退出而异常中断。",
+  "functions": [
+    {
+      "name": "show_box",
+      "description": "显示屏幕矩形框",
+      "parameters": [
+        {
+          "name": "top",
+          "type": "any",
+          "description": "矩形框左上角y坐标",
+          "required": true
+        },
+        {
+          "name": "left",
+          "type": "any",
+          "description": "矩形框左上角x坐标",
+          "required": true
+        },
+        {
+          "name": "width",
+          "type": "any",
+          "description": "矩形框宽度",
+          "required": true
+        },
+        {
+          "name": "height",
+          "type": "any",
+          "description": "矩形框高度",
+          "required": true
+        },
+        {
+          "name": "duration",
+          "type": "any",
+          "description": "显示持续时间(毫秒)",
+          "defaultValue": 1000,
+          "required": false
+        },
+        {
+          "name": "color",
+          "type": "any",
+          "description": "矩形框颜色",
+          "defaultValue": "red",
+          "required": false
+        },
+        {
+          "name": "sub_boxes",
+          "type": "any",
+          "description": "子框列表，用于标识关键词等细节部分",
+          "defaultValue": null,
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "any",
+        "description": "返回值"
+      },
+      "lineNumber": 100,
+      "label": "显示屏幕矩形框",
+      "sourceCode": "def show_box(top, left, width, height, duration=1000, color='red', sub_boxes=None):\n    \"\"\""
+    }
+  ],
+  "componentConfig": {
+    "timeout": 30,
+    "requireApproval": false,
+    "allowedImports": [],
+    "blockedImports": [
+      "os",
+      "sys",
+      "subprocess",
+      "eval",
+      "exec",
+      "importlib"
+    ],
+    "memoryLimit": 256
+  },
+  "aiControl": [
+    {
+      "id": "rule_1770803380780",
+      "name": "屏幕矩形框显示工具 自动规则",
+      "description": "自动为 屏幕矩形框显示工具 (BoxDisplay) 创建的AI控制规则",
+      "priority": 5,
+      "enabled": true,
+      "triggers": [
+        {
+          "type": "keyword",
+          "pattern": "屏幕矩形框显示工具"
+        }
+      ],
+      "inputRules": [],
+      "outputRules": [],
+      "limits": {
+        "maxCallsPerExecution": 10,
+        "maxTotalCalls": 0,
+        "requireUserPermission": false
+      }
+    }
+  ],
+  "createdAt": 1770803380780,
+  "updatedAt": 1770804972465
+}

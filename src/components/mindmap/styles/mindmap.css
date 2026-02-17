@@ -1,0 +1,766 @@
+/* 思维导图样式 */
+.mindmap-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: #f8fafc;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* 工具栏样式 */
+.mindmap-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  flex-shrink: 0;
+}
+
+.toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.toolbar-divider {
+  width: 1px;
+  height: 24px;
+  background-color: #e2e8f0;
+  margin: 0 4px;
+}
+
+.zoom-level {
+  font-size: 12px;
+  color: #64748b;
+  min-width: 40px;
+  text-align: center;
+}
+
+.import-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 4px;
+  border: 1px solid #e2e8f0;
+  background-color: #fff;
+  transition: all 0.2s;
+}
+
+.import-label:hover {
+  background-color: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+/* 画布样式 */
+.mindmap-canvas {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  cursor: grab;
+  background-image:
+    radial-gradient(circle, #e2e8f0 1px, transparent 1px);
+  background-size: 20px 20px;
+  background-position: -10px -10px;
+}
+
+.mindmap-canvas:active {
+  cursor: grabbing;
+}
+
+.mindmap-canvas.dragging {
+  cursor: grabbing;
+}
+
+/* SVG连接线层 */
+.mindmap-connections {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* 节点层 */
+.mindmap-nodes {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+/* 节点样式 */
+.mindmap-node {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border-radius: 8px;
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+  padding: 8px 16px;
+  min-height: 40px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  /* 移除过渡动画以避免拖拽延迟 */
+  transition: background-color 0.2s, box-shadow 0.2s, border 0.2s;
+}
+
+.mindmap-node:hover {
+  filter: brightness(1.1);
+}
+
+.mindmap-node.selected {
+  z-index: 100;
+  /* 增强选中效果：发光边框 + 脉冲光晕 */
+  box-shadow:
+    0 0 0 3px rgba(255, 0, 0, 0.6),
+    0 0 20px rgba(255, 0, 0, 0.4),
+    0 4px 12px rgba(0, 0, 0, 0.3);
+  animation: node-glow 1.5s ease-in-out infinite;
+  /* 选中时稍微提亮背景色 */
+  filter: brightness(1.15);
+}
+
+/* 选中状态的额外脉动边框环 */
+.mindmap-node.selected::after {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 12px;
+  border: 2px solid rgba(59, 130, 246, 0.4);
+  animation: border-pulse 1.5s ease-in-out infinite;
+}
+
+.mindmap-node.editing {
+  z-index: 101;
+}
+
+/* 选中状态发光动画 - 多层光晕 */
+@keyframes node-glow {
+  0%, 100% {
+    box-shadow:
+      0 0 0 3px rgba(59, 130, 246, 0.5),
+      0 0 15px rgba(59, 130, 246, 0.3),
+      0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+  50% {
+    box-shadow:
+      0 0 0 1px rgba(0, 255, 64, 0.7),
+      0 0 30px rgba(81, 255, 0, 0.5),
+      0 6px 20px rgba(0, 106, 255, 0.3);
+  }
+}
+
+/* 外边框脉动动画 */
+@keyframes border-pulse {
+  0%, 100% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.02);
+  }
+}
+
+/* 节点内容 */
+.node-content {
+  flex: 1;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 节点编辑输入框 */
+.node-edit-input {
+  width: 100%;
+  height: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+  min-width: 100px;
+}
+
+.node-edit-input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* 折叠/展开按钮 */
+.collapse-toggle {
+  position: absolute;
+  right: -20px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 4px;
+  color: #64748b;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s;
+  z-index: 10;
+}
+
+.mindmap-node:hover .collapse-toggle {
+  opacity: 1;
+}
+
+.collapse-toggle:hover {
+  background-color: white;
+  color: #3b82f6;
+}
+
+/* 颜色选择器 */
+.color-picker {
+  position: absolute;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 8px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  z-index: 200;
+  width: 120px;
+}
+
+.color-option {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.color-option:hover {
+  transform: scale(1.15);
+}
+
+.color-option.active {
+  border-color: #1e293b;
+  box-shadow: 0 0 0 2px white, 0 0 0 4px currentColor;
+}
+
+/* 状态栏样式 */
+.mindmap-statusbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background-color: #ffffff;
+  border-top: 1px solid #e2e8f0;
+  font-size: 12px;
+  color: #64748b;
+  flex-shrink: 0;
+}
+
+/* 快捷键提示样式 */
+.shortcut-hints {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+}
+
+.shortcut-hint {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 6px;
+  background-color: #f1f5f9;
+  border-radius: 4px;
+  font-size: 11px;
+  color: #64748b;
+  white-space: nowrap;
+}
+
+.shortcut-hint kbd {
+  display: inline-block;
+  padding: 1px 4px;
+  font-size: 10px;
+  font-family: monospace;
+  font-weight: 600;
+  color: #334155;
+  background-color: #e2e8f0;
+  border-radius: 3px;
+  border: 1px solid #cbd5e1;
+  box-shadow: 0 1px 0 #cbd5e1;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .mindmap-toolbar {
+    flex-wrap: wrap;
+    padding: 6px 8px;
+  }
+
+  .toolbar-group {
+    gap: 2px;
+  }
+
+  .zoom-level {
+    display: none;
+  }
+
+  .collapse-toggle {
+    opacity: 1;
+    right: -16px;
+    width: 16px;
+    height: 16px;
+  }
+
+  .collapse-toggle svg {
+    width: 12px;
+    height: 12px;
+  }
+}
+
+/* 动画效果 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 节点连接线动画 */
+.mindmap-connections path {
+  transition: stroke 0.2s;
+}
+
+/* 节点添加动画（仅在添加时触发） */
+.mindmap-node.adding {
+  animation: fadeIn 0.3s ease;
+}
+
+/* 颜色选择器动画 */
+.color-picker {
+  animation: fadeIn 0.2s ease;
+}
+
+/* 工具栏按钮悬停效果 */
+.mindmap-toolbar .btn:hover {
+  background-color: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+/* 导入标签悬停效果 */
+.import-label:hover {
+  background-color: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+/* 画布拖拽效果 */
+.mindmap-canvas.moving {
+  cursor: grabbing;
+}
+
+/* 节点拖拽效果 */
+.mindmap-node[draggable="true"] {
+  cursor: grab;
+}
+
+.mindmap-node[draggable="true"]:active {
+  cursor: grabbing;
+  opacity: 0.8;
+}
+
+/* 滚动条样式 */
+.mindmap-canvas::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.mindmap-canvas::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+.mindmap-canvas::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.mindmap-canvas::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* 禁用状态 */
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn:disabled:hover {
+  background-color: transparent;
+  border-color: #e2e8f0;
+}
+
+/* ==================== 分类和思维导图选择器样式 ==================== */
+
+/* 顶部工具栏（分类选择） */
+.mindmap-toolbar-top {
+  border-bottom: 1px solid #e2e8f0;
+  background-color: #f8fafc;
+}
+
+/* 分类选择器容器 */
+.category-selector,
+.map-selector {
+  position: relative;
+}
+
+/* 选择器按钮 */
+.category-selector-button,
+.map-selector-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  background-color: #fff;
+  cursor: pointer;
+  font-size: 13px;
+  color: #334155;
+  transition: all 0.2s;
+  min-width: 180px;
+  max-width: 260px;
+  justify-content: space-between;
+}
+
+.category-selector-button > span,
+.map-selector-button > span {
+  flex: 1;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.category-selector-button:hover,
+.map-selector-button:hover {
+  background-color: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+/* 移除不再使用的 map-name-display */
+/* 思维导图名称显示和编辑 */
+/* .map-name-display { ... } */
+
+.map-name-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background-color: #f1f5f9;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #334155;
+  min-width: 100px;
+  cursor: text;
+}
+
+.map-name-input:focus {
+  background-color: #fff;
+  box-shadow: 0 0 0 2px #3b82f6;
+}
+
+/* 下拉菜单 */
+.category-dropdown,
+.map-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  min-width: 220px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  overflow: hidden;
+  animation: fadeIn 0.2s ease;
+}
+
+.map-dropdown {
+  left: auto;
+  right: 0;
+}
+
+/* 下拉菜单头部 */
+.dropdown-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+}
+
+.dropdown-title {
+  font-size: 12px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+/* 输入框样式 */
+.category-input,
+.category-edit-input {
+  flex: 1;
+  padding: 6px 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.category-input:focus,
+.category-edit-input:focus {
+  border-color: #3b82f6;
+}
+
+/* 下拉菜单分隔线 */
+.dropdown-divider {
+  height: 1px;
+  background-color: #e2e8f0;
+  margin: 4px 0;
+}
+
+/* 分类列表 */
+.category-list {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.category-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.category-item:hover {
+  background-color: #f1f5f9;
+}
+
+.category-item.active {
+  background-color: #eff6ff;
+}
+
+.category-name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #334155;
+}
+
+.map-count {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+/* 分类操作按钮 */
+.category-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.category-item:hover .category-actions {
+  opacity: 1;
+}
+
+.category-actions button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: none;
+  border-radius: 4px;
+  background-color: transparent;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.category-actions button:hover {
+  background-color: #e2e8f0;
+  color: #334155;
+}
+
+.category-actions button.delete-action:hover {
+  background-color: #fee2e2;
+  color: #ef4444;
+}
+
+/* 思维导图列表 */
+.map-list {
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.map-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.map-item:hover {
+  background-color: #f1f5f9;
+}
+
+.map-item.active {
+  background-color: #eff6ff;
+}
+
+.map-name {
+  font-size: 13px;
+  color: #334155;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 下拉菜单操作按钮 */
+.dropdown-actions {
+  display: flex;
+  gap: 8px;
+  padding: 10px 12px;
+}
+
+.dropdown-actions .btn {
+  flex: 1;
+}
+
+.dropdown-actions .delete-btn {
+  color: #ef4444;
+}
+
+.dropdown-actions .delete-btn:hover {
+  background-color: #fee2e2;
+  border-color: #fecaca;
+}
+
+/* ==================== 布局选择器样式 ==================== */
+
+/* 布局选择器容器 */
+.layout-selector {
+  position: relative;
+}
+
+/* 选择器按钮 */
+.layout-selector-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  background-color: #fff;
+  cursor: pointer;
+  font-size: 13px;
+  color: #334155;
+  transition: all 0.2s;
+}
+
+.layout-selector-button:hover {
+  background-color: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+/* 下拉菜单 */
+.layout-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  min-width: 180px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  overflow: hidden;
+  animation: fadeIn 0.2s ease;
+}
+
+/* 布局列表 */
+.layout-list {
+  padding: 4px;
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+/* 布局项 */
+.layout-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background-color 0.2s;
+}
+
+.layout-item:hover {
+  background-color: #f1f5f9;
+}
+
+.layout-item.active {
+  background-color: #eff6ff;
+}
+
+.layout-name {
+  flex: 1;
+  font-size: 13px;
+  color: #334155;
+}
+
+.check-mark {
+  color: #3b82f6;
+  font-weight: bold;
+}
+
+/* 动画 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

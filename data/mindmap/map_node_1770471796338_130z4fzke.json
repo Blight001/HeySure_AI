@@ -1,0 +1,92 @@
+{
+  "id": "node_1770471796338_130z4fzke",
+  "name": "测试类",
+  "createdAt": "2026-02-07T13:43:16.338Z",
+  "updatedAt": "2026-02-17T08:08:57.957Z",
+  "nodes": [
+    {
+      "id": "node_1770471796338_9a1g4l5nt",
+      "name": "中心主题",
+      "parentId": null,
+      "createdAt": "2026-02-07T13:43:16.338Z",
+      "updatedAt": "2026-02-07T13:43:16.338Z",
+      "usageCount": 0,
+      "lastUsed": "2026-02-07T13:43:16.338Z",
+      "contexts": [],
+      "children": [
+        "node_1771314439118_pq2f9n25q",
+        "node_1771315737957_0b0zuonis"
+      ],
+      "isRoot": true,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "id": "node_1771314439118_pq2f9n25q",
+      "name": "打开浏览器",
+      "parentId": "node_1770471796338_9a1g4l5nt",
+      "createdAt": "2026-02-17T07:47:19.118Z",
+      "updatedAt": "2026-02-17T07:47:22.913Z",
+      "usageCount": 0,
+      "lastUsed": "2026-02-17T07:47:19.118Z",
+      "contexts": [],
+      "children": [],
+      "x": 200,
+      "y": -70,
+      "color": "#3b82f6",
+      "duplicateIndex": 3
+    },
+    {
+      "id": "node_1771315737957_0b0zuonis",
+      "name": "新节点",
+      "parentId": "node_1770471796338_9a1g4l5nt",
+      "createdAt": "2026-02-17T08:08:57.957Z",
+      "updatedAt": "2026-02-17T08:08:59.585Z",
+      "usageCount": 0,
+      "lastUsed": "2026-02-17T08:08:57.957Z",
+      "contexts": [],
+      "children": [],
+      "x": 200,
+      "y": 30,
+      "color": "#3b82f6",
+      "duplicateIndex": 2
+    }
+  ],
+  "version": 1,
+  "theme": {
+    "id": "dark",
+    "name": "暗黑主题",
+    "backgroundColor": "#1e1e2e",
+    "gridColor": "#313244",
+    "gridEnabled": true,
+    "connectionColor": "#6c7086",
+    "connectionWidth": 2,
+    "connectionStyle": "curve",
+    "nodeBackgroundColor": "#313244",
+    "nodeBorderColor": "#45475a",
+    "nodeBorderWidth": 1,
+    "nodeBorderRadius": 8,
+    "rootNodeColor": "#000000ff",
+    "textColor": "#cdd6f4",
+    "rootTextColor": "#1e1e2e",
+    "fontFamily": "system-ui, -apple-system, sans-serif",
+    "fontSize": 14,
+    "rootFontSize": 16,
+    "lineHeight": 1.5,
+    "shadowEnabled": true,
+    "shadowColor": "rgba(0, 0, 0, 0.3)",
+    "shadowBlur": 8,
+    "shadowOffsetX": 4,
+    "shadowOffsetY": 4
+  },
+  "aiConfig": {
+    "selectedModelId": "model-1770703248800",
+    "allowReadMindmap": true,
+    "allowAiEdit": true
+  },
+  "viewState": {
+    "scale": 1.2,
+    "x": 230.5,
+    "y": 364
+  }
+}

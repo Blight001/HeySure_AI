@@ -1,0 +1,23 @@
+{
+  "theme": "light",
+  "language": "zh-CN",
+  "fontSize": 14,
+  "autoSave": true,
+  "autoSaveInterval": 30,
+  "showConsole": false,
+  "maxHistoryCount": 100,
+  "enableSpellCheck": false,
+  "enableMarkdownPreview": true,
+  "enableCodeHighlight": true,
+  "enableSound": true,
+  "notificationOnComplete": true,
+  "defaultModel": "",
+  "temperature": 0.7,
+  "maxTokens": 4096,
+  "shortcuts": {
+    "newDialog": "Ctrl+N",
+    "search": "Ctrl+K",
+    "settings": "Ctrl+,",
+    "toggleSidebar": "Ctrl+B"
+  }
+}

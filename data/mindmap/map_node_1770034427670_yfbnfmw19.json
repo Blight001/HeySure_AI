@@ -1,0 +1,312 @@
+{
+  "id": "node_1770034427670_yfbnfmw19",
+  "name": "生活类",
+  "createdAt": "2026-02-02T12:13:47.670Z",
+  "updatedAt": "2026-02-17T14:23:13.924Z",
+  "nodes": [
+    {
+      "id": "node_1770034427670_pbkrue3fz",
+      "name": "生活日常",
+      "parentId": null,
+      "createdAt": "2026-02-02T12:13:47.670Z",
+      "updatedAt": "2026-02-12T11:45:11.960Z",
+      "usageCount": 0,
+      "lastUsed": "2026-02-02T12:13:47.670Z",
+      "contexts": [],
+      "children": [
+        "node_1770895962803_3f5drd7sd",
+        "node_1770897380085_9zeto43xi"
+      ],
+      "isRoot": true,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "id": "node_1770895962803_3f5drd7sd",
+      "name": "日常操作",
+      "parentId": "node_1770034427670_pbkrue3fz",
+      "createdAt": "2026-02-12T11:32:42.803Z",
+      "updatedAt": "2026-02-12T11:45:24.480Z",
+      "usageCount": 0,
+      "lastUsed": "2026-02-12T11:32:42.803Z",
+      "contexts": [],
+      "children": [
+        "node_1770896935472_ww7w8wrfo"
+      ],
+      "x": 200,
+      "y": -200,
+      "color": "#3b82f6"
+    },
+    {
+      "id": "node_1770896935472_ww7w8wrfo",
+      "name": "看下服务器使用情况",
+      "parentId": "node_1770895962803_3f5drd7sd",
+      "createdAt": "2026-02-12T11:48:55.472Z",
+      "updatedAt": "2026-02-12T11:49:17.729Z",
+      "usageCount": 0,
+      "lastUsed": "2026-02-12T11:48:55.472Z",
+      "contexts": [],
+      "children": [
+        "node_1770896961243_6q86sfy1l",
+        "node_1770897070930_fkq1vofle",
+        "node_1770897088026_c8clozc70",
+        "node_1770897251514_5mbcckvz0",
+        "node_1770897257930_925ank8fx"
+      ],
+      "x": 400,
+      "y": -230,
+      "color": "#3b82f6"
+    },
+    {
+      "id": "node_1770896961243_6q86sfy1l",
+      "name": "打开浏览器",
+      "parentId": "node_1770896935472_ww7w8wrfo",
+      "createdAt": "2026-02-12T11:49:21.243Z",
+      "updatedAt": "2026-02-12T11:49:27.808Z",
+      "usageCount": 0,
+      "lastUsed": "2026-02-12T11:49:21.243Z",
+      "contexts": [],
+      "children": [],
+      "x": 600,
+      "y": -450,
+      "color": "#3b82f6",
+      "duplicateIndex": 1
+    },
+    {
+      "id": "node_1770897070930_fkq1vofle",
+      "name": "观察收藏栏",
+      "parentId": "node_1770896935472_ww7w8wrfo",
+      "createdAt": "2026-02-12T11:51:10.930Z",
+      "updatedAt": "2026-02-12T11:51:27.758Z",
+      "usageCount": 0,
+      "lastUsed": "2026-02-12T11:51:10.930Z",
+      "contexts": [],
+      "children": [],
+      "x": 600,
+      "y": -350,
+      "color": "#3b82f6"
+    },
+    {
+      "id": "node_1770897088026_c8clozc70",
+      "name": "点击即梦AI",
+      "parentId": "node_1770896935472_ww7w8wrfo",
+      "createdAt": "2026-02-12T11:51:28.026Z",
+      "updatedAt": "2026-02-12T11:57:26.276Z",
+      "usageCount": 0,
+      "lastUsed": "2026-02-12T11:51:28.026Z",
+      "contexts": [],
+      "children": [],
+      "x": 600,
+      "y": -250,
+      "color": "#3b82f6"
+    },
+    {
+      "id": "node_1770897251514_5mbcckvz0",
+      "name": "输入暗号：哈机密",
+      "parentId": "node_1770896935472_ww7w8wrfo",
+      "createdAt": "2026-02-12T11:54:11.514Z",
+      "updatedAt": "2026-02-12T11:54:16.769Z",
+      "usageCount": 0,
+      "lastUsed": "2026-02-12T11:54:11.514Z",
+      "contexts": [],
+      "children": [],
+      "x": 600,
+      "y": -150,
+      "color": "#3b82f6"
+    },
+    {
+      "id": "node_1770897257930_925ank8fx",
+      "name": "点击进入",
+      "parentId": "node_1770896935472_ww7w8wrfo",
+      "createdAt": "2026-02-12T11:54:17.930Z",
+      "updatedAt": "2026-02-12T11:54:24.043Z",
+      "usageCount": 0,
+      "lastUsed": "2026-02-12T11:54:17.930Z",
+      "contexts": [],
+      "children": [],
+      "x": 600,
+      "y": -50,
+      "color": "#3b82f6"
+    },
+    {
+      "id": "node_1770897380085_9zeto43xi",
+      "name": "基础操作",
+      "parentId": "node_1770034427670_pbkrue3fz",
+      "createdAt": "2026-02-12T11:56:20.085Z",
+      "updatedAt": "2026-02-12T11:56:23.688Z",
+      "usageCount": 0,
+      "lastUsed": "2026-02-12T11:56:20.085Z",
+      "contexts": [],
+      "children": [
+        "node_1770897384141_oqr1w29sm"
+      ],
+      "x": 200,
+      "y": 230,
+      "color": "#3b82f6"
+    },
+    {
+      "id": "node_1770897384141_oqr1w29sm",
+      "name": "打开浏览器",
+      "parentId": "node_1770897380085_9zeto43xi",
+      "createdAt": "2026-02-12T11:56:24.141Z",
+      "updatedAt": "2026-02-12T11:56:28.274Z",
+      "usageCount": 0,
+      "lastUsed": "2026-02-12T11:56:24.141Z",
+      "contexts": [],
+      "children": [
+        "node_1770897388858_st0ss0zjh",
+        "node_1770897710437_njrfx150v",
+        "node_1770897724393_75kphpcox"
+      ],
+      "x": 400,
+      "y": 210,
+      "color": "#3b82f6",
+      "duplicateIndex": 2
+    },
+    {
+      "id": "node_1770897388858_st0ss0zjh",
+      "name": "方法1",
+      "parentId": "node_1770897384141_oqr1w29sm",
+      "createdAt": "2026-02-12T11:56:28.858Z",
+      "updatedAt": "2026-02-12T11:56:38.698Z",
+      "usageCount": 0,
+      "lastUsed": "2026-02-12T11:56:28.858Z",
+      "contexts": [],
+      "children": [
+        "node_1770898253276_2w1vjkuvi"
+      ],
+      "x": 600,
+      "y": 70,
+      "color": "#3b82f6"
+    },
+    {
+      "id": "node_1770897710437_njrfx150v",
+      "name": "方法3",
+      "parentId": "node_1770897384141_oqr1w29sm",
+      "createdAt": "2026-02-12T12:01:50.437Z",
+      "updatedAt": "2026-02-12T12:01:54.196Z",
+      "usageCount": 0,
+      "lastUsed": "2026-02-12T12:01:50.437Z",
+      "contexts": [],
+      "children": [
+        "node_1770897704005_vna1c6lt3"
+      ],
+      "x": 600,
+      "y": 190,
+      "color": "#3b82f6"
+    },
+    {
+      "id": "node_1770897704005_vna1c6lt3",
+      "name": "开始菜单搜索‘Edge’并点击",
+      "parentId": "node_1770897710437_njrfx150v",
+      "createdAt": "2026-02-12T12:01:44.005Z",
+      "updatedAt": "2026-02-12T12:01:44.005Z",
+      "usageCount": 0,
+      "lastUsed": "2026-02-12T11:58:04.602Z",
+      "contexts": [],
+      "children": [],
+      "x": 800,
+      "y": 160,
+      "color": "#3b82f6"
+    },
+    {
+      "id": "node_1770897724393_75kphpcox",
+      "name": "方法4",
+      "parentId": "node_1770897384141_oqr1w29sm",
+      "createdAt": "2026-02-12T12:02:04.393Z",
+      "updatedAt": "2026-02-12T12:02:08.435Z",
+      "usageCount": 0,
+      "lastUsed": "2026-02-12T12:02:04.393Z",
+      "contexts": [],
+      "children": [
+        "node_1770897762593_lpzn1g0si"
+      ],
+      "x": 600,
+      "y": 310,
+      "color": "#3b82f6"
+    },
+    {
+      "id": "node_1770897762593_lpzn1g0si",
+      "name": "双击桌面Edge快捷方式",
+      "parentId": "node_1770897724393_75kphpcox",
+      "createdAt": "2026-02-12T12:02:42.593Z",
+      "updatedAt": "2026-02-12T12:02:42.593Z",
+      "usageCount": 0,
+      "lastUsed": "2026-02-12T11:58:04.605Z",
+      "contexts": [],
+      "children": [],
+      "x": 800,
+      "y": 280,
+      "color": "#3b82f6"
+    },
+    {
+      "id": "node_1770898253276_2w1vjkuvi",
+      "name": "点击右侧任务栏中edge图标",
+      "parentId": "node_1770897388858_st0ss0zjh",
+      "createdAt": "2026-02-12T12:10:53.276Z",
+      "updatedAt": "2026-02-12T12:10:53.276Z",
+      "usageCount": 0,
+      "lastUsed": "2026-02-12T11:56:39.272Z",
+      "contexts": [],
+      "children": [
+        "node_1771334147136_7g0cijrf3"
+      ],
+      "x": 800,
+      "y": 40,
+      "color": "#3b82f6"
+    },
+    {
+      "id": "node_1771334147136_7g0cijrf3",
+      "name": "打开香蕉平台网页测试",
+      "parentId": "node_1770898253276_2w1vjkuvi",
+      "createdAt": "2026-02-17T13:15:47.136Z",
+      "updatedAt": "2026-02-17T14:12:18.785Z",
+      "usageCount": 0,
+      "lastUsed": "2026-02-17T13:15:47.136Z",
+      "contexts": [],
+      "children": [],
+      "x": 1000,
+      "y": 10,
+      "color": "linear-gradient(135deg, #ef4444 0%, #3b82f6 100%)",
+      "type": "process-trigger"
+    }
+  ],
+  "version": 1,
+  "theme": {
+    "id": "dark",
+    "name": "暗黑主题",
+    "backgroundColor": "#1e1e2e",
+    "gridColor": "#313244",
+    "gridEnabled": true,
+    "connectionColor": "#6c7086",
+    "connectionWidth": 2,
+    "connectionStyle": "curve",
+    "nodeBackgroundColor": "#313244",
+    "nodeBorderColor": "#45475a",
+    "nodeBorderWidth": 1,
+    "nodeBorderRadius": 8,
+    "rootNodeColor": "#000000ff",
+    "textColor": "#cdd6f4",
+    "rootTextColor": "#1e1e2e",
+    "fontFamily": "system-ui, -apple-system, sans-serif",
+    "fontSize": 14,
+    "rootFontSize": 16,
+    "lineHeight": 1.5,
+    "shadowEnabled": true,
+    "shadowColor": "rgba(0, 0, 0, 0.3)",
+    "shadowBlur": 8,
+    "shadowOffsetX": 4,
+    "shadowOffsetY": 4
+  },
+  "viewState": {
+    "scale": 0.8,
+    "x": 105.55555555555554,
+    "y": 450.17777760823566
+  },
+  "aiConfig": {
+    "selectedModelId": "model-1770703248800",
+    "allowReadMindmap": true,
+    "allowAiEdit": true
+  },
+  "layoutType": "tree-right"
+}

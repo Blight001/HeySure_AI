@@ -1,0 +1,121 @@
+{
+  "id": "script_1770793490494",
+  "name": "拟人化鼠标键盘控制器",
+  "fileName": "HumanLikeController.py",
+  "savedPath": "D:\\1.STUDY\\1_project\\AI\\HeySure_AI_1.0\\data\\script\\mode\\HumanLikeController.py",
+  "category": "custom",
+  "description": "该脚本提供了一套基于 Windows API (user32.dll) 的鼠标和键盘模拟控制功能。\r\n    它不仅支持基础的点击和按键操作，还重点实现了\"拟人化\"的鼠标移动轨迹，\r\n    通过模拟人类的操作习惯（如平滑移动、随机抖动、非线性速度）来规避自动化检测。\r\n    1. 键盘操作:\r\n       - control_keyboard(action_type, key): 统一管理按键按下(down)、释放(up)、点击(press)。\r\n\r\n    2. 鼠标操作:\r\n       - control_mouse(action_type, x, y, button, interval): 统一管理鼠标移动(move/smooth_move)、点击(click/down/up)、获取位置(get_pos)。",
+  "functions": [
+    {
+      "name": "control_keyboard",
+      "description": "统一键盘控制函数",
+      "parameters": [
+        {
+          "name": "action_type",
+          "type": "any",
+          "description": "操作类型 ('press', 'down', 'up')",
+          "required": true
+        },
+        {
+          "name": "key",
+          "type": "any",
+          "description": "键名 (如 'A', 'ENTER', 'SPACE' 等)",
+          "defaultValue": null,
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "any",
+        "description": "返回值"
+      },
+      "lineNumber": 178,
+      "label": "统一键盘控制函数",
+      "sourceCode": "def control_keyboard(action_type, key=None):\r\n    \"\"\"\r"
+    },
+    {
+      "name": "control_mouse",
+      "description": "统一鼠标控制函数",
+      "parameters": [
+        {
+          "name": "action_type",
+          "type": "any",
+          "description": "操作类型 ('move', 'smooth_move', 'click', 'down', 'up', 'get_pos')",
+          "required": true
+        },
+        {
+          "name": "x",
+          "type": "any",
+          "description": "目标x坐标 (用于 move, smooth_move)",
+          "defaultValue": 0,
+          "required": false
+        },
+        {
+          "name": "y",
+          "type": "any",
+          "description": "目标y坐标 (用于 move, smooth_move)",
+          "defaultValue": 0,
+          "required": false
+        },
+        {
+          "name": "button",
+          "type": "any",
+          "description": "鼠标按键 'left', 'right', 'middle' (默认 'left')",
+          "defaultValue": "left",
+          "required": false
+        },
+        {
+          "name": "interval",
+          "type": "any",
+          "description": "移动间隔 (用于 smooth_move)",
+          "defaultValue": 0.01,
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "any",
+        "description": "get_pos 时返回 (x, y)，其他返回 None"
+      },
+      "lineNumber": 204,
+      "label": "统一鼠标控制函数",
+      "sourceCode": "def control_mouse(action_type, x=0, y=0, button='left', interval=0.01):\r\n    \"\"\"\r"
+    }
+  ],
+  "componentConfig": {
+    "timeout": 30,
+    "requireApproval": false,
+    "allowedImports": [],
+    "blockedImports": [
+      "os",
+      "sys",
+      "subprocess",
+      "eval",
+      "exec",
+      "importlib"
+    ],
+    "memoryLimit": 256
+  },
+  "aiControl": [
+    {
+      "id": "rule_1770793490505",
+      "name": "拟人化鼠标键盘控制器 自动规则",
+      "description": "自动为 拟人化鼠标键盘控制器 (HumanLikeController) 创建的AI控制规则",
+      "priority": 5,
+      "enabled": true,
+      "triggers": [
+        {
+          "type": "keyword",
+          "pattern": "拟人化鼠标键盘控制器"
+        }
+      ],
+      "inputRules": [],
+      "outputRules": [],
+      "limits": {
+        "maxCallsPerExecution": 10,
+        "maxTotalCalls": 0,
+        "requireUserPermission": false
+      }
+    }
+  ],
+  "createdAt": 1770793490505,
+  "updatedAt": 1770804968553
+}
