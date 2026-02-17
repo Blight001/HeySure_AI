@@ -4,16 +4,88 @@
 
 ## 📋 简介
 
-HeySure AI 是一款强大的智能对话协作桌面应用，基于 Electron + React + TypeScript 构建。核心功能包括多AI模型对话、可视化流程编排、思维导图和 Python 脚本自动化执行。
+HeySure AI 是一款功能强大、高度可定制的**智能对话协作桌面应用**，基于 Electron + React + TypeScript 构建。作为一个开放的 AI 平台，它支持用户灵活配置各类大语言模型，并通过可视化流程编排、思维导图和 Python 脚本自动化执行，实现复杂任务的智能化处理。
+
+### 核心理念
+
+- **开放兼容**: 全面支持 OpenAI 兼容 API，可接入千问、kimi、GLM、DeepSeek 等各类主流大模型
+- **可视化编排**: 通过拖拽式的流程编辑器，将复杂的多步骤任务简化为直观的流程图
+- **自动化执行**: 支持 Python 脚本导入执行，满足各种自动化场景需求
+- **本地优先**: 数据本地存储，保护隐私安全
 
 ## ✨ 特性
 
-- **🤖 多模型支持**: 支持 OpenAI 兼容 API 的各类大语言模型（千问、kimi、GLM 等）
-- **💬 智能对话**: 流式输出、Markdown 渲染、代码高亮、多轮对话
-- **🔀 流程编排**: 可视化流程编辑器，支持 20+ 种节点类型
-- **🧠 思维导图**: 内置思维导图工具，支持 AI 辅助生成
-- **🐍 Python 脚本**: 支持 Python 脚本导入执行，自动化任务
-- **🔌 插件系统**: 灵活的 AI 模型配置和管理
+### 🤖 多模型支持
+
+- **多模型同时配置**: 支持同时配置多个 AI 模型，灵活切换使用
+- **主流模型兼容**: 完美支持千问 (Qwen)、kimi、GLM、DeepSeek、OpenAI 等 OpenAI 兼容 API
+- **高级能力开关**:
+  - 📡 **流式输出**: 实时流式响应，体验更流畅
+  - 💬 **多轮对话**: 保留上下文记忆，理解更准确
+  - 🧠 **深度思考**: 启用推理能力，解决复杂问题
+  - 🔍 **联网搜索**: 实时获取最新信息
+  - 🕸️ **网页爬取**: 自动抓取网页内容
+
+### 💬 智能对话
+
+- **流式输出**: 实时流式 AI 回复，即时响应无需等待
+- **Markdown 渲染**: 完整支持 Markdown 语法，代码高亮、数学公式显示
+- **多轮对话**: 智能上下文记忆，保持对话连贯性
+- **对话管理**: 新建、编辑、删除对话，对话历史自动保存
+- **智能标题**: 自动生成对话摘要标题
+- **多种模式**: 支持普通对话、思维导图模式、操作流程模式
+
+### 🔀 可视化流程编排
+
+- **拖拽式编辑**: 可视化节点拖拽，连接线自动吸附
+- **20+ 节点类型**:
+  - **触发器**: 手动触发、定时触发、简单按钮
+  - **AI 节点**: AI 对话、LLM 判断
+  - **逻辑节点**: 条件分支、并行执行、聚合汇总、循环
+  - **数据节点**: 变量、数学运算、模板、代码执行、文本显示
+  - **工具节点**: 通用工具、Python 脚本
+- **实时执行**: 流程可视化执行，实时显示执行进度和状态
+- **内置聊天**: 流程内嵌 AI 对话，直接在流程中使用 AI 能力
+- **AI 辅助**: AI 自动生成流程节点配置
+- **快捷操作**: 丰富的快捷键支持，提升编辑效率
+- **自动保存**: 定时自动保存，防止数据丢失
+
+### 🧠 思维导图
+
+- **AI 辅助生成**: 输入主题，AI 自动生成思维导图内容
+- **可视化编辑**: 节点拖拽、编辑、删除，自动布局
+- **多种布局**: 支持多种布局方式，适配不同场景
+- **分类管理**: 思维导图分类管理，井井有条
+- **内置聊天**: 导图内嵌 AI 对话，边思考边 AI 辅助
+
+### 🐍 Python 脚本自动化
+
+- **脚本管理**: 导入、编辑、删除 Python 脚本
+- **智能解析**: 自动解析 Python 函数，提取输入输出参数
+- **流程集成**: 将 Python 函数作为节点嵌入流程执行
+- **参数配置**: 灵活的参数配置，支持类型验证和默认值
+- **AI 控制规则**: 可配置 AI 调用限制，安全可控
+
+### 🔌 插件系统
+
+- **模型配置管理**: 添加、编辑、删除 AI 模型配置
+- **启用/禁用**: 灵活控制模型是否可用
+- **API 模板**: 内置常用模型 API 地址模板，快速配置
+
+### 💻 桌面应用特性
+
+- **原生窗口**: 最小化、最大化、关闭，原生窗口控制
+- **系统托盘**: 支持最小化到托盘，后台运行
+- **数据本地存储**: 所有数据本地保存，隐私安全
+- **自动更新**: 支持应用自动更新
+
+### ⚙️ 高级配置
+
+- **主题切换**: 支持浅色/深色主题
+- **快捷键自定义**: 可配置快捷键，提升效率
+- **自动保存**: 可配置自动保存间隔
+- **代码高亮**: 编程代码语法高亮显示
+- **通知设置**: 可配置任务完成通知
 
 ## 🛠️ 技术栈
 
@@ -48,113 +120,6 @@ pnpm build
 
 # 打包 Windows 安装包
 pnpm build:win
-```
-
-### 项目结构
-
-```
-HeySure_AI_1.0/
-├── electron/              # Electron 主进程代码
-│   ├── config/
-│   │   └── paths.ts       # 路径配置
-│   ├── ipc/               # IPC 通信处理
-│   │   ├── aiIPC.ts       # AI 相关 IPC
-│   │   ├── dialogIPC.ts   # 对话 IPC
-│   │   ├── fileDialogIPC.ts
-│   │   ├── flowIPC.ts     # 流程 IPC
-│   │   ├── fsIPC.ts       # 文件系统 IPC
-│   │   ├── messageIPC.ts  # 消息 IPC
-│   │   ├── nodeIPC.ts     # 节点 IPC
-│   │   ├── pluginIPC.ts   # 插件 IPC
-│   │   ├── pythonIPC.ts   # Python IPC
-│   │   ├── storeIPC.ts    # 存储 IPC
-│   │   ├── windowIPC.ts   # 窗口 IPC
-│   │   └── index.ts       # IPC 入口
-│   ├── preload/
-│   │   └── index.ts       # 预加载脚本
-│   ├── services/
-│   │   ├── AIService.ts        # AI 服务
-│   │   ├── dialogStore.ts      # 对话存储
-│   │   ├── flowService.ts      # 流程服务
-│   │   └── pythonComponentService.ts
-│   ├── window/
-│   │   └── windowManager.ts
-│   ├── main.ts            # 主进程入口
-│   └── electron.vite.config.ts
-│
-├── src/                   # React 前端代码 (121 文件)
-│   ├── components/
-│   │   ├── chat/         # 聊天组件
-│   │   │   ├── ChatInput.tsx
-│   │   │   ├── MessageBubble.tsx
-│   │   │   └── index.ts
-│   │   ├── flow/         # 流程编排组件
-│   │   │   ├── FlowEditor.tsx
-│   │   │   ├── canvas/   # 画布组件 (11个)
-│   │   │   ├── chat/     # 流程内嵌聊天
-│   │   │   ├── core/     # 核心定义
-│   │   │   ├── header/   # 头部组件
-│   │   │   ├── hooks/    # 流程 Hooks (16个)
-│   │   │   ├── nodes/    # 节点组件 (12个)
-│   │   │   ├── python/   # Python 节点 (core/manager/node)
-│   │   │   └── sidebar/  # 侧边栏组件 (7个)
-│   │   ├── layout/       # 布局组件
-│   │   │   ├── MainLayout.tsx
-│   │   │   └── WindowTitleBar.tsx
-│   │   ├── mindmap/      # 思维导图组件
-│   │   │   ├── Mindmap.tsx
-│   │   │   ├── chat/     # 导图内嵌聊天
-│   │   │   ├── components/ (7个)
-│   │   │   ├── hooks/    # 导图 Hooks (15个)
-│   │   │   ├── services/ (4个)
-│   │   │   ├── styles/
-│   │   │   ├── types/
-│   │   │   └── utils/
-│   │   ├── model/        # 模型配置组件
-│   │   ├── plugin/       # 插件组件
-│   │   └── ui/           # 基础 UI 组件 (17个 Radix UI)
-│   ├── pages/            # 页面 (6个)
-│   │   ├── Home.tsx      # 聊天首页
-│   │   ├── FlowEditor.tsx # 流程编辑
-│   │   ├── Mindmap.tsx   # 思维导图
-│   │   ├── Plugins.tsx   # 插件/模型配置
-│   │   ├── Settings.tsx  # 设置
-│   │   └── Notifications.tsx
-│   ├── hooks/            # 通用 Hooks (5个)
-│   ├── services/         # 前端服务
-│   ├── stores/           # Zustand 状态管理 (5个)
-│   ├── styles/           # 样式
-│   ├── types/            # TypeScript 类型 (8个)
-│   ├── utils/            # 工具函数
-│   ├── App.tsx
-│   └── main.tsx
-│
-├── python/                # Python 脚本
-│   ├── BoxDisplay.py
-│   ├── CH9329_HumanLikeController.py
-│   ├── HumanLikeController.py
-│   └── screen_capture.py
-│
-├── data/                  # 数据存储 (JSON文件)
-│   ├── flows/            # 流程数据
-│   │   └── categories.json
-│   ├── messages.json     # 对话消息
-│   ├── mindmap/          # 思维导图数据
-│   │   └── mindmaps.json
-│   ├── models.json       # AI 模型配置
-│   ├── script/           # Python 脚本
-│   │   ├── main.py
-│   │   └── mode/
-│   └── settings.json     # 应用设置
-│
-├── backup/               # 备份文件
-├── public/image/         # 静态资源
-├── dist-electron/        # 构建输出
-├── package.json
-├── vite.config.ts
-├── tailwind.config.js
-├── tsconfig.json
-└── electron.vite.config.ts
 ```
 
 ## 📖 功能说明
