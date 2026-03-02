@@ -9,21 +9,13 @@ import { useMessageStore, useDialogStore, useUiStore } from '@/stores';
 import { MessageServiceWrapper, MessageService, ModelService } from '@/services/apiService';
 import { ChatInput, MessageList } from '@/components/chat';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useToast } from '@/hooks/use-toast';
+import { useExtendedToast, ExtendedToast } from '../hooks/useExtendedToast';
 import { useAiStreamListener } from '@/hooks/useAiStreamListener';
 import type { Message } from '@/types';
 import { v4 as uuidv4 } from 'uuid';
 import { cn } from '@/utils/helpers';
 import { MessageSquare, Map as MapIcon, GitBranch } from 'lucide-react';
 import { chatBridge, ChatMode, BridgeMessage } from '@/services/chatBridge';
-
-// 扩展 Toast 类型以支持 variant
-type ToastVariant = 'default' | 'destructive';
-type ExtendedToast = {
-  variant?: ToastVariant;
-  title?: string;
-  description?: string;
-};
 
 interface ModelConfig {
   id: string;
@@ -428,14 +420,6 @@ export default function HomePage() {
       </div>
     </div>
   );
-}
-
-// 包装 toast hook 以支持 variant
-function useExtendedToast() {
-  const { toast } = useToast();
-  return useMemo(() => ({
-    toast: (t: ExtendedToast) => toast(t),
-  }), [toast]);
 }
 
 // 自定义路由导航 hook

@@ -1,0 +1,33 @@
+{
+  "id": "node_1771991185965_r442cnrne",
+  "type": "aiChat",
+  "position": {
+    "x": 1050.3426377544035,
+    "y": 530.4263815819552
+  },
+  "data": {
+    "label": "千问-plus",
+    "modelId": "model-1770017328240",
+    "model": "qwen-plus",
+    "systemPrompt": "你是一位新来的思维导图分析员，这里有大量的思维导图资料，我将给你一份记忆检索清单，需要你整理出相关信息并返回给我：",
+    "useMemory": false,
+    "messages": [],
+    "status": "completed",
+    "savedAt": "2026-02-27T06:20:33.211Z",
+    "isTriggering": false
+  },
+  "inputs": [
+    {
+      "id": "input",
+      "type": "input",
+      "label": "用户输入"
+    }
+  ],
+  "outputs": [
+    {
+      "id": "output",
+      "type": "output",
+      "label": "AI回复"
+    }
+  ]
+}

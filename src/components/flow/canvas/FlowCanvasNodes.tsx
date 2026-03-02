@@ -19,6 +19,8 @@ import {
   SwitchNodeContent,
   TriggerNodeContent,
   SimpleTriggerButton,
+  MindmapInfoNodeContent,
+  ClassifierNodeContent,
 } from '../nodes';
 import type { FlowNode as FlowNodeType } from '@/types/flow';
 import type { LocalModelConfig } from '@/types/flow';
@@ -95,6 +97,7 @@ export function FlowCanvasNodes({
             models={models}
             tokenStats={node.data?.tokenStats}
             useMemory={node.data?.useMemory !== false}
+            systemPrompt={node.data?.systemPrompt}
             onToggleMemory={(useMemory) => onToggleMemory(node.id, useMemory)}
             onClearHistory={() => onClearHistory(node.id)}
             onModelChange={(model) =>
@@ -104,7 +107,60 @@ export function FlowCanvasNodes({
                 model: model.model
               })
             }
+            onPromptChange={(prompt) =>
+              onUpdate(node.id, {
+                systemPrompt: prompt
+              })
+            }
             theme={theme}
+          />
+        );
+      case 'classifier':
+        return (
+          <ClassifierNodeContent
+            label={node.data?.label || '分类器'}
+            theme={theme}
+            lastValue={node.data?.lastValue}
+            portCount={node.outputs?.length || 3}
+            keywords={node.data?.keywords || []}
+            activeIndex={node.data?.activeIndex}
+            onPortCountChange={(count) => {
+              const newOutputs = Array.from({ length: Math.max(1, count) }, (_, i) => ({
+                id: `output${i + 1}`,
+                type: 'output' as const,
+                label: `输出 ${i + 1}`
+              }));
+              onUpdate(node.id, { outputs: newOutputs });
+            }}
+            onAddPort={() => {
+              const currentCount = node.outputs?.length || 3;
+              const newCount = currentCount + 1;
+              const newOutputs = Array.from({ length: newCount }, (_, i) => ({
+                id: `output${i + 1}`,
+                type: 'output' as const,
+                label: `输出 ${i + 1}`
+              }));
+              onUpdate(node.id, { outputs: newOutputs });
+            }}
+            onRemovePort={() => {
+              const currentCount = node.outputs?.length || 3;
+              if (currentCount <= 1) return;
+              const newCount = currentCount - 1;
+              const newOutputs = Array.from({ length: newCount }, (_, i) => ({
+                id: `output${i + 1}`,
+                type: 'output' as const,
+                label: `输出 ${i + 1}`
+              }));
+              onUpdate(node.id, { outputs: newOutputs });
+            }}
+            onKeywordChange={(index, keyword) => {
+               const currentKeywords = [...(node.data?.keywords || [])];
+               currentKeywords[index] = keyword;
+               onUpdate(node.id, { keywords: currentKeywords });
+            }}
+            onClear={() => {
+                onUpdate(node.id, { activeIndex: undefined, lastValue: undefined });
+            }}
           />
         );
       case 'condition':
@@ -152,6 +208,14 @@ export function FlowCanvasNodes({
           <div className="flex items-center justify-center w-20 h-full">
             <SimpleTriggerButton label={node.data?.label || '触发'} onTrigger={() => onSimpleTrigger(node.id)} theme={theme} />
           </div>
+        );
+      case 'mindmapInfo':
+        return (
+          <MindmapInfoNodeContent 
+            data={node.data} 
+            theme={theme} 
+            onUpdate={(newData) => onUpdate(node.id, newData)}
+          />
         );
       case 'start':
       case 'end':

@@ -12,7 +12,6 @@
 import { RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { BasicNodePalette } from './BasicNodePalette';
-import { LogicNodePalette } from './LogicNodePalette';
 import { AINodePalette } from './AINodePalette';
 import { PythonNodePalette } from './PythonNodePalette';
 import { ControlNodePalette } from './ControlNodePalette';
@@ -33,7 +32,7 @@ interface NodePaletteProps {
   onDeleteComponent: (componentId: string) => void;
   onModelConfig?: (model: ModelConfig) => void;
   onAddModelNode?: (model: ModelConfig) => void;
-  onAddPythonNode?: (component: PythonComponent) => void;
+  onAddPythonNode: (component: PythonComponent) => void;
   onDragStart?: (e: React.DragEvent, data: DragData) => void;
 }
 
@@ -72,7 +71,6 @@ export function NodePalette({
       {/* 可滚动区域 */}
       <div className="flex-1 overflow-y-auto p-2 space-y-1 min-h-0">
         <BasicNodePalette onDragStart={onDragStart} />
-        <LogicNodePalette onDragStart={onDragStart} />
         <ControlNodePalette onDragStart={onDragStart} />
         <AINodePalette
           models={models}

@@ -20,7 +20,6 @@ import {
   Undo, Redo, ZoomIn, ZoomOut, MousePointer2, Zap, MessageSquare, Plus
 } from 'lucide-react';
 import { BasicNodePalette } from '../sidebar/BasicNodePalette';
-import { LogicNodePalette } from '../sidebar/LogicNodePalette';
 import { AINodePalette } from '../sidebar/AINodePalette';
 import { PythonNodePalette } from '../sidebar/PythonNodePalette';
 import { ControlNodePalette } from '../sidebar/ControlNodePalette';
@@ -119,8 +118,6 @@ export function CanvasToolbar({
           data-canvas-ignore="true"
         >
           <BasicNodePalette onDragStart={onDragStart} />
-          <DropdownMenuSeparator />
-          <LogicNodePalette onDragStart={onDragStart} />
           <DropdownMenuSeparator />
           <ControlNodePalette onDragStart={onDragStart} />
           <DropdownMenuSeparator />

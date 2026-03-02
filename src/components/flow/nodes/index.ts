@@ -7,6 +7,8 @@ export * from './LogicNodeContent';
 export * from './PythonNodeContent';
 export * from './UserInputNodeContent';
 export * from './TextDisplayNodeContent';
+export * from './ClassifierNodeContent';
 export * from './SwitchNodeContent';
 export * from './TriggerNodeContent';
 export * from './SimpleTriggerButton';
+export * from './MindmapInfoNodeContent';

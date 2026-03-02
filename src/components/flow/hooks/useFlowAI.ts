@@ -13,10 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import { FlowNode, FlowEdge, FlowNodeType } from '@/types/flow';
 import {
   createBasicNode,
-  createConditionNode,
   createAIChatNode,
-  createParallelNode,
-  createAggregateNode,
   generateEdgeId
 } from '../core/types';
 
@@ -164,7 +161,7 @@ ${markdown}
 如需修改流程，请在回复中附加 JSON 数组格式的操作指令。
 操作格式：
 1. 添加节点：{"操作": "添加节点", "节点类型": "AI对话", "标签": "AI助手", "x": 100, "y": 100}
-   （节点类型支持：开始, 结束, 用户输入, AI对话, 条件, 并行, 聚合, 文本显示, 开关, 触发器）
+   （节点类型支持：开始, 结束, 用户输入, AI对话, 文本显示, 开关, 触发器）
 2. 删除节点：{"操作": "删除节点", "节点ID": "节点_id"} (请使用 [] 中显示的ID)
 3. 添加连线：{"操作": "添加连线", "源节点ID": "源节点_id", "目标节点ID": "目标节点_id", "源句柄": "output", "目标句柄": "input"}
 4. 删除连线：{"操作": "删除连线", "连线ID": "连线_id"}
@@ -368,9 +365,6 @@ ${availableFlows.length > 0 ? `当前可用的流程列表：\n${availableFlows.
                '用户输入': 'userInput', 'userInput': 'userInput',
                '文本显示': 'textDisplay', 'textDisplay': 'textDisplay',
                'AI对话': 'aiChat', 'aiChat': 'aiChat',
-               '条件': 'condition', 'condition': 'condition',
-               '并行': 'parallel', 'parallel': 'parallel',
-               '聚合': 'aggregate', 'aggregate': 'aggregate',
                '开关': 'switch', 'switch': 'switch',
                '触发器': 'trigger', 'trigger': 'trigger'
            };
@@ -473,10 +467,7 @@ ${availableFlows.length > 0 ? `当前可用的流程列表：\n${availableFlows.
         const label = action.label || action.nodeType;
         
         switch (action.nodeType) {
-            case 'condition': newNode = createConditionNode(pos); break;
             case 'aiChat': newNode = createAIChatNode(pos); break;
-            case 'parallel': newNode = createParallelNode(pos); break;
-            case 'aggregate': newNode = createAggregateNode(pos); break;
             case 'start': newNode = createBasicNode('start', pos, 'Start', '🟢'); break;
             case 'end': newNode = createBasicNode('end', pos, 'End', '🔴'); break;
             case 'userInput': newNode = createBasicNode('userInput', pos, 'Input', '👤'); break;
@@ -569,10 +560,7 @@ ${availableFlows.length > 0 ? `当前可用的流程列表：\n${availableFlows.
         let newNode: FlowNode;
         
         switch (action.nodeType) {
-            case 'condition': newNode = createConditionNode(pos); break;
             case 'aiChat': newNode = createAIChatNode(pos); break;
-            case 'parallel': newNode = createParallelNode(pos); break;
-            case 'aggregate': newNode = createAggregateNode(pos); break;
             case 'start': newNode = createBasicNode('start', pos, 'Start', '🟢'); break;
             case 'end': newNode = createBasicNode('end', pos, 'End', '🔴'); break;
             case 'userInput': newNode = createBasicNode('userInput', pos, 'Input', '👤'); break;

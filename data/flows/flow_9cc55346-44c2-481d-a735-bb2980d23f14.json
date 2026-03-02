@@ -1,0 +1,819 @@
+{
+  "id": "9cc55346-44c2-481d-a735-bb2980d23f14",
+  "name": "千问基础对话",
+  "description": "",
+  "version": "1.0.0",
+  "nodes": [
+    {
+      "id": "node_1771381617334_u76hnthyy",
+      "type": "userInput",
+      "position": {
+        "x": 263.7463092463093,
+        "y": 361.9290709290709
+      },
+      "data": {
+        "label": "用户输入",
+        "icon": "👤",
+        "value": "去看下服务器使用情况的操作过程，员工B不需要操作",
+        "isTriggering": false
+      },
+      "inputs": [],
+      "outputs": [
+        {
+          "id": "output",
+          "type": "output",
+          "label": "输出"
+        }
+      ]
+    },
+    {
+      "id": "node_1771991185965_r442cnrne",
+      "type": "aiChat",
+      "position": {
+        "x": 1050.3426377544035,
+        "y": 530.4263815819552
+      },
+      "data": {
+        "label": "千问-plus",
+        "modelId": "model-1770017328240",
+        "model": "qwen-plus",
+        "systemPrompt": "你是一位新来的思维导图分析员，这里有大量的思维导图资料，我将给你一份记忆检索清单，需要你整理出相关信息并返回给我：",
+        "useMemory": false,
+        "messages": [],
+        "savedAt": "2026-02-27T06:20:33.211Z",
+        "isTriggering": false
+      },
+      "inputs": [
+        {
+          "id": "input",
+          "type": "input",
+          "label": "用户输入"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "output",
+          "type": "output",
+          "label": "AI回复"
+        }
+      ]
+    },
+    {
+      "id": "node_1771991236482_cz8kluikl",
+      "type": "textDisplay",
+      "position": {
+        "x": 1359.8652262769922,
+        "y": 549.4379255934994
+      },
+      "data": {
+        "label": "文本显示",
+        "icon": "📄",
+        "value": "已记录并确认以下信息：\n\n✅ 服务器使用情况查看流程为纯图形化操作路径：  \n → 使用 Microsoft Edge 浏览器  \n → 访问「即梦AI」平台  \n → 在平台内输入关键词「哈机密」触发查询  \n\n❌ 当前无任何 Linux 终端命令需求（如 `top`、`df -h`、`htop` 等）  \n❌ 不涉及员工B的协同或执行任务（无需转派、通知或调用）  \n\n📌 备注：该流程属于内部授权可视化监控方式，关键词「哈机密」为安全访问令牌/快捷入口标识，非明文密码，符合当前权限管控策略。\n\n如后续需补充该流程的截图指引、访问时效说明、或异常响应预案，我可立即为您结构化整理。",
+        "receivedData": "已记录并确认以下信息：\n\n✅ 服务器使用情况查看流程为纯图形化操作路径：  \n → 使用 Microsoft Edge 浏览器  \n → 访问「即梦AI」平台  \n → 在平台内输入关键词「哈机密」触发查询  \n\n❌ 当前无任何 Linux 终端命令需求（如 `top`、`df -h`、`htop` 等）  \n❌ 不涉及员工B的协同或执行任务（无需转派、通知或调用）  \n\n📌 备注：该流程属于内部授权可视化监控方式，关键词「哈机密」为安全访问令牌/快捷入口标识，非明文密码，符合当前权限管控策略。\n\n如后续需补充该流程的截图指引、访问时效说明、或异常响应预案，我可立即为您结构化整理。",
+        "displayText": "已记录并确认以下信息：\n\n✅ 服务器使用情况查看流程为纯图形化操作路径：  \n → 使用 Microsoft Edge 浏览器  \n → 访问「即梦AI」平台  \n → 在平台内输入关键词「哈机密」触发查询  \n\n❌ 当前无任何 Linux 终端命令需求（如 `top`、`df -h`、`htop` 等）  \n❌ 不涉及员工B的协同或执行任务（无需转派、通知或调用）  \n\n📌 备注：该流程属于内部授权可视化监控方式，关键词「哈机密」为安全访问令牌/快捷入口标识，非明文密码，符合当前权限管控策略。\n\n如后续需补充该流程的截图指引、访问时效说明、或异常响应预案，我可立即为您结构化整理。",
+        "isExpanded": true,
+        "layout": "default",
+        "presetText": "",
+        "isTriggering": false
+      },
+      "inputs": [
+        {
+          "id": "input",
+          "type": "input",
+          "label": "输入"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "output",
+          "type": "output",
+          "label": "输出"
+        }
+      ]
+    },
+    {
+      "id": "node_1772014423587_ws0h4r52j",
+      "type": "textDisplay",
+      "position": {
+        "x": 490.7884337884333,
+        "y": 60.0468836718836
+      },
+      "data": {
+        "label": "文本显示",
+        "icon": "📄",
+        "value": "用户：已确认服务器使用情况的查看流程为图形化操作——通过浏览器访问“即梦AI”平台（收藏栏快捷入口），输入认证口令“哈机密”后进入监控界面。该路径为当前标准、安全、无需终端命令的操作方式；如需扩展SSH命令行方式（如 `top`、`df -h` 等）或对接具体服务器节点，请提供目标环境名称或导图节点，我将立即调取对应方案。",
+        "receivedData": "用户：已确认服务器使用情况的查看流程为图形化操作——通过浏览器访问“即梦AI”平台（收藏栏快捷入口），输入认证口令“哈机密”后进入监控界面。该路径为当前标准、安全、无需终端命令的操作方式；如需扩展SSH命令行方式（如 `top`、`df -h` 等）或对接具体服务器节点，请提供目标环境名称或导图节点，我将立即调取对应方案。",
+        "displayText": "用户：已确认服务器使用情况的查看流程为图形化操作——通过浏览器访问“即梦AI”平台（收藏栏快捷入口），输入认证口令“哈机密”后进入监控界面。该路径为当前标准、安全、无需终端命令的操作方式；如需扩展SSH命令行方式（如 `top`、`df -h` 等）或对接具体服务器节点，请提供目标环境名称或导图节点，我将立即调取对应方案。",
+        "presetText": "",
+        "layout": "reversed",
+        "isExpanded": true,
+        "isTriggering": false
+      },
+      "inputs": [
+        {
+          "id": "input",
+          "type": "input",
+          "label": "输入"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "output",
+          "type": "output",
+          "label": "输出"
+        }
+      ]
+    },
+    {
+      "id": "node_1772014432205_yeaxgcoh1",
+      "type": "aiChat",
+      "position": {
+        "x": 551.6595904095906,
+        "y": 372.44234931734945
+      },
+      "data": {
+        "label": "千问-plus",
+        "modelId": "model-1770017328240",
+        "model": "qwen-plus",
+        "systemPrompt": "你是一位新来的拥有电脑完全控制权的策划总监，专门分析用户的请求，规划一个执行清单，\n你有两个员工：\n员工A：经验汇总和提取员工，记忆了之前的工作经验，你行动前，可能需要提前去理解之前成功的案例和失败的案例；\n员工B：动作执行并反馈员工，这是一位全能的员工，他们会按照你的意愿去行动，并实时告诉你行动后的结果，你需要积极和他们沟通\n你规划前可能需要向员工A请教工作经验，然后再安排员工B具体的工作流程；\n注意精简安排员工AB的任务，重点说明你想要什么，一次只能和一个员工对话，无需额外特别说明，例如“员工A：获取某某记忆“，\n任务有结果后，就可以回复用户，注意回复格式例如：”用户：...“",
+        "useMemory": true,
+        "messages": [
+          {
+            "id": "556f197f-e9be-49be-b408-726144a6f9b0",
+            "role": "user",
+            "content": "去看下服务器使用情况的操作过程，员工B不需要操作",
+            "timestamp": 1772173234165
+          },
+          {
+            "id": "d997d840-19c7-41ac-b50f-a3aeaf241ac0",
+            "role": "assistant",
+            "content": "员工A：获取之前查看服务器使用情况的成功操作案例和常用命令记忆",
+            "timestamp": 1772173235181
+          },
+          {
+            "id": "f2125528-eeed-4992-a0c4-d471b68a0e31",
+            "role": "user",
+            "content": "user：成功操作案例：  \n1. 打开浏览器 → 观察收藏栏 → 点击“即梦AI” → 输入暗号“哈机密” → 点击进入。  \n\n常用命令记忆（隐含在流程中）：  \n- 浏览器访问地址（即梦AI平台）  \n- 认证口令：`哈机密`（需保密，不可外泄）  \n\n注：该流程属图形化操作，未涉及终端命令；如需SSH/CLI方式查服务器状态（如 `top`、`df -h`、`htop` 等），可补充说明导图名称或节点，我将定向检索。",
+            "timestamp": 1772173240649
+          },
+          {
+            "id": "433cdf0a-3d07-4856-accf-b1230a795e44",
+            "role": "assistant",
+            "content": "用户：已确认服务器使用情况的查看流程为图形化操作——通过浏览器访问“即梦AI”平台（收藏栏快捷入口），输入认证口令“哈机密”后进入监控界面。该路径为当前标准、安全、无需终端命令的操作方式；如需扩展SSH命令行方式（如 `top`、`df -h` 等）或对接具体服务器节点，请提供目标环境名称或导图节点，我将立即调取对应方案。",
+            "timestamp": 1772173243471
+          }
+        ],
+        "savedAt": "2026-02-27T06:20:31.343Z",
+        "value": "用户：已确认服务器使用情况的查看流程为图形化操作——通过浏览器访问“即梦AI”平台（收藏栏快捷入口），输入认证口令“哈机密”后进入监控界面。该路径为当前标准、安全、无需终端命令的操作方式；如需扩展SSH命令行方式（如 `top`、`df -h` 等）或对接具体服务器节点，请提供目标环境名称或导图节点，我将立即调取对应方案。",
+        "usage": {
+          "prompt_tokens": 366,
+          "completion_tokens": 103,
+          "total_tokens": 469
+        },
+        "tokenStats": {
+          "currentTokens": 469,
+          "totalTokens": 677,
+          "promptTokens": 558,
+          "completionTokens": 119,
+          "requestCount": 2
+        },
+        "isTriggering": false
+      },
+      "inputs": [
+        {
+          "id": "input",
+          "type": "input",
+          "label": "用户输入"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "output",
+          "type": "output",
+          "label": "AI回复"
+        }
+      ]
+    },
+    {
+      "id": "node_1772017990900_wi3r7s27p",
+      "type": "classifier",
+      "position": {
+        "x": 803.7779165279164,
+        "y": 355.01616439116503
+      },
+      "data": {
+        "label": "分类器",
+        "icon": "🔀",
+        "keywords": [
+          "员工A：",
+          "员工B：",
+          "用户："
+        ],
+        "value": "用户：已确认服务器使用情况的查看流程为图形化操作——通过浏览器访问“即梦AI”平台（收藏栏快捷入口），输入认证口令“哈机密”后进入监控界面。该路径为当前标准、安全、无需终端命令的操作方式；如需扩展SSH命令行方式（如 `top`、`df -h` 等）或对接具体服务器节点，请提供目标环境名称或导图节点，我将立即调取对应方案。",
+        "lastValue": "用户：已确认服务器使用情况的查看流程为图形化操作——通过浏览器访问“即梦AI”平台（收藏栏快捷入口），输入认证口令“哈机密”后进入监控界面。该路径为当前标准、安全、无需终端命令的操作方式；如需扩展SSH命令行方式（如 `top`、`df -h` 等）或对接具体服务器节点，请提供目标环境名称或导图节点，我将立即调取对应方案。",
+        "activeIndex": 2,
+        "isTriggering": false
+      },
+      "inputs": [
+        {
+          "id": "input",
+          "type": "input",
+          "label": "信号输入"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "output1",
+          "type": "output",
+          "label": "输出 1"
+        },
+        {
+          "id": "output2",
+          "type": "output",
+          "label": "输出 2"
+        },
+        {
+          "id": "output3",
+          "type": "output",
+          "label": "输出 3"
+        }
+      ]
+    },
+    {
+      "id": "node_1772018521048_crz0y7v0b",
+      "type": "mindmapInfo",
+      "position": {
+        "x": 1055.373876123876,
+        "y": 30.30404317904329
+      },
+      "data": {
+        "label": "思维导图信息",
+        "value": "节点 \"看下服务器使用情况\" 的子节点 (深度: 99级):\n看下服务器使用情况\n   ├─ 打开浏览器\n   ├─ 观察收藏栏\n   ├─ 点击即梦AI\n   ├─ 输入暗号：哈机密\n   └─ 点击进入",
+        "mapName": "生活类",
+        "lastUpdate": "14:20:36",
+        "infoType": "markdown",
+        "layout": "reversed",
+        "isTriggering": false
+      },
+      "inputs": [
+        {
+          "id": "input",
+          "type": "input",
+          "label": "触发输入",
+          "allowMultiple": true
+        }
+      ],
+      "outputs": [
+        {
+          "id": "output",
+          "type": "output",
+          "label": "导图数据"
+        }
+      ]
+    },
+    {
+      "id": "node_1772087573441_isihocgm3",
+      "type": "textDisplay",
+      "position": {
+        "x": 1582.7440549646435,
+        "y": 260.2596586420127
+      },
+      "data": {
+        "label": "文本显示",
+        "icon": "📄",
+        "layout": "default",
+        "value": "user：成功操作案例：  \n1. 打开浏览器 → 观察收藏栏 → 点击“即梦AI” → 输入暗号“哈机密” → 点击进入。  \n\n常用命令记忆（隐含在流程中）：  \n- 浏览器访问地址（即梦AI平台）  \n- 认证口令：`哈机密`（需保密，不可外泄）  \n\n注：该流程属图形化操作，未涉及终端命令；如需SSH/CLI方式查服务器状态（如 `top`、`df -h`、`htop` 等），可补充说明导图名称或节点，我将定向检索。",
+        "receivedData": "user：成功操作案例：  \n1. 打开浏览器 → 观察收藏栏 → 点击“即梦AI” → 输入暗号“哈机密” → 点击进入。  \n\n常用命令记忆（隐含在流程中）：  \n- 浏览器访问地址（即梦AI平台）  \n- 认证口令：`哈机密`（需保密，不可外泄）  \n\n注：该流程属图形化操作，未涉及终端命令；如需SSH/CLI方式查服务器状态（如 `top`、`df -h`、`htop` 等），可补充说明导图名称或节点，我将定向检索。",
+        "displayText": "user：成功操作案例：  \n1. 打开浏览器 → 观察收藏栏 → 点击“即梦AI” → 输入暗号“哈机密” → 点击进入。  \n\n常用命令记忆（隐含在流程中）：  \n- 浏览器访问地址（即梦AI平台）  \n- 认证口令：`哈机密`（需保密，不可外泄）  \n\n注：该流程属图形化操作，未涉及终端命令；如需SSH/CLI方式查服务器状态（如 `top`、`df -h`、`htop` 等），可补充说明导图名称或节点，我将定向检索。",
+        "isExpanded": false,
+        "presetText": "",
+        "isTriggering": false
+      },
+      "inputs": [
+        {
+          "id": "input",
+          "type": "input",
+          "label": "输入"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "output",
+          "type": "output",
+          "label": "输出"
+        }
+      ]
+    },
+    {
+      "id": "node_1772087617425_yb397mazu",
+      "type": "userInput",
+      "position": {
+        "x": 1045.398095368683,
+        "y": 734.2849111672656
+      },
+      "data": {
+        "label": "用户输入",
+        "icon": "👤",
+        "layout": "reversed",
+        "value": "我刚才问了你什么",
+        "isTriggering": false
+      },
+      "inputs": [],
+      "outputs": [
+        {
+          "id": "output",
+          "type": "output",
+          "label": "输出"
+        }
+      ]
+    },
+    {
+      "id": "node_1772167922312_0xkvq4ufz",
+      "type": "aiChat",
+      "position": {
+        "x": 1055.1542558748422,
+        "y": 189.8616399939939
+      },
+      "data": {
+        "label": "千问-plus",
+        "modelId": "model-1770017328240",
+        "model": "qwen-plus",
+        "systemPrompt": "你是一位新来的思维导图分析员，这里有大量的思维导图资料，需要你主动获取并整理出相关信息并返回给我，注意返回的格式要精简，获取信息的方式如下：\n1. 需要你先主动去获取导图文件列表，然后再做回复决定\n发送以下指令可获取所有思维导图的列表：- `ls`\n2. 获取指定节点及其子节点：`node:<节点名称>` 或 `节点:<节点名称>`\n3. 指定查询深度：`depth:<层级数>` 或 `深度:<层级数>` 或 `level:<层级数>`\n4. 跨导图查询：`map:<导图名称>` 或 `导图:<导图名称>`\n组合指令示例：获取 \"产品规划\" 导图中 \"Q1目标\" 节点下的所有层级内容---`map:产品规划 node:Q1目标 depth:99`\n注意回答前，你需要搞清楚你需要和哪位说话，\n例如返回：\ntool：获取...\nuser：我找到了...",
+        "useMemory": true,
+        "messages": [
+          {
+            "id": "a6d33efc-f9d9-4713-a841-b943d8bd1954",
+            "role": "user",
+            "content": "员工A：获取之前查看服务器使用情况的成功操作案例和常用命令记忆",
+            "timestamp": 1772173235208
+          },
+          {
+            "id": "f7507b45-b2a4-4f92-a9ff-8e2d72414d38",
+            "role": "assistant",
+            "content": "tool：ls",
+            "timestamp": 1772173235603
+          },
+          {
+            "id": "c6df7c1a-0f29-42d6-ae93-dd78b25d6d62",
+            "role": "user",
+            "content": "思维导图结构:\n生活日常\n   ├─ 日常操作\n   │  └─ 看下服务器使用情况\n   │     ├─ 打开浏览器\n   │     ├─ 观察收藏栏\n   │     ├─ 点击即梦AI\n   │     ├─ 输入暗号：哈机密\n   │     └─ 点击进入\n   └─ 基础操作\n      └─ 打开浏览器\n         ├─ 方法1\n         │  └─ 点击右侧任务栏中edge图标\n         │     └─ 打开香蕉平台网页测试\n         ├─ 方法3\n         │  └─ 开始菜单搜索‘Edge’并点击\n         │     └─ 打开浏览器\n         └─ 方法4\n            └─ 双击桌面Edge快捷方式\n",
+            "timestamp": 1772173235949
+          },
+          {
+            "id": "6cfc8324-bda7-4e2f-8166-56e2a02409b4",
+            "role": "assistant",
+            "content": "tool：node:看下服务器使用情况 depth:99",
+            "timestamp": 1772173236590
+          },
+          {
+            "id": "0e7c11fc-005e-495b-848f-387a9234094e",
+            "role": "user",
+            "content": "节点 \"看下服务器使用情况\" 的子节点 (深度: 99级):\n看下服务器使用情况\n   ├─ 打开浏览器\n   ├─ 观察收藏栏\n   ├─ 点击即梦AI\n   ├─ 输入暗号：哈机密\n   └─ 点击进入",
+            "timestamp": 1772173236932
+          },
+          {
+            "id": "d4c3da33-5c3b-497a-9b29-fddbe202cec2",
+            "role": "assistant",
+            "content": "user：成功操作案例：  \n1. 打开浏览器 → 观察收藏栏 → 点击“即梦AI” → 输入暗号“哈机密” → 点击进入。  \n\n常用命令记忆（隐含在流程中）：  \n- 浏览器访问地址（即梦AI平台）  \n- 认证口令：`哈机密`（需保密，不可外泄）  \n\n注：该流程属图形化操作，未涉及终端命令；如需SSH/CLI方式查服务器状态（如 `top`、`df -h`、`htop` 等），可补充说明导图名称或节点，我将定向检索。",
+            "timestamp": 1772173240617
+          }
+        ],
+        "savedAt": "2026-02-27T06:20:32.179Z",
+        "value": "user：成功操作案例：  \n1. 打开浏览器 → 观察收藏栏 → 点击“即梦AI” → 输入暗号“哈机密” → 点击进入。  \n\n常用命令记忆（隐含在流程中）：  \n- 浏览器访问地址（即梦AI平台）  \n- 认证口令：`哈机密`（需保密，不可外泄）  \n\n注：该流程属图形化操作，未涉及终端命令；如需SSH/CLI方式查服务器状态（如 `top`、`df -h`、`htop` 等），可补充说明导图名称或节点，我将定向检索。",
+        "usage": {
+          "prompt_tokens": 551,
+          "completion_tokens": 148,
+          "total_tokens": 699
+        },
+        "tokenStats": {
+          "currentTokens": 699,
+          "totalTokens": 1423,
+          "promptTokens": 1259,
+          "completionTokens": 164,
+          "requestCount": 3
+        },
+        "isTriggering": false
+      },
+      "inputs": [
+        {
+          "id": "input",
+          "type": "input",
+          "label": "用户输入"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "output",
+          "type": "output",
+          "label": "AI回复"
+        }
+      ]
+    },
+    {
+      "id": "node_1772168038537_jpkaw0tjn",
+      "type": "classifier",
+      "position": {
+        "x": 1270.7098114303978,
+        "y": 190.97275110510503
+      },
+      "data": {
+        "label": "分类器",
+        "icon": "🔀",
+        "keywords": [
+          "tool",
+          "user"
+        ],
+        "value": "user：成功操作案例：  \n1. 打开浏览器 → 观察收藏栏 → 点击“即梦AI” → 输入暗号“哈机密” → 点击进入。  \n\n常用命令记忆（隐含在流程中）：  \n- 浏览器访问地址（即梦AI平台）  \n- 认证口令：`哈机密`（需保密，不可外泄）  \n\n注：该流程属图形化操作，未涉及终端命令；如需SSH/CLI方式查服务器状态（如 `top`、`df -h`、`htop` 等），可补充说明导图名称或节点，我将定向检索。",
+        "lastValue": "user：成功操作案例：  \n1. 打开浏览器 → 观察收藏栏 → 点击“即梦AI” → 输入暗号“哈机密” → 点击进入。  \n\n常用命令记忆（隐含在流程中）：  \n- 浏览器访问地址（即梦AI平台）  \n- 认证口令：`哈机密`（需保密，不可外泄）  \n\n注：该流程属图形化操作，未涉及终端命令；如需SSH/CLI方式查服务器状态（如 `top`、`df -h`、`htop` 等），可补充说明导图名称或节点，我将定向检索。",
+        "activeIndex": 1,
+        "isTriggering": false
+      },
+      "inputs": [
+        {
+          "id": "input",
+          "type": "input",
+          "label": "信号输入"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "output1",
+          "type": "output",
+          "label": "输出 1"
+        },
+        {
+          "id": "output2",
+          "type": "output",
+          "label": "输出 2"
+        }
+      ]
+    },
+    {
+      "id": "node_1772168428274_vm50pmhz0",
+      "type": "textDisplay",
+      "position": {
+        "x": 252.93203365261914,
+        "y": 553.4171955495498
+      },
+      "data": {
+        "label": "文本显示",
+        "icon": "📄",
+        "layout": "reversed",
+        "value": "用户：已确认服务器使用情况的查看流程为图形化操作——通过浏览器访问“即梦AI”平台（收藏栏快捷入口），输入认证口令“哈机密”后进入监控界面。该路径为当前标准、安全、无需终端命令的操作方式；如需扩展SSH命令行方式（如 `top`、`df -h` 等）或对接具体服务器节点，请提供目标环境名称或导图节点，我将立即调取对应方案。",
+        "receivedData": "用户：已确认服务器使用情况的查看流程为图形化操作——通过浏览器访问“即梦AI”平台（收藏栏快捷入口），输入认证口令“哈机密”后进入监控界面。该路径为当前标准、安全、无需终端命令的操作方式；如需扩展SSH命令行方式（如 `top`、`df -h` 等）或对接具体服务器节点，请提供目标环境名称或导图节点，我将立即调取对应方案。",
+        "displayText": "用户：已确认服务器使用情况的查看流程为图形化操作——通过浏览器访问“即梦AI”平台（收藏栏快捷入口），输入认证口令“哈机密”后进入监控界面。该路径为当前标准、安全、无需终端命令的操作方式；如需扩展SSH命令行方式（如 `top`、`df -h` 等）或对接具体服务器节点，请提供目标环境名称或导图节点，我将立即调取对应方案。",
+        "isExpanded": true,
+        "isTriggering": false
+      },
+      "inputs": [
+        {
+          "id": "input",
+          "type": "input",
+          "label": "输入"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "output",
+          "type": "output",
+          "label": "输出"
+        }
+      ]
+    },
+    {
+      "id": "node_1772168506242_nh9orgk81",
+      "type": "textDisplay",
+      "position": {
+        "x": 1055.8209225415087,
+        "y": -167.13836000600634
+      },
+      "data": {
+        "label": "文本显示",
+        "icon": "📄",
+        "layout": "default",
+        "value": "节点 \"看下服务器使用情况\" 的子节点 (深度: 99级):\n看下服务器使用情况\n   ├─ 打开浏览器\n   ├─ 观察收藏栏\n   ├─ 点击即梦AI\n   ├─ 输入暗号：哈机密\n   └─ 点击进入",
+        "receivedData": "节点 \"看下服务器使用情况\" 的子节点 (深度: 99级):\n看下服务器使用情况\n   ├─ 打开浏览器\n   ├─ 观察收藏栏\n   ├─ 点击即梦AI\n   ├─ 输入暗号：哈机密\n   └─ 点击进入",
+        "displayText": "节点 \"看下服务器使用情况\" 的子节点 (深度: 99级):\n看下服务器使用情况\n   ├─ 打开浏览器\n   ├─ 观察收藏栏\n   ├─ 点击即梦AI\n   ├─ 输入暗号：哈机密\n   └─ 点击进入",
+        "isExpanded": true,
+        "isTriggering": false
+      },
+      "inputs": [
+        {
+          "id": "input",
+          "type": "input",
+          "label": "输入"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "output",
+          "type": "output",
+          "label": "输出"
+        }
+      ]
+    },
+    {
+      "id": "node_1772171691105_bhd84lrqh",
+      "type": "textDisplay",
+      "position": {
+        "x": 1579.1635243841106,
+        "y": 130.37568150803537
+      },
+      "data": {
+        "label": "文本显示",
+        "icon": "📄",
+        "value": "tool：node:看下服务器使用情况 depth:99",
+        "receivedData": "tool：node:看下服务器使用情况 depth:99",
+        "displayText": "tool：node:看下服务器使用情况 depth:99",
+        "isTriggering": false
+      },
+      "inputs": [
+        {
+          "id": "input",
+          "type": "input",
+          "label": "输入"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "output",
+          "type": "output",
+          "label": "输出"
+        }
+      ]
+    },
+    {
+      "id": "node_1772172361843_8c7cyjjl0",
+      "type": "end",
+      "position": {
+        "x": 95.03581875640337,
+        "y": 628.3189049512586
+      },
+      "data": {
+        "label": "结束",
+        "icon": "🔴",
+        "layout": "reversed",
+        "value": "",
+        "isTriggering": false
+      },
+      "inputs": [
+        {
+          "id": "input",
+          "type": "input",
+          "label": "输入"
+        }
+      ],
+      "outputs": []
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge_1771991238103_k12xtha6x",
+      "source": "node_1771991185965_r442cnrne",
+      "target": "node_1771991236482_cz8kluikl",
+      "sourceHandle": "output",
+      "targetHandle": "input",
+      "type": "default",
+      "style": {
+        "stroke": "#64748b",
+        "strokeWidth": 2
+      }
+    },
+    {
+      "id": "edge_1772014435054_wv4ksv2p2",
+      "source": "node_1771381617334_u76hnthyy",
+      "target": "node_1772014432205_yeaxgcoh1",
+      "sourceHandle": "output",
+      "targetHandle": "input",
+      "type": "default",
+      "style": {
+        "stroke": "#64748b",
+        "strokeWidth": 2
+      }
+    },
+    {
+      "id": "edge_1772014436658_3u287pco0",
+      "source": "node_1772014432205_yeaxgcoh1",
+      "target": "node_1772014423587_ws0h4r52j",
+      "sourceHandle": "output",
+      "targetHandle": "input",
+      "type": "default",
+      "style": {
+        "stroke": "#64748b",
+        "strokeWidth": 2
+      }
+    },
+    {
+      "id": "edge_1772018012450_c463d6gxe",
+      "source": "node_1772014432205_yeaxgcoh1",
+      "target": "node_1772017990900_wi3r7s27p",
+      "sourceHandle": "output",
+      "targetHandle": "input",
+      "type": "default",
+      "style": {
+        "stroke": "#64748b",
+        "strokeWidth": 2
+      }
+    },
+    {
+      "id": "edge_1772018507816_51qb5dzqf",
+      "source": "node_1772017990900_wi3r7s27p",
+      "target": "node_1771991185965_r442cnrne",
+      "sourceHandle": "output2",
+      "targetHandle": "input",
+      "type": "default",
+      "style": {
+        "stroke": "#64748b",
+        "strokeWidth": 2
+      }
+    },
+    {
+      "id": "edge_1772087620978_xh5rsp0t7",
+      "source": "node_1772087617425_yb397mazu",
+      "target": "node_1771991185965_r442cnrne",
+      "sourceHandle": "output",
+      "targetHandle": "input",
+      "type": "default",
+      "style": {
+        "stroke": "#64748b",
+        "strokeWidth": 2
+      }
+    },
+    {
+      "id": "edge_1772168102989_2fjye3blm",
+      "source": "node_1772167922312_0xkvq4ufz",
+      "target": "node_1772168038537_jpkaw0tjn",
+      "sourceHandle": "output",
+      "targetHandle": "input",
+      "type": "default",
+      "style": {
+        "stroke": "#64748b",
+        "strokeWidth": 2
+      }
+    },
+    {
+      "id": "edge_1772168110754_snqisbel1",
+      "source": "node_1772168038537_jpkaw0tjn",
+      "target": "node_1772018521048_crz0y7v0b",
+      "sourceHandle": "output1",
+      "targetHandle": "input",
+      "type": "default",
+      "style": {
+        "stroke": "#64748b",
+        "strokeWidth": 2
+      }
+    },
+    {
+      "id": "edge_1772168220008_m5r9i1tto",
+      "source": "node_1772018521048_crz0y7v0b",
+      "target": "node_1772167922312_0xkvq4ufz",
+      "sourceHandle": "output",
+      "targetHandle": "input",
+      "type": "default",
+      "style": {
+        "stroke": "#64748b",
+        "strokeWidth": 2
+      }
+    },
+    {
+      "id": "edge_1772168280923_8x81342z4",
+      "source": "node_1772017990900_wi3r7s27p",
+      "target": "node_1772167922312_0xkvq4ufz",
+      "sourceHandle": "output1",
+      "targetHandle": "input",
+      "type": "default",
+      "style": {
+        "stroke": "#64748b",
+        "strokeWidth": 2
+      }
+    },
+    {
+      "id": "edge_1772168290112_kgrx2kvfh",
+      "source": "node_1772168038537_jpkaw0tjn",
+      "target": "node_1772014432205_yeaxgcoh1",
+      "sourceHandle": "output2",
+      "targetHandle": "input",
+      "type": "default",
+      "style": {
+        "stroke": "#64748b",
+        "strokeWidth": 2
+      }
+    },
+    {
+      "id": "edge_1772168432230_ava5smpqa",
+      "source": "node_1772017990900_wi3r7s27p",
+      "target": "node_1772168428274_vm50pmhz0",
+      "sourceHandle": "output3",
+      "targetHandle": "input",
+      "type": "default",
+      "style": {
+        "stroke": "#64748b",
+        "strokeWidth": 2
+      }
+    },
+    {
+      "id": "edge_1772168512160_g1ht269ip",
+      "source": "node_1772018521048_crz0y7v0b",
+      "target": "node_1772168506242_nh9orgk81",
+      "sourceHandle": "output",
+      "targetHandle": "input",
+      "type": "default",
+      "style": {
+        "stroke": "#64748b",
+        "strokeWidth": 2
+      }
+    },
+    {
+      "id": "edge_1772171694956_hfn9r3i88",
+      "source": "node_1772168038537_jpkaw0tjn",
+      "target": "node_1772171691105_bhd84lrqh",
+      "sourceHandle": "output1",
+      "targetHandle": "input",
+      "type": "default",
+      "style": {
+        "stroke": "#64748b",
+        "strokeWidth": 2
+      }
+    },
+    {
+      "id": "edge_1772172365792_v9g4b7yo3",
+      "source": "node_1772168428274_vm50pmhz0",
+      "target": "node_1772172361843_8c7cyjjl0",
+      "sourceHandle": "output",
+      "targetHandle": "input",
+      "type": "default",
+      "style": {
+        "stroke": "#64748b",
+        "strokeWidth": 2
+      }
+    },
+    {
+      "id": "edge_1772173182948_kov2oh7og",
+      "source": "node_1772168038537_jpkaw0tjn",
+      "target": "node_1772087573441_isihocgm3",
+      "sourceHandle": "output2",
+      "targetHandle": "input",
+      "type": "default",
+      "style": {
+        "stroke": "#64748b",
+        "strokeWidth": 2
+      }
+    }
+  ],
+  "settings": {
+    "executionMode": "async",
+    "timeout": 300,
+    "retryOnError": false,
+    "maxRetries": 3
+  },
+  "metadata": {
+    "author": "",
+    "tags": [],
+    "isTemplate": false
+  },
+  "createdAt": 1771379924355,
+  "updatedAt": 1772450741563,
+  "aiConfig": {
+    "selectedModelId": "model-1770017328240",
+    "allowReadFlow": true,
+    "allowAiEdit": true,
+    "allowAiAutoExecution": true
+  },
+  "viewState": {
+    "zoom": 1.4999999999999996,
+    "pan": {
+      "x": -165.3337397896173,
+      "y": -433.9497193982495
+    },
+    "animationSpeed": 0.01,
+    "showGrid": true,
+    "connectionStrokeWidth": 2
+  },
+  "theme": {
+    "id": "dark",
+    "name": "暗黑主题",
+    "backgroundColor": "#1e1e2e",
+    "gridColor": "#313244",
+    "gridEnabled": true,
+    "connectionColor": "#6c7086",
+    "lineColor": "#89b4fa",
+    "connectionWidth": 2,
+    "connectionStyle": "curve",
+    "nodeBackgroundColor": "#313244",
+    "nodeBorderColor": "#45475a",
+    "nodeBorderWidth": 1,
+    "nodeBorderRadius": 8,
+    "rootNodeColor": "#000000ff",
+    "textColor": "#cdd6f4",
+    "rootTextColor": "#1e1e2e",
+    "fontFamily": "system-ui, -apple-system, sans-serif",
+    "fontSize": 14,
+    "rootFontSize": 16,
+    "lineHeight": 1.5,
+    "shadowEnabled": true,
+    "shadowColor": "rgba(0, 0, 0, 0.3)",
+    "shadowBlur": 8,
+    "shadowOffsetX": 4,
+    "shadowOffsetY": 4
+  }
+}

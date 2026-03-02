@@ -8,7 +8,7 @@
  * - 流式响应动画
  */
 // ============ AI节点内容组件 ============
-import { Brain, Clock, Trash2, BarChart3, Zap, ChevronDown } from 'lucide-react';
+import { Brain, Clock, Trash2, BarChart3, Zap, ChevronDown, Settings2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -16,6 +16,17 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { useState } from 'react';
 import type { ModelConfig } from '../core/types';
 
 // Token 统计信息
@@ -35,9 +46,11 @@ interface AINodeContentProps {
   models?: ModelConfig[];
   tokenStats?: TokenStats;     // Token 统计信息
   useMemory?: boolean;          // 是否使用上下文记忆
+  systemPrompt?: string;        // 系统提示词
   onToggleMemory?: (useMemory: boolean) => void; // 切换记忆模式的回调
   onClearHistory?: () => void;  // 清除历史消息的回调
   onModelChange?: (model: ModelConfig) => void;
+  onPromptChange?: (prompt: string) => void; // 修改提示词的回调
   theme?: ThemeConfig;
 }
 
@@ -55,13 +68,27 @@ export function AINodeContent({
   models = [],
   tokenStats,
   useMemory = true,
+  systemPrompt = '',
   onToggleMemory,
   onClearHistory,
   onModelChange,
+  onPromptChange,
   theme
 }: AINodeContentProps) {
   const currentModel = models.find((model) => model.id === modelId);
   const displayLabel = currentModel?.name || label;
+  const [isPromptOpen, setIsPromptOpen] = useState(false);
+  const [editingPrompt, setEditingPrompt] = useState(systemPrompt);
+
+  const handleOpenPrompt = () => {
+    setEditingPrompt(systemPrompt);
+    setIsPromptOpen(true);
+  };
+
+  const handleSavePrompt = () => {
+    onPromptChange?.(editingPrompt);
+    setIsPromptOpen(false);
+  };
 
   return (
     <div className="flex flex-col gap-1 mb-2">
@@ -124,6 +151,16 @@ export function AINodeContent({
           <Clock className="w-3 h-3" />
           <span>单次</span>
         </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-6 px-2 text-xs"
+          onClick={handleOpenPrompt}
+          title="设置系统提示词"
+          style={theme ? { color: theme.textColor } : undefined}
+        >
+          <Settings2 className="w-3 h-3" />
+        </Button>
         {onClearHistory && (
           <Button
             variant="ghost"
@@ -137,6 +174,34 @@ export function AINodeContent({
           </Button>
         )}
       </div>
+
+      <Dialog open={isPromptOpen} onOpenChange={setIsPromptOpen}>
+        <DialogContent className="sm:max-w-[500px]" onPointerDownOutside={(e) => e.stopPropagation()}>
+          <DialogHeader>
+            <DialogTitle>系统提示词 (System Prompt)</DialogTitle>
+            <DialogDescription>
+              设置 AI 的角色设定和行为准则，这将作为 system message 发送给模型。
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="system-prompt">提示词内容</Label>
+              <Textarea
+                id="system-prompt"
+                value={editingPrompt}
+                onChange={(e) => setEditingPrompt(e.target.value)}
+                placeholder="例如：你是一个专业的代码助手..."
+                className="h-[200px]"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsPromptOpen(false)}>取消</Button>
+            <Button onClick={handleSavePrompt}>保存</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
 
       {/* Token 统计显示 */}
       {tokenStats && (

@@ -12,9 +12,9 @@ export * from './python/node/PythonNodeConfigModal';
 
 // ============ 新增导出 ============
 
-// 核心模块
-export * from './core';
-export * from './core/types';
+// 核心模块 - 只显式导出需要的类型，避免与节点组件冲突
+export type { FlowNode, FlowEdge, FlowNodeType, NodePort } from '@/types/flow';
+export type { DragData, ConnectionState, CanvasViewState, HistoryItem, ModelConfig, NodeTypeInfo } from './core/types';
 export * from './core/constants';
 
 // Hooks

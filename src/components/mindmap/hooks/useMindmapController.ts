@@ -253,6 +253,7 @@ export const useMindmapController = ({ onNodeClick: propOnNodeClick }: UseMindma
     clipboardData,
     isCut,
     handleAddChild: nodeOps.handleAddChild,
+    handleAddProcessTrigger: nodeOps.handleAddProcessTrigger,
     handleAddSibling: nodeOps.handleAddSibling,
     handleDeleteNode: nodeOps.handleDeleteNode,
     handleCopyNode: nodeOps.handleCopyNode,
@@ -354,7 +355,6 @@ export const useMindmapController = ({ onNodeClick: propOnNodeClick }: UseMindma
       onRedo: mapOps.handleRedo,
       onZoomIn: () => canvasEvents.updateScale(scale + 0.1),
       onZoomOut: () => canvasEvents.updateScale(scale - 0.1),
-      onResetView: mapOps.resetView,
       onRelayout: mapOps.handleRelayout,
       onToggleFullContent: setShowFullContent,
       onOpenAiChat: () => {

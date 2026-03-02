@@ -5,8 +5,10 @@
 
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { app } from 'electron';
+import { is } from '@electron-toolkit/utils';
 
-import { existsSync, promises as fs } from 'fs';
+import { existsSync, promises as fs, mkdirSync, readdirSync, lstatSync, copyFileSync } from 'fs';
 
 // ========== 基础路径计算 ==========
 
@@ -42,23 +44,77 @@ console.log('[Paths] AppData Dir:', APPDATA_DIR);
 /**
  * 主数据目录
  * 默认使用项目根目录下的 data 文件夹
+ * 生产环境使用 userData/data 目录
  * 可以通过环境变量 HEYSURE_DATA_DIR 覆盖
  */
 export const DATA_DIR = process.env.HEYSURE_DATA_DIR
   ? process.env.HEYSURE_DATA_DIR
-  : join(PROJECT_ROOT, 'data');
+  : (is.dev ? join(PROJECT_ROOT, 'data') : join(app.getPath('userData'), 'data'));
 console.log('[Paths] Data Dir:', DATA_DIR);
 
 
 
 // ========== 目录创建辅助函数 ==========
 
+// 递归复制目录
+function copyFolderSync(from: string, to: string) {
+  if (!existsSync(to)) {
+    mkdirSync(to, { recursive: true });
+  }
+  const files = readdirSync(from);
+  for (const file of files) {
+    const src = join(from, file);
+    const dest = join(to, file);
+    const stat = lstatSync(src);
+    if (stat.isDirectory()) {
+      copyFolderSync(src, dest);
+    } else {
+      if (!existsSync(dest)) {
+        copyFileSync(src, dest);
+      }
+    }
+  }
+}
+
 /**
  * 确保数据目录存在
+ * 生产环境下如果目录不存在，尝试从资源目录复制初始数据
  */
 export async function ensureDataDir(): Promise<void> {
+  // 生产环境初始化数据
+  if (!is.dev && !existsSync(DATA_DIR)) {
+    try {
+      // 尝试查找打包的资源目录
+      // resources/data (asar unpack) 或 resources/../data (nsis extraResources)
+      let sourceData = join(process.resourcesPath, 'data');
+      if (!existsSync(sourceData)) {
+        // 尝试在上级目录查找（针对某些安装包结构）
+        sourceData = join(process.resourcesPath, '..', 'data');
+      }
+
+      if (existsSync(sourceData)) {
+        console.log('[Paths] Initializing data from:', sourceData);
+        copyFolderSync(sourceData, DATA_DIR);
+      }
+    } catch (err) {
+      console.error('[Paths] Failed to initialize data:', err);
+    }
+  }
+
   if (!existsSync(DATA_DIR)) {
     await fs.mkdir(DATA_DIR, { recursive: true });
+  }
+  if (!existsSync(MODELS_DIR)) {
+    await fs.mkdir(MODELS_DIR, { recursive: true });
+  }
+  if (!existsSync(MINDMAP_DIR)) {
+    await fs.mkdir(MINDMAP_DIR, { recursive: true });
+  }
+  if (!existsSync(FLOW_DIR)) {
+    await fs.mkdir(FLOW_DIR, { recursive: true });
+  }
+  if (!existsSync(PYTHON_SCRIPT_DIR)) {
+    await fs.mkdir(PYTHON_SCRIPT_DIR, { recursive: true });
   }
 }
 
@@ -72,8 +128,15 @@ export const DIALOGS_FILE = join(DATA_DIR, 'dialogs.json');
 // 消息数据文件
 export const MESSAGES_FILE = join(DATA_DIR, 'messages.json');
 
+// 模型配置目录
+export const MODELS_DIR = join(DATA_DIR, 'models');
+
 // 模型配置文件
-export const MODELS_FILE = join(DATA_DIR, 'models.json');
+export const MODELS_FILE = join(MODELS_DIR, 'models.json');
+
+// 模型脚本文件
+export const getModelScriptFile = (modelId: string) =>
+  join(MODELS_DIR, `${modelId}.js`);
 
 // ========== 思维导图目录 ==========
 
@@ -213,6 +276,7 @@ export interface ModelConfig {
   enableWebSearch: boolean;
   enableWebScraping: boolean;
   enabled: boolean;
+  requestCode?: string;
   createdAt: string;
   updatedAt: string;
 }

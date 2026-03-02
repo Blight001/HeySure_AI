@@ -583,7 +583,7 @@ export default function MainLayout() {
           <Outlet />
           <div className={cn(
             "absolute inset-0 bg-background transition-opacity duration-200", 
-            location.pathname.startsWith('/flow') ? "z-0 opacity-100" : "z-0 opacity-0 pointer-events-none"
+            location.pathname.startsWith('/flow') ? "z-10 opacity-100 visible" : "z-0 opacity-0 pointer-events-none invisible"
           )}>
             <FlowEditorPage />
           </div>
@@ -591,7 +591,7 @@ export default function MainLayout() {
             "absolute inset-0 bg-background transition-opacity duration-200", 
             // 只要是思维导图路由，或者是聊天路由且开启了思维导图模式，就显示
             // 注意 z-index: 如果是 MindmapMode，它应该在底层 (z-0)，让 Outlet (z-10) 浮在上面
-            location.pathname.startsWith('/mindmap') ? "z-0 opacity-100" : "z-0 opacity-0 pointer-events-none"
+            location.pathname.startsWith('/mindmap') ? "z-10 opacity-100 visible" : "z-0 opacity-0 pointer-events-none invisible"
           )}>
             <MindmapPage />
           </div>

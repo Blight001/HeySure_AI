@@ -13,6 +13,7 @@ interface UseMindmapShortcutsProps {
   clipboardData: any;
   isCut: boolean;
   handleAddChild: () => void;
+  handleAddProcessTrigger: () => void;
   handleAddSibling: () => void;
   handleDeleteNode: () => void;
   handleCopyNode: () => void;
@@ -34,6 +35,7 @@ export const useMindmapShortcuts = ({
   clipboardData,
   isCut,
   handleAddChild,
+  handleAddProcessTrigger,
   handleAddSibling,
   handleDeleteNode,
   handleCopyNode,
@@ -59,6 +61,15 @@ export const useMindmapShortcuts = ({
 
       // 如果正在编辑节点内容，忽略快捷键
       if (editingNodeId) return;
+
+      // Ctrl + Tab - 创建流程触发节点
+      if (e.ctrlKey && e.key === 'Tab') {
+        e.preventDefault();
+        if (selectedNodeId) {
+          handleAddProcessTrigger();
+        }
+        return;
+      }
 
       // Ctrl/Cmd + 复制粘贴剪切
       if (e.ctrlKey || e.metaKey) {
@@ -213,6 +224,7 @@ export const useMindmapShortcuts = ({
     clipboardData,
     isCut,
     handleAddChild,
+    handleAddProcessTrigger,
     handleAddSibling,
     handleDeleteNode,
     handleCopyNode,

@@ -98,6 +98,7 @@ export interface FlowNode {
 export type FlowNodeType =
   | 'start'
   | 'end'
+  | 'classifier'
   | 'userInput'
   | 'textDisplay'
   | 'aiChat'
@@ -114,7 +115,8 @@ export type FlowNodeType =
   | 'python'  // Python自定义节点
   | 'switch'  // 开关节点：暂存信号，打开后发送
   | 'trigger' // 触发器节点：按钮触发，预留信号通信
-  | 'simpleTrigger'; // 简单触发按钮：单纯发送信号
+  | 'simpleTrigger' // 简单触发按钮：单纯发送信号
+  | 'mindmapInfo'; // 思维导图信息组件：获取当前思维导图信息
 
 export interface NodeData {
   [key: string]: any;

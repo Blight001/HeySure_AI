@@ -2,7 +2,7 @@
   "id": "node_1770034427670_yfbnfmw19",
   "name": "生活类",
   "createdAt": "2026-02-02T12:13:47.670Z",
-  "updatedAt": "2026-02-17T14:23:13.924Z",
+  "updatedAt": "2026-02-27T05:05:50.428Z",
   "nodes": [
     {
       "id": "node_1770034427670_pbkrue3fz",
@@ -42,7 +42,7 @@
       "name": "看下服务器使用情况",
       "parentId": "node_1770895962803_3f5drd7sd",
       "createdAt": "2026-02-12T11:48:55.472Z",
-      "updatedAt": "2026-02-12T11:49:17.729Z",
+      "updatedAt": "2026-02-27T05:05:56.825Z",
       "usageCount": 0,
       "lastUsed": "2026-02-12T11:48:55.472Z",
       "contexts": [],
@@ -204,7 +204,9 @@
       "usageCount": 0,
       "lastUsed": "2026-02-12T11:58:04.602Z",
       "contexts": [],
-      "children": [],
+      "children": [
+        "node_1771379302643_y6n1t3qxp"
+      ],
       "x": 800,
       "y": 160,
       "color": "#3b82f6"
@@ -269,6 +271,22 @@
       "y": 10,
       "color": "linear-gradient(135deg, #ef4444 0%, #3b82f6 100%)",
       "type": "process-trigger"
+    },
+    {
+      "id": "node_1771379302643_y6n1t3qxp",
+      "name": "打开浏览器",
+      "parentId": "node_1770897704005_vna1c6lt3",
+      "createdAt": "2026-02-18T01:48:22.643Z",
+      "updatedAt": "2026-02-18T01:50:15.157Z",
+      "usageCount": 0,
+      "lastUsed": "2026-02-18T01:48:22.643Z",
+      "contexts": [],
+      "children": [],
+      "x": 1000,
+      "y": 140,
+      "color": "linear-gradient(135deg, #ef4444 0%, #3b82f6 100%)",
+      "duplicateIndex": 3,
+      "type": "process-trigger"
     }
   ],
   "version": 1,
@@ -300,8 +318,8 @@
   },
   "viewState": {
     "scale": 0.8,
-    "x": 105.55555555555554,
-    "y": 450.17777760823566
+    "x": 71.96507936507919,
+    "y": 463.7388167388165
   },
   "aiConfig": {
     "selectedModelId": "model-1770703248800",

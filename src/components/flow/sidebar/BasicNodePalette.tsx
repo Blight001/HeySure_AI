@@ -20,6 +20,8 @@ const BASIC_NODES: { type: FlowNodeType; label: string; icon: string }[] = [
   { type: 'end', label: '结束', icon: '🔴' },
   { type: 'userInput', label: '用户输入', icon: '👤' },
   { type: 'textDisplay', label: '文本显示', icon: '📄' },
+  { type: 'classifier', label: '分类器', icon: '🔀' },
+  { type: 'mindmapInfo', label: '导图信息', icon: '🧠' },
 ];
 
 interface BasicNodePaletteProps {

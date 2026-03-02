@@ -46,14 +46,12 @@ import type {
 } from '@/types/flow';
 import {
   createBasicNode,
-  createConditionNode,
-  createParallelNode,
-  createAggregateNode,
   createAIChatNode,
   createPythonNode,
   createSwitchNode,
   createTriggerNode,
   createSimpleTriggerNode,
+  createMindmapInfoNode,
 } from '../core/types';
 import { NODE_WIDTH, NODE_HEIGHT } from '../core/layout';
 
@@ -220,10 +218,11 @@ export function useFlowController() {
 
   // ==================== 7. 自动保存与节点操作 ====================
   const handleDeleteCanvasNode = useCallback((nodeId: string) => {
+    stopFlow(); // 删除节点时停止流程运行
     setCanvasNodes(prev => prev.filter(node => node.id !== nodeId));
     setCanvasEdges(prev => prev.filter(edge => edge.source !== nodeId && edge.target !== nodeId));
     setTimeout(() => saveToHistory(), 0);
-  }, [saveToHistory]);
+  }, [saveToHistory, stopFlow]);
 
   const handleSaveNode = async (nodeId: string) => {
     console.log('节点数据将随流程自动保存:', nodeId);
@@ -247,13 +246,20 @@ export function useFlowController() {
   const handleNodeDataChange = (nodeId: string, newData: any) => {
     setCanvasNodes(prev => prev.map(n => {
       if (n.id === nodeId) {
+        // 检查是否有需要更新的顶层属性 (inputs, outputs)
+        const { inputs, outputs, ...dataPayload } = newData;
+        
+        let nodeUpdate = { ...n };
+        if (inputs) nodeUpdate.inputs = inputs;
+        if (outputs) nodeUpdate.outputs = outputs;
+
         let status = n.data?.status;
-        if (newData.value !== undefined && newData.value !== '' && status !== 'running' && status !== 'completed') {
+        if (dataPayload.value !== undefined && dataPayload.value !== '' && status !== 'running' && status !== 'completed') {
           status = 'idle';
-        } else if (newData.value === '') {
+        } else if (dataPayload.value === '') {
           status = undefined;
         }
-        return { ...n, data: { ...n.data, ...newData, status } };
+        return { ...nodeUpdate, data: { ...n.data, ...dataPayload, status } };
       }
       return n;
     }));
@@ -360,14 +366,12 @@ export function useFlowController() {
       if (data.type === 'basic' && data.nodeType) {
         switch (data.nodeType) {
           case 'simpleTrigger': newNode = createSimpleTriggerNode({ x, y }, data.label || '触发'); break;
+          case 'mindmapInfo': newNode = createMindmapInfoNode({ x, y }); break;
           case 'switch': newNode = createSwitchNode({ x, y }, data.label || '开关'); break;
           case 'trigger': newNode = createTriggerNode({ x, y }, data.label || '触发器'); break;
           default: newNode = createBasicNode(data.nodeType, { x, y }, data.label || '节点', data.icon || '🟢');
         }
-      } else if (data.type === 'condition') newNode = createConditionNode({ x, y });
-      else if (data.type === 'parallel') newNode = createParallelNode({ x, y });
-      else if (data.type === 'aggregate') newNode = createAggregateNode({ x, y });
-      else if (data.type === 'aiChat') newNode = createAIChatNode({ x, y });
+      } else if (data.type === 'aiChat') newNode = createAIChatNode({ x, y });
       else if (data.type === 'model' && data.model) newNode = createAIChatNode({ x, y }, data.model);
       else if (data.type === 'python' && data.component) newNode = createPythonNode({ x, y }, data.component);
       
@@ -662,7 +666,10 @@ export function useFlowController() {
       setSelectedModel,
       edgeToDelete,
       setEdgeToDelete,
-      handleDeleteEdge,
+      handleDeleteEdge: (edgeId: string) => {
+        stopFlow(); // 删除连线时停止流程运行
+        handleDeleteEdge?.(edgeId);
+      },
       handleScriptSaved,
       handleSaveModel
     },

@@ -137,15 +137,22 @@
         "filter": [
           "**/*"
         ]
+      },
+      {
+        "from": "data",
+        "to": "data",
+        "filter": [
+          "**/*"
+        ]
       }
     ],
     "win": {
-      "icon": "public/image/logo.ico",
+      "icon": "public/image/logo.png",
       "target": "nsis",
       "artifactName": "HeySureAI-Setup-${version}.${ext}"
     },
     "mac": {
-      "icon": "public/image/logo.icns",
+      "icon": "public/image/logo.png",
       "target": "dmg",
       "artifactName": "HeySureAI-${version}.${ext}"
     },

@@ -59,7 +59,6 @@ export const useMindmapCategory = ({
   }, [newCategoryName, refreshCategoryData, toast]);
 
   const handleDeleteCategory = useCallback(async (categoryId: string) => {
-    if (!window.confirm('确定要删除该分类及其下的所有思维导图吗？')) return;
     try {
       await mindmapStorage.deleteCategory(categoryId);
       refreshCategoryData();
@@ -152,7 +151,6 @@ export const useMindmapCategory = ({
       toast({ title: '无法删除', description: '每个分类至少保留一个思维导图', variant: 'destructive' });
       return;
     }
-    if (!window.confirm('确定要删除此思维导图吗？')) return;
     
     try {
       // If deleting the current map, switch to another one first

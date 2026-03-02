@@ -33,7 +33,6 @@ interface MindmapToolbarProps {
   onRedo: () => void;
   onZoomIn: () => void;
   onZoomOut: () => void;
-  onResetView: () => void;
   onRelayout: () => void;
   onToggleFullContent: (show: boolean) => void;
   onOpenAiChat?: () => void;
@@ -55,7 +54,6 @@ export const MindmapToolbar: React.FC<MindmapToolbarProps> = ({
   onRedo,
   onZoomIn,
   onZoomOut,
-  onResetView,
   onRelayout,
   onToggleFullContent,
   onOpenAiChat
@@ -104,7 +102,6 @@ export const MindmapToolbar: React.FC<MindmapToolbarProps> = ({
         <Button variant="outline" size="sm" onClick={onZoomIn} title="放大" style={buttonStyle} className="h-8 w-8 p-0"><ZoomIn size={16} /></Button>
         <span className="text-xs w-12 text-center select-none" style={{ color: currentTheme.textColor }}>{Math.round(scale * 100)}%</span>
         <Button variant="outline" size="sm" onClick={onZoomOut} title="缩小" style={buttonStyle} className="h-8 w-8 p-0"><ZoomOut size={16} /></Button>
-        <Button variant="outline" size="sm" onClick={onResetView} title="重置视图" style={buttonStyle} className="h-8 w-8 p-0 text-[10px]">重置</Button>
       </div>
       
       <div className="w-px h-6 bg-gray-200 dark:bg-gray-700 mx-1" style={{ backgroundColor: currentTheme.gridColor }} />

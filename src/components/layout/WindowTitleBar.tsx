@@ -71,7 +71,7 @@ export function WindowTitleBar({ className }: WindowTitleBarProps) {
       {/* 左侧：Logo 和应用名称 */}
       <div className="flex items-center gap-2 h-full">
         <img
-          src="/image/logo.png"
+          src="./image/logo.png"
           alt="HeySure AI Logo"
           className="h-9 w-9 object-contain flex-shrink-0"
         />

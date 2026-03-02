@@ -12,6 +12,8 @@ import { useCallback, useRef, useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useToast } from '@/hooks/use-toast';
 import type { FlowNode, FlowEdge } from '@/types/flow';
+import { mindmapStorage } from '@/components/mindmap/services/mindmap-storage';
+import { mindmapToMarkdown } from '@/components/mindmap/utils/mindmap-to-markdown';
 
 interface UseFlowExecutionProps {
   nodes: FlowNode[];
@@ -37,6 +39,7 @@ export function useFlowExecution({
   const flowStatusRef = useRef<'idle' | 'running' | 'paused'>('idle');
   const pendingTasksRef = useRef<Array<() => void>>([]);
   const resetTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const isStoppedRef = useRef(false);
 
   // 同步状态到 ref
   useEffect(() => {
@@ -49,6 +52,53 @@ export function useFlowExecution({
     nodesRef.current = nodes;
   }, [nodes]);
 
+  // 使用 ref 追踪最新的 edges，确保在异步回调中能获取到最新的连线状态（如已被删除）
+  const edgesRef = useRef(edges);
+  useEffect(() => {
+    edgesRef.current = edges;
+  }, [edges]);
+
+  // 使用 ref 追踪最新的动画速度，支持实时变速
+  const animationSpeedRef = useRef(animationSpeed);
+  useEffect(() => {
+    animationSpeedRef.current = animationSpeed;
+  }, [animationSpeed]);
+
+  // 智能延迟执行函数：支持实时速度调整和状态检查
+  const executeWithDelay = useCallback((task: () => void, cleanup?: () => void, forceExecution: boolean = false) => {
+    const startTime = Date.now();
+    
+    const check = () => {
+      // 检查是否被显式停止（即使是强制执行也要停止）
+      if (isStoppedRef.current) {
+        cleanup?.();
+        return;
+      }
+
+      // 1. 检查是否已停止 (强制执行除外)
+      if (flowStatusRef.current === 'idle' && !forceExecution) {
+        cleanup?.(); // 即使停止也要清理动画状态
+        return;
+      }
+
+      // 2. 检查是否暂停
+      if (flowStatusRef.current === 'paused') {
+        requestAnimationFrame(check);
+        return;
+      }
+
+      // 3. 检查时间是否满足当前速度设定
+      const elapsed = (Date.now() - startTime) / 1000;
+      if (elapsed >= animationSpeedRef.current) {
+        task();
+      } else {
+        requestAnimationFrame(check);
+      }
+    };
+
+    requestAnimationFrame(check);
+  }, []);
+
   // 暂停流程
   const pauseFlow = useCallback(() => {
     setFlowStatus('paused');
@@ -57,6 +107,7 @@ export function useFlowExecution({
   // 停止流程
   const stopFlow = useCallback(() => {
     setFlowStatus('idle');
+    isStoppedRef.current = true;
     pendingTasksRef.current = [];
     setAnimatingEdges(new Set()); // 立即清除所有动画
     
@@ -105,121 +156,125 @@ export function useFlowExecution({
     });
 
     // 动态时长清除动画状态并更新数据
-    setTimeout(() => {
-      const executeTransfer = () => {
-        // 清除动画状态
-        setAnimatingEdges(prev => {
-          const next = new Set(prev);
-          outgoingEdges.forEach(edge => next.delete(edge.id));
-          return next;
-        });
+    // 使用 executeWithDelay 替代 setTimeout，支持实时变速和状态检查
+    const cleanup = () => {
+      setAnimatingEdges(prev => {
+        const next = new Set(prev);
+        outgoingEdges.forEach(edge => next.delete(edge.id));
+        return next;
+      });
+    };
 
-        // 1. 更新目标节点的数据
-        setNodes(prev => {
-          const nextNodes = [...prev];
-          outgoingEdges.forEach(edge => {
-            const targetNodeIndex = nextNodes.findIndex(n => n.id === edge.target);
-            if (targetNodeIndex !== -1) {
-              const targetNode = nextNodes[targetNodeIndex];
+    executeWithDelay(() => {
+      // 二次检查：确保节点和连线仍然存在（处理删除操作后的状态）
+      const currentEdges = edgesRef.current;
+      const currentNodes = nodesRef.current;
 
-              // 如果连接到目标节点的输出端口，则不更新节点数据（仅作为中继）
-              const isTargetOutput = targetNode.outputs.some(o => o.id === edge.targetHandle);
-              if (isTargetOutput) return;
-
-              nextNodes[targetNodeIndex] = {
-                ...targetNode,
-                data: {
-                  ...targetNode.data,
-                  // UserInput 节点不应被上游数据覆盖输入内容
-                  ...(targetNode.type === 'userInput' ? {} : { value: payload }),
-                  status: 'idle' // 接收到数据后状态变更
-                }
-              };
-            }
-          });
-          return nextNodes;
-        });
-
-        // 2. 触发目标节点的执行逻辑 和 转发逻辑
-        const latestNodes = nodesRef.current;
-        
-        outgoingEdges.forEach(edge => {
-          const targetNode = latestNodes.find(n => n.id === edge.target);
-          if (!targetNode) return;
-
-          // 检查是否连接到输出端口（中继模式）
-          const isTargetOutput = targetNode.outputs.some(o => o.id === edge.targetHandle);
-          if (isTargetOutput) {
-            // 直接中继信号，不执行节点逻辑，也不改变节点状态
-            // 指定 sourceHandleId 为接收到信号的端口，确保信号只从该端口流出
-            triggerDataTransfer(targetNode.id, payload, 'output', isForced, edge.targetHandle);
-            return;
-          }
-
-          // 检查是否为 Input-to-Input 中继 (当数据到达输入端口时，立即触发从该端口引出的连线)
-          const isTargetInput = targetNode.inputs.some(i => i.id === edge.targetHandle);
-          if (isTargetInput) {
-             const hasInputRelay = edges.some(e => e.source === targetNode.id && e.sourceHandle === edge.targetHandle);
-             if (hasInputRelay) {
-                // 立即中继原始数据，不等待节点执行
-                triggerDataTransfer(targetNode.id, payload, 'input', isForced, edge.targetHandle);
-             }
-          }
-
-          if (targetNode.type === 'aiChat') {
-            handleAINodeExecution(targetNode.id, payload, isForced);
-          } else if (targetNode.type === 'python') {
-            handlePythonExecution(targetNode.id, payload, isForced);
-          } else if (targetNode.type === 'switch') {
-            handleSwitchReceiveSignal(targetNode.id, payload, targetNode.data?.isOn ?? false, isForced);
-          } else if (targetNode.type === 'textDisplay') {
-            handleTextDisplayExecution(targetNode.id, payload, edge.target, isForced);
-          } else if (targetNode.type === 'userInput') {
-            handleUserInputSend(targetNode.id, undefined, isForced);
-          } else if (targetNode.type === 'end') {
-            // 遇到结束节点，停止流程
-            stopFlow();
-            // 5秒后自动清理节点状态
-            if (resetTimerRef.current) clearTimeout(resetTimerRef.current);
-            resetTimerRef.current = setTimeout(() => {
-              resetNodesStatus();
-              resetTimerRef.current = null;
-            }, 5000);
-          } else {
-            // 对于其他节点，让数据通过
-            // 递归调用也需要受控，但这里通过 setTimeout 再次进入 triggerDataTransfer，会自动检查状态
-            setTimeout(() => {
-              triggerDataTransfer(targetNode.id, payload, 'output', isForced);
-            }, animationSpeed * 1000);
-          }
-        });
-      };
-
-      // 检查当前流程状态
-      if (flowStatusRef.current === 'idle' && !isForced) {
-        // 如果已停止，仅清除动画，不执行后续逻辑
-        setAnimatingEdges(prev => {
-          const next = new Set(prev);
-          outgoingEdges.forEach(edge => next.delete(edge.id));
-          return next;
-        });
+      // 验证源节点是否存在
+      if (!currentNodes.find(n => n.id === sourceNodeId)) {
+        cleanup();
         return;
       }
 
-      if (flowStatusRef.current === 'paused') {
-        // 如果暂停，将执行逻辑加入队列
-        pendingTasksRef.current.push(executeTransfer);
+      // 过滤出仍然有效的连线
+      const validEdges = outgoingEdges.filter(edge => 
+        currentEdges.some(e => e.id === edge.id) &&
+        currentNodes.some(n => n.id === edge.target)
+      );
+
+      if (validEdges.length === 0) {
+        cleanup();
         return;
       }
 
-      // 正常运行
-      executeTransfer();
+      // 清除动画状态
+      cleanup();
 
-    }, animationSpeed * 1000);
-  }, [nodes, edges, animationSpeed, setAnimatingEdges, stopFlow, resetNodesStatus]); // 依赖保持不变
+      // 1. 更新目标节点的数据
+      setNodes(prev => {
+        const nextNodes = [...prev];
+        validEdges.forEach(edge => {
+          const targetNodeIndex = nextNodes.findIndex(n => n.id === edge.target);
+          if (targetNodeIndex !== -1) {
+            const targetNode = nextNodes[targetNodeIndex];
+
+            // 如果连接到目标节点的输出端口，则不更新节点数据（仅作为中继）
+            const isTargetOutput = targetNode.outputs.some(o => o.id === edge.targetHandle);
+            if (isTargetOutput) return;
+
+            nextNodes[targetNodeIndex] = {
+              ...targetNode,
+              data: {
+                ...targetNode.data,
+                // UserInput 节点不应被上游数据覆盖输入内容
+                ...(targetNode.type === 'userInput' ? {} : { value: payload }),
+                status: 'idle' // 接收到数据后状态变更
+              }
+            };
+          }
+        });
+        return nextNodes;
+      });
+
+      // 2. 触发目标节点的执行逻辑 和 转发逻辑
+      const latestNodes = nodesRef.current;
+      
+      validEdges.forEach(edge => {
+        const targetNode = latestNodes.find(n => n.id === edge.target);
+        if (!targetNode) return;
+
+        // 检查是否连接到输出端口（中继模式）
+        const isTargetOutput = targetNode.outputs.some(o => o.id === edge.targetHandle);
+        if (isTargetOutput) {
+          triggerDataTransfer(targetNode.id, payload, 'output', isForced, edge.targetHandle);
+          return;
+        }
+
+        // 检查是否为 Input-to-Input 中继
+        const isTargetInput = targetNode.inputs.some(i => i.id === edge.targetHandle);
+        if (isTargetInput) {
+           const hasInputRelay = currentEdges.some(e => e.source === targetNode.id && e.sourceHandle === edge.targetHandle);
+           if (hasInputRelay) {
+              triggerDataTransfer(targetNode.id, payload, 'input', isForced, edge.targetHandle);
+           }
+        }
+
+        if (targetNode.type === 'aiChat') {
+          handleAINodeExecution(targetNode.id, payload, isForced);
+        } else if (targetNode.type === 'python') {
+          handlePythonExecution(targetNode.id, payload, isForced);
+        } else if (targetNode.type === 'switch') {
+          handleSwitchReceiveSignal(targetNode.id, payload, targetNode.data?.isOn ?? false, isForced);
+        } else if (targetNode.type === 'classifier') {
+          handleClassifierExecution(targetNode.id, payload, isForced);
+        } else if (targetNode.type === 'textDisplay') {
+          handleTextDisplayExecution(targetNode.id, payload, edge.target, isForced);
+        } else if (targetNode.type === 'userInput') {
+          handleUserInputSend(targetNode.id, undefined, isForced);
+        } else if (targetNode.type === 'mindmapInfo') {
+          handleMindmapInfoExecution(targetNode.id, payload, isForced);
+        } else if (targetNode.type === 'end') {
+          stopFlow();
+          if (resetTimerRef.current) clearTimeout(resetTimerRef.current);
+          resetTimerRef.current = setTimeout(() => {
+            resetNodesStatus();
+            resetTimerRef.current = null;
+          }, 5000);
+        } else {
+          // 对于其他节点，让数据通过
+          // 递归调用，利用 executeWithDelay 自动处理延迟
+          executeWithDelay(() => {
+            triggerDataTransfer(targetNode.id, payload, 'output', isForced);
+          }, undefined, isForced);
+        }
+      });
+
+    }, cleanup, isForced);
+  }, [nodes, edges, animationSpeed, setAnimatingEdges, stopFlow, resetNodesStatus, executeWithDelay]);
 
   // 运行流程
   const runFlow = useCallback(() => {
+    isStoppedRef.current = false;
     // 运行开始时，清除可能存在的重置定时器
     if (resetTimerRef.current) {
       clearTimeout(resetTimerRef.current);
@@ -327,12 +382,13 @@ export function useFlowExecution({
     }));
 
     try {
-      const node = nodes.find(n => n.id === nodeId);
+      const node = nodesRef.current.find(n => n.id === nodeId);
       if (!node) throw new Error("节点未找到");
 
       const modelId = node.data?.modelId;
       const modelConfig = node.data?.model;
       const useMemory = node.data?.useMemory !== false;
+      const systemPrompt = node.data?.systemPrompt;
 
       if (!modelId && !modelConfig) {
            throw new Error("AI模型未配置");
@@ -344,6 +400,10 @@ export function useFlowExecution({
         messages = [...historyMessages, { role: 'user', content: String(input) }];
       } else {
         messages = [{ role: 'user', content: String(input) }];
+      }
+
+      if (systemPrompt) {
+        messages.unshift({ role: 'system', content: systemPrompt });
       }
 
       if (!window.electronAPI?.ai?.chat) {
@@ -366,21 +426,6 @@ export function useFlowExecution({
       const completionTokens = usage.completion_tokens || 0;
       const currentTokens = promptTokens + completionTokens;
 
-      const prevTokenStats = node.data?.tokenStats || {
-        totalTokens: 0,
-        promptTokens: 0,
-        completionTokens: 0,
-        requestCount: 0
-      };
-
-      const newTokenStats = {
-        currentTokens,
-        totalTokens: prevTokenStats.totalTokens + currentTokens,
-        promptTokens: prevTokenStats.promptTokens + promptTokens,
-        completionTokens: prevTokenStats.completionTokens + completionTokens,
-        requestCount: prevTokenStats.requestCount + 1
-      };
-
       const assistantMessage = {
         id: uuidv4(),
         role: 'assistant',
@@ -390,6 +435,21 @@ export function useFlowExecution({
 
       setNodes(prev => prev.map(n => {
         if (n.id === nodeId) {
+          const prevTokenStats = n.data?.tokenStats || {
+            totalTokens: 0,
+            promptTokens: 0,
+            completionTokens: 0,
+            requestCount: 0
+          };
+
+          const newTokenStats = {
+            currentTokens,
+            totalTokens: prevTokenStats.totalTokens + currentTokens,
+            promptTokens: prevTokenStats.promptTokens + promptTokens,
+            completionTokens: prevTokenStats.completionTokens + completionTokens,
+            requestCount: prevTokenStats.requestCount + 1
+          };
+
           if (useMemory) {
             const currentHistory = n.data?.messages || [];
             return {
@@ -465,14 +525,16 @@ export function useFlowExecution({
     });
 
     // 用户手动输入视为强制触发，或者继承上游的强制状态
+    setFlowStatus('running');
+    isStoppedRef.current = false;
     triggerDataTransfer(nodeId, payload, 'output', isForced);
     
-    setTimeout(() => {
+    executeWithDelay(() => {
         setNodes(prev => prev.map(n => 
             n.id === nodeId ? { ...n, data: { ...n.data, status: 'completed' } } : n
         ));
-    }, animationSpeed * 1000);
-  }, [nodes, setNodes, triggerDataTransfer, animationSpeed, toast]);
+    }, undefined, true);
+  }, [nodes, setNodes, triggerDataTransfer, animationSpeed, toast, executeWithDelay]);
 
   const handleToggleMemory = useCallback((nodeId: string, useMemory: boolean) => {
     setNodes(prev => prev.map(n => {
@@ -535,22 +597,24 @@ export function useFlowExecution({
 
     const payload = pendingSignal;
     // 手动开启开关，视为强制触发
+    setFlowStatus('running');
+    isStoppedRef.current = false;
     triggerDataTransfer(nodeId, payload, 'output', true);
 
-    setTimeout(() => {
+    executeWithDelay(() => {
       setNodes(prev => prev.map(n =>
         n.id === nodeId
           ? { ...n, data: { ...n.data, status: 'completed', pendingSignal: undefined, hasPendingSignal: false } }
           : n
       ));
-    }, animationSpeed * 1000);
+    }, undefined, true);
 
     toast({
       title: "信号已发送",
       description: "信号已转发到下游节点",
       duration: 2000
     });
-  }, [nodes, setNodes, triggerDataTransfer, animationSpeed, toast]);
+  }, [nodes, setNodes, triggerDataTransfer, animationSpeed, toast, executeWithDelay]);
 
   const handleSwitchReceiveSignal = useCallback((nodeId: string, signal: any, isOn: boolean, isForced: boolean = false) => {
     if (isOn) {
@@ -558,11 +622,11 @@ export function useFlowExecution({
         n.id === nodeId ? { ...n, data: { ...n.data, status: 'running' } } : n
       ));
       triggerDataTransfer(nodeId, signal, 'output', isForced);
-      setTimeout(() => {
+      executeWithDelay(() => {
         setNodes(prev => prev.map(n =>
           n.id === nodeId ? { ...n, data: { ...n.data, status: 'completed' } } : n
         ));
-      }, animationSpeed * 1000);
+      }, undefined, true);
     } else {
       setNodes(prev => prev.map(n => 
         n.id === nodeId 
@@ -570,7 +634,68 @@ export function useFlowExecution({
         : n
       ));
     }
-  }, [setNodes, triggerDataTransfer, animationSpeed]);
+  }, [setNodes, triggerDataTransfer, animationSpeed, executeWithDelay]);
+
+  const handleClassifierExecution = useCallback((nodeId: string, payload: any, isForced: boolean = false) => {
+    const node = nodesRef.current.find(n => n.id === nodeId);
+    if (!node) return;
+
+    // Determine output port
+    let outputIndex = -1;
+    const keywords = node.data?.keywords || [];
+    const payloadStr = typeof payload === 'object' ? JSON.stringify(payload) : String(payload);
+    
+    // 1. Keyword matching (Priority)
+    // Find the first keyword that is contained in the payload
+    const keywordIndex = keywords.findIndex((keyword: string) => 
+      keyword && keyword.trim() !== '' && payloadStr.includes(keyword)
+    );
+
+    if (keywordIndex !== -1) {
+      outputIndex = keywordIndex;
+      console.log(`[Classifier] Keyword match: "${keywords[keywordIndex]}" -> Output Index ${outputIndex}`);
+    } else {
+      // 2. Numeric index fallback
+      let value = parseInt(String(payload), 10);
+      
+      // If payload is an object with 'button': true (trigger signal), treat as 1
+      if (typeof payload === 'object' && payload.button === true) {
+           value = 1;
+      }
+
+      if (!isNaN(value)) {
+          // 1-based to 0-based
+          outputIndex = value - 1;
+      } else {
+          // If not a number and no keyword match, warn and fallback to last output
+          console.warn(`[Classifier] No keyword match and invalid numeric input: ${payload}, defaulting to last output.`);
+          outputIndex = node.outputs.length - 1;
+      }
+    }
+
+    if (outputIndex < 0) outputIndex = 0;
+    
+    if (outputIndex >= node.outputs.length) {
+        // Fallback to the last port (Default/Else behavior)
+        outputIndex = node.outputs.length - 1;
+    }
+
+    // Update node data with last value, status AND activeIndex
+    setNodes(prev => prev.map(n => 
+      n.id === nodeId 
+        ? { ...n, data: { ...n.data, lastValue: typeof payload === 'object' ? JSON.stringify(payload) : payload, status: 'completed', activeIndex: outputIndex } } 
+        : n
+    ));
+
+    const targetOutput = node.outputs[outputIndex];
+    if (targetOutput) {
+        console.log(`[Classifier] Input ${payload} -> Output ${targetOutput.label} (${targetOutput.id})`);
+        triggerDataTransfer(nodeId, payload, 'output', isForced, targetOutput.id);
+    } else {
+        console.warn(`[Classifier] No output found for index ${outputIndex}`);
+    }
+
+  }, [triggerDataTransfer, setNodes]);
 
   const handleTrigger = useCallback(async (nodeId: string) => {
     const node = nodes.find(n => n.id === nodeId);
@@ -585,6 +710,8 @@ export function useFlowExecution({
       : n
     ));
 
+    setFlowStatus('running');
+    isStoppedRef.current = false;
     const payload = { button: true };
     triggerDataTransfer(nodeId, payload, 'output', true); // 手动触发强制执行
 
@@ -613,6 +740,8 @@ export function useFlowExecution({
       : n
     ));
 
+    setFlowStatus('running');
+    isStoppedRef.current = false;
     triggerDataTransfer(nodeId, { button: true }, 'output', true); // 手动触发强制执行
   }, [nodes, setNodes, triggerDataTransfer]);
 
@@ -830,6 +959,207 @@ export function useFlowExecution({
     }
   }, [nodes, setNodes, triggerDataTransfer, toast]);
 
+  const handleMindmapInfoExecution = useCallback(async (nodeId: string, payload: any, isForced: boolean = false) => {
+    const node = nodes.find(n => n.id === nodeId);
+    if (!node) return;
+
+    // 更新节点状态为运行中
+    setNodes(prev => prev.map(n =>
+      n.id === nodeId ? { ...n, data: { ...n.data, status: 'running' } } : n
+    ));
+
+    try {
+      // 确保存储已初始化
+      if (!mindmapStorage.getCurrentMap()) {
+        await mindmapStorage.init();
+      }
+      
+      let mapData = mindmapStorage.getCurrentMap();
+      let output = '';
+      let mapName = mapData?.name || '';
+      const infoType = node.data?.infoType || 'markdown';
+      
+      // 解析指令
+      let isCommand = false;
+      let targetMapName = '';
+      let targetNodeName = '';
+      let depth = 1;
+
+      // 简单的指令解析逻辑
+      // 支持格式：
+      // 1. "files" / "list" -> 文件列表
+      // 2. "map:名称" -> 切换/指定导图
+      // 3. "node:名称" -> 指定节点
+      // 4. "depth:数字" -> 指定深度
+      // 5. 纯文本如果匹配当前导图的节点名，视为指定节点
+      
+      if (typeof payload === 'string' && payload.trim()) {
+        const p = payload.trim();
+        
+        // 文件列表指令
+        if (/^(files|list|ls|文件列表|导图列表)$/i.test(p)) {
+            const maps = mindmapStorage.getMapsInCategory();
+            output = "思维导图文件列表:\n" + maps.map(m => `- ${m.name} (ID: ${m.id})`).join('\n');
+            isCommand = true;
+        } else {
+            // 解析参数
+            const mapMatch = p.match(/(?:map|导图)[:：]\s*([^\s]+)/i);
+            if (mapMatch) targetMapName = mapMatch[1];
+
+            const nodeMatch = p.match(/(?:node|节点)[:：]\s*([^\s]+)/i);
+            if (nodeMatch) {
+                targetNodeName = nodeMatch[1];
+            }
+
+            const depthMatch = p.match(/(?:depth|深度|level|层级)[:：]\s*(\d+)/i);
+            if (depthMatch) depth = parseInt(depthMatch[1], 10);
+            
+            // 如果没有显式指定 node，但 payload 匹配当前导图中的某个节点名
+            if (!targetNodeName && !mapMatch && !depthMatch && mapData) {
+                // 检查 payload 是否就是节点名
+                // 为了避免误匹配普通文本，这里要求完全匹配
+                if (mapData.nodes.some(n => n.name === p)) {
+                    targetNodeName = p;
+                    isCommand = true;
+                }
+            }
+
+            if (mapMatch || nodeMatch || depthMatch) {
+                isCommand = true;
+            }
+        }
+      }
+
+      if (isCommand && !output) {
+          // 如果指定了导图，先尝试切换上下文（仅用于本次查询）
+          if (targetMapName) {
+              const maps = mindmapStorage.getMapsInCategory();
+              const foundMap = maps.find(m => m.name === targetMapName);
+              if (foundMap) {
+                  mapData = foundMap;
+                  mapName = foundMap.name;
+              } else {
+                  output = `未找到名为 "${targetMapName}" 的思维导图。`;
+              }
+          }
+
+          if (!output) {
+              if (!mapData) {
+                  output = "未找到思维导图数据。";
+              } else {
+                  let targetNodeId = undefined;
+                  if (targetNodeName) {
+                      const targetNode = mapData.nodes.find(n => n.name === targetNodeName);
+                      if (targetNode) {
+                          targetNodeId = targetNode.id;
+                      } else {
+                           output = `在导图 "${mapName}" 中未找到节点 "${targetNodeName}"。`;
+                      }
+                  }
+
+                  if (!output) {
+                      // 使用 mindmapToMarkdown 获取指定结构
+                      // 如果指定了 targetNodeName，depth 默认为 1（只看直接子级）
+                      // 除非显式指定了 depth
+                      // 用户需求：获取指定某一个思维导图或节点的n级子节点，默认为1级
+                      
+                      const result = mindmapToMarkdown(mapData.nodes, {
+                          rootId: targetNodeId,
+                          maxDepth: depth
+                      });
+                      
+                      const depthStr = depth === Infinity ? "全部" : `${depth}级`;
+                      const targetStr = targetNodeName ? `节点 "${targetNodeName}"` : `导图 "${mapName}"`;
+                      
+                      if (!result) {
+                          output = `${targetStr} 下无内容 (深度: ${depthStr})`;
+                      } else {
+                          output = `${targetStr} 的子节点 (深度: ${depthStr}):\n${result}`;
+                      }
+                  }
+              }
+          }
+      } else if (!output) {
+        // 如果不是指令，或者是空指令，或者是触发器信号，则回退到 infoType 配置
+        if (mapData && mapData.nodes) {
+            mapName = mapData.name;
+            
+            switch (infoType) {
+            case 'json':
+                 output = JSON.stringify(mapData, null, 2);
+                 break;
+
+             case 'fileList':
+                 const maps = mindmapStorage.getMapsInCategory();
+                 output = "思维导图文件列表:\n" + maps.map(m => `- ${m.name} (ID: ${m.id})`).join('\n');
+                 break;
+                 
+             case 'root':
+                const rootNode = mapData.nodes.find((n: any) => n.isRoot);
+                output = rootNode ? `中心主题: ${rootNode.name}` : '未找到中心主题';
+                break;
+                
+            case 'summary':
+                // 获取根节点和一级子节点
+                const root = mapData.nodes.find((n: any) => n.isRoot);
+                if (root) {
+                const children = root.children?.map((id: string) => mapData!.nodes.find((n: any) => n.id === id)).filter(Boolean);
+                const childrenNames = children?.map((c: any) => c.name).join('、');
+                output = `思维导图摘要:\n中心主题: ${root.name}\n主要分支: ${childrenNames || '无'}`;
+                } else {
+                output = '未找到中心主题';
+                }
+                break;
+                
+            case 'structure':
+                const structure = mindmapToMarkdown(mapData.nodes);
+                output = structure;
+                break;
+
+            case 'markdown':
+            default:
+                const markdown = mindmapToMarkdown(mapData.nodes);
+                output = `思维导图结构:\n${markdown}\n`;
+                break;
+            }
+        } else {
+            output = '当前没有打开的思维导图或思维导图为空。';
+        }
+      }
+
+      // 模拟一点延迟以显示状态变化
+      await new Promise(resolve => setTimeout(resolve, 300));
+
+      setNodes(prev => prev.map(n =>
+        n.id === nodeId
+          ? {
+            ...n,
+            data: {
+              ...n.data,
+              status: 'completed',
+              value: output,
+              mapName: mapName,
+              lastUpdate: new Date().toLocaleTimeString()
+            }
+          }
+          : n
+      ));
+
+      triggerDataTransfer(nodeId, output, 'output', isForced);
+
+    } catch (error: any) {
+      console.error('Mindmap Info Execution Error:', error);
+      toast({
+        variant: 'destructive',
+        title: '获取思维导图信息失败',
+        description: error.message
+      });
+      setNodes(prev => prev.map(n =>
+        n.id === nodeId ? { ...n, data: { ...n.data, status: 'error', error: error.message } } : n
+      ));
+    }
+  }, [nodes, setNodes, triggerDataTransfer, toast]);
+
   return {
     triggerDataTransfer,
     handleAINodeExecution,
@@ -842,6 +1172,7 @@ export function useFlowExecution({
     handleTrigger,
     handleSimpleTrigger,
     handleTextDisplayExecution,
+    handleMindmapInfoExecution,
     flowStatus,
     runFlow,
     pauseFlow,

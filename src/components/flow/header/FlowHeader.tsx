@@ -205,10 +205,10 @@ export function FlowHeader({
                     value={newCategoryName}
                     onChange={(e) => setNewCategoryName(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleCreateCategorySubmit()}
-                    className="flex-1 px-2 py-1 text-sm border rounded bg-background focus:outline-none focus:ring-1 focus:ring-primary"
+                    className="flex-1 min-w-0 px-2 py-1 text-sm border rounded bg-background focus:outline-none focus:ring-1 focus:ring-primary"
                     style={theme ? { backgroundColor: theme.backgroundColor, borderColor: theme.nodeBorderColor, color: theme.textColor } : undefined}
                   />
-                  <Button size="sm" onClick={handleCreateCategorySubmit} style={theme ? { backgroundColor: theme.lineColor, color: '#fff' } : undefined}>创建</Button>
+                  <Button size="sm" onClick={handleCreateCategorySubmit} className="px-2 text-2xl" style={theme ? { backgroundColor: theme.lineColor, color: '#fff' } : undefined}>+</Button>
                 </div>
               </div>
               <div className="max-h-48 overflow-y-auto">
@@ -306,7 +306,7 @@ export function FlowHeader({
                     className="flex-1 px-2 py-1 text-sm border rounded bg-background focus:outline-none focus:ring-1 focus:ring-primary"
                     style={theme ? { backgroundColor: theme.backgroundColor, borderColor: theme.nodeBorderColor, color: theme.textColor } : undefined}
                   />
-                  <Button size="sm" onClick={handleCreateFlowSubmit} style={theme ? { backgroundColor: theme.lineColor, color: '#fff' } : undefined}>创建</Button>
+                  <Button size="sm" onClick={handleCreateFlowSubmit} className="px-2 text-2xl" style={theme ? { backgroundColor: theme.lineColor, color: '#fff' } : undefined}>+</Button>
                 </div>
               </div>
               <div className="max-h-64 overflow-y-auto">
@@ -353,25 +353,23 @@ export function FlowHeader({
                     )}
                     
                     <div className="flex items-center gap-1 ml-2 shrink-0">
-                       <button
+                      <button
                         onClick={(e) => { e.stopPropagation(); startEditListFlow(flow); }}
                         className="p-1 hover:bg-muted-foreground/20 rounded"
                         title="重命名流程"
                       >
                         <Edit2 size={12} />
                       </button>
-                      {flowsInCategory.length > 1 && (
-                        <button
-                          onClick={(e) => { 
-                            e.stopPropagation(); 
-                            onDeleteFlow(flow.id); 
-                          }}
-                          className="p-1 hover:bg-red-100 text-red-500 rounded"
-                          title="删除流程"
-                        >
-                          <Trash2 size={12} />
-                        </button>
-                      )}
+                      <button
+                        onClick={(e) => { 
+                          e.stopPropagation(); 
+                          onDeleteFlow(flow.id); 
+                        }}
+                        className="p-1 hover:bg-red-100 text-red-500 rounded"
+                        title="删除流程"
+                      >
+                        <Trash2 size={12} />
+                      </button>
                     </div>
                   </div>
                 ))}

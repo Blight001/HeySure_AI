@@ -15,6 +15,7 @@ import { existsSync, promises as fs } from 'fs';
 import { modelConfigs } from './pluginIPC';
 import { DATA_DIR, MESSAGES_FILE, ensureDataDir, DialogStorage, DialogMessage } from '../config/paths';
 import { dialogStore } from '../services/dialogStore';
+const vm = require('vm');
 
 // 广播对话变更事件
 const broadcastDialogChange = () => {
@@ -284,6 +285,7 @@ interface ModelConfig {
   enableWebSearch: boolean;
   enableWebScraping: boolean;
   enabled: boolean;
+  requestCode?: string;
 }
 
 /**
@@ -295,22 +297,55 @@ async function callCustomModelChat(
   sender?: WebContents,
   context?: { dialogId: string; messageId: string }
 ): Promise<any> {
-  const { apiKey, baseUrl, model, enableStreaming } = modelConfig;
-
-  // 构建 API 请求
-  const apiBase = baseUrl.replace(/\/$/, '');
-  const url = `${apiBase}/chat/completions`;
-
-  const requestBody = {
-    model: model,
-    messages: messages,
-    stream: enableStreaming,
-  };
-
-  console.log(`[CustomModel] Calling API: ${url} with model: ${model}, stream: ${enableStreaming}`);
+  const { apiKey, baseUrl, model, enableStreaming, requestCode } = modelConfig;
+  
+  let response;
 
   try {
-    const response = await fetch(url, {
+    if (requestCode && requestCode.trim()) {
+    console.log(`[CustomModel] Using custom request logic for ${model}`);
+    
+    // Create VM context
+    const sandbox = {
+      fetch: global.fetch,
+      console: console,
+      messages: JSON.parse(JSON.stringify(messages)),
+      modelConfig: JSON.parse(JSON.stringify(modelConfig)),
+      context: context || {}
+    };
+
+    // Execute user code
+    try {
+      const scriptCode = `
+        ${requestCode}
+        
+        if (typeof request !== 'function') {
+           throw new Error("Custom code must define a 'request' function");
+        }
+        
+        request({ messages, modelConfig }, { fetch });
+      `;
+      
+      response = await vm.runInNewContext(scriptCode, sandbox, { timeout: 30000 });
+      
+    } catch (err: any) {
+      console.error(`[CustomModel] Custom code execution error:`, err);
+      throw new Error(`Custom request failed: ${err.message}`);
+    }
+  } else {
+    // Default logic
+    const apiBase = baseUrl.replace(/\/$/, '');
+    const url = `${apiBase}/chat/completions`;
+
+    const requestBody = {
+      model: model,
+      messages: messages,
+      stream: enableStreaming,
+    };
+
+    console.log(`[CustomModel] Calling API: ${url} with model: ${model}, stream: ${enableStreaming}`);
+
+    response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -318,12 +353,13 @@ async function callCustomModelChat(
       },
       body: JSON.stringify(requestBody),
     });
+  }
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error(`[CustomModel] API error: ${response.status} ${errorText}`);
-      throw new Error(`API 请求失败: ${response.status} ${errorText}`);
-    }
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error(`[CustomModel] API error: ${response.status} ${errorText}`);
+    throw new Error(`API 请求失败: ${response.status} ${errorText}`);
+  }
 
     // 处理流式响应
     if (enableStreaming && sender && response.body) {

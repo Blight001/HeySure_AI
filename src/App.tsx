@@ -8,8 +8,6 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from '@/components/ui/toaster';
 import MainLayout from '@/components/layout/MainLayout';
 import HomePage from '@/pages/Home';
-import FlowEditorPage from '@/pages/FlowEditor';
-import MindmapPage from '@/pages/Mindmap';
 import PluginsPage from '@/pages/Plugins';
 import SettingsPage from '@/pages/Settings';
 import NotificationsPage from '@/pages/Notifications';

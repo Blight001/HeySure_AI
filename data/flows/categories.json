@@ -20,8 +20,17 @@
       "flowIds": [
         "7282fca9-ae25-47f7-8156-34eca79aaea0"
       ]
+    },
+    {
+      "id": "100e0f33-249e-400a-9a21-b352754bbab5",
+      "name": "对话流程",
+      "createdAt": 1771379922273,
+      "updatedAt": 1771379942846,
+      "flowIds": [
+        "9cc55346-44c2-481d-a735-bb2980d23f14"
+      ]
     }
   ],
-  "selectedCategoryId": "1b003aa4-223a-4412-99fb-d9f9671338f4",
-  "selectedFlowId": "7282fca9-ae25-47f7-8156-34eca79aaea0"
+  "selectedCategoryId": "100e0f33-249e-400a-9a21-b352754bbab5",
+  "selectedFlowId": "9cc55346-44c2-481d-a735-bb2980d23f14"
 }

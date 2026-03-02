@@ -29,6 +29,17 @@ import {
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { useClickOutside } from '@/hooks/useClickOutside';
 import { FileCategory, MindmapData, LayoutType, LocalModelConfig } from '../types';
 import { layoutEngine } from '../services/layout-engine';
@@ -146,6 +157,9 @@ export const MindmapHeader: React.FC<MindmapHeaderProps> = ({
   const themeDropdownRef = useClickOutside<HTMLDivElement>(() => setShowThemeDropdown(false));
   const permissionPanelRef = useClickOutside<HTMLDivElement>(() => setShowPermissionPanel(false));
 
+  // Delete alert state
+  const [deleteAlert, setDeleteAlert] = useState<{ type: 'category' | 'map', id: string, name: string } | null>(null);
+
   const buttonStyle = {
     color: currentTheme.textColor,
     borderColor: currentTheme.nodeBorderColor,
@@ -204,7 +218,7 @@ export const MindmapHeader: React.FC<MindmapHeaderProps> = ({
               {categories.map(category => (
                 <div 
                   key={category.id} 
-                  className={`flex items-center justify-between px-2 py-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer ${selectedCategory?.id === category.id ? 'bg-gray-100 dark:bg-gray-700' : ''}`}
+                  className={`group flex items-center justify-between px-2 py-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer ${selectedCategory?.id === category.id ? 'bg-gray-100 dark:bg-gray-700' : ''}`}
                   onClick={() => handleSwitchCategory(category.id)}
                 >
                   {isEditingCategory && editingCategoryName && category.id === selectedCategory?.id ? ( // simplistic check, ideally need editingCategoryId
@@ -227,11 +241,11 @@ export const MindmapHeader: React.FC<MindmapHeaderProps> = ({
                     </div>
                   )}
                   
-                  <div className="flex items-center opacity-0 group-hover:opacity-100">
+                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100">
                     <Button 
                       size="icon" 
                       variant="ghost" 
-                      className="h-6 w-6" 
+                      className="h-6 w-6 text-muted-foreground hover:text-foreground" 
                       onClick={(e) => {
                         e.stopPropagation();
                         startEditCategory(category);
@@ -245,7 +259,7 @@ export const MindmapHeader: React.FC<MindmapHeaderProps> = ({
                       className="h-6 w-6 text-red-500 hover:text-red-600" 
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleDeleteCategory(category.id);
+                        setDeleteAlert({ type: 'category', id: category.id, name: category.name });
                       }}
                     >
                       <Trash2 size={12} />
@@ -273,7 +287,7 @@ export const MindmapHeader: React.FC<MindmapHeaderProps> = ({
             <div className="absolute top-full left-0 mt-1 w-72 bg-white dark:bg-gray-800 rounded-md shadow-lg border z-50 p-2 max-h-[400px] overflow-y-auto">
               <div className="mb-2">
                 <div className="text-xs font-medium text-gray-500 mb-1 px-2">新建思维导图</div>
-                <div className="flex gap-1 px-2">
+                <div className="flex gap-1 px-2 items-center">
                   <input
                     type="text"
                     value={newMapName}
@@ -283,9 +297,9 @@ export const MindmapHeader: React.FC<MindmapHeaderProps> = ({
                     onClick={(e) => e.stopPropagation()}
                   />
                   <Button 
-                    size="sm" 
-                    variant="ghost" 
-                    className="h-7 w-7 p-0" 
+                    size="sm"
+                    variant="outline"
+                    className="h-7 px-2 text-xs"
                     onClick={(e) => {
                       e.stopPropagation();
                       handleCreateMap();
@@ -294,7 +308,7 @@ export const MindmapHeader: React.FC<MindmapHeaderProps> = ({
                       setShowMapDropdown(false);
                     }}
                   >
-                    <Plus size={14} />
+                    新建
                   </Button>
                 </div>
               </div>
@@ -341,7 +355,7 @@ export const MindmapHeader: React.FC<MindmapHeaderProps> = ({
                       className="h-6 w-6 text-red-500 hover:text-red-600"
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleDeleteMapById(map.id);
+                        setDeleteAlert({ type: 'map', id: map.id, name: map.name });
                       }}
                     >
                       <Trash2 size={12} />
@@ -540,6 +554,39 @@ export const MindmapHeader: React.FC<MindmapHeaderProps> = ({
           <span className="text-xs hidden sm:inline">保存</span>
         </Button>
       </div>
+
+      {/* Shared Delete Alert Dialog */}
+      <AlertDialog open={!!deleteAlert} onOpenChange={(open) => !open && setDeleteAlert(null)}>
+        <AlertDialogContent onClick={(e) => e.stopPropagation()}>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {deleteAlert?.type === 'category' ? '确认删除分类？' : '确认删除思维导图？'}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {deleteAlert?.type === 'category' 
+                ? `此操作将删除分类 "${deleteAlert?.name}" 及其包含的所有思维导图。此操作无法撤销。`
+                : `此操作将永久删除思维导图 "${deleteAlert?.name}"。此操作无法撤销。`
+              }
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>取消</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={() => {
+                if (deleteAlert?.type === 'category') {
+                  handleDeleteCategory(deleteAlert.id);
+                } else if (deleteAlert?.type === 'map') {
+                  handleDeleteMapById(deleteAlert.id);
+                }
+                setDeleteAlert(null);
+              }}
+              className="bg-red-500 hover:bg-red-600"
+            >
+              删除
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

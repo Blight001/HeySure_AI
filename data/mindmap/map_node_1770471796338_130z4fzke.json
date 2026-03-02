@@ -34,7 +34,7 @@
       "x": 200,
       "y": -70,
       "color": "#3b82f6",
-      "duplicateIndex": 3
+      "duplicateIndex": 4
     },
     {
       "id": "node_1771315737957_0b0zuonis",
@@ -48,8 +48,7 @@
       "children": [],
       "x": 200,
       "y": 30,
-      "color": "#3b82f6",
-      "duplicateIndex": 2
+      "color": "#3b82f6"
     }
   ],
   "version": 1,
@@ -85,8 +84,8 @@
     "allowAiEdit": true
   },
   "viewState": {
-    "scale": 1.2,
-    "x": 230.5,
-    "y": 364
+    "scale": 0.8,
+    "x": 310.0952380952381,
+    "y": 399.77777777777766
   }
 }

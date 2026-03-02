@@ -12,7 +12,7 @@
     "enableWebScraping": false,
     "enabled": true,
     "createdAt": "2026-02-02T07:29:35.673Z",
-    "updatedAt": "2026-02-03T04:31:29.870Z"
+    "updatedAt": "2026-02-19T03:48:47.471Z"
   },
   "model-1770101187607": {
     "id": "model-1770101187607",
@@ -27,7 +27,7 @@
     "enableWebScraping": false,
     "enabled": true,
     "createdAt": "2026-02-03T06:48:45.885Z",
-    "updatedAt": "2026-02-03T06:48:47.420Z"
+    "updatedAt": "2026-02-18T11:04:07.514Z"
   },
   "model-1770101797685": {
     "id": "model-1770101797685",
@@ -42,7 +42,7 @@
     "enableWebScraping": false,
     "enabled": true,
     "createdAt": "2026-02-03T06:56:54.763Z",
-    "updatedAt": "2026-02-03T06:56:56.341Z"
+    "updatedAt": "2026-02-18T11:04:12.624Z"
   },
   "model-1770703248800": {
     "id": "model-1770703248800",
@@ -57,6 +57,6 @@
     "enableWebScraping": false,
     "enabled": true,
     "createdAt": "2026-02-10T06:02:17.638Z",
-    "updatedAt": "2026-02-10T06:02:19.027Z"
+    "updatedAt": "2026-02-18T11:04:15.101Z"
   }
 }

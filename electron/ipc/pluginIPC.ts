@@ -15,7 +15,8 @@ import {
   ModelConfig,
   DATA_DIR,
   MODELS_FILE,
-  ensureDataDir
+  ensureDataDir,
+  getModelScriptFile
 } from '../config/paths';
 
 // 导出给其他模块使用
@@ -27,9 +28,28 @@ export const modelConfigs: Map<string, ModelConfig> = new Map();
 async function saveModelConfigs(): Promise<void> {
   await ensureDataDir();
   const data: Record<string, ModelConfig> = {};
-  modelConfigs.forEach((config, modelId) => {
-    data[modelId] = config;
-  });
+  
+  for (const [modelId, config] of modelConfigs.entries()) {
+    // 复制配置对象，避免修改内存中的数据
+    const configToSave = { ...config };
+    
+    // 如果有自定义请求代码，保存到独立文件
+    if (configToSave.requestCode) {
+      try {
+        const scriptPath = getModelScriptFile(modelId);
+        await fs.writeFile(scriptPath, configToSave.requestCode, 'utf-8');
+        console.log(`Saved request code for model ${modelId} to ${scriptPath}`);
+        
+        // 从 JSON 中移除代码，避免冗余
+        delete configToSave.requestCode;
+      } catch (err) {
+        console.error(`Failed to save request code for model ${modelId}:`, err);
+      }
+    }
+    
+    data[modelId] = configToSave;
+  }
+  
   await fs.writeFile(MODELS_FILE, JSON.stringify(data, null, 2), 'utf-8');
 }
 
@@ -42,9 +62,25 @@ async function loadModelConfigs(): Promise<void> {
     try {
       const content = await fs.readFile(MODELS_FILE, 'utf-8');
       const data = JSON.parse(content);
-      Object.entries(data).forEach(([modelId, config]) => {
-        modelConfigs.set(modelId, config as ModelConfig);
-      });
+      
+      for (const [modelId, config] of Object.entries(data)) {
+        const modelConfig = config as ModelConfig;
+        
+        // 尝试加载独立的代码文件
+        const scriptPath = getModelScriptFile(modelId);
+        if (existsSync(scriptPath)) {
+          try {
+            const code = await fs.readFile(scriptPath, 'utf-8');
+            modelConfig.requestCode = code;
+            console.log(`Loaded request code for model ${modelId} from ${scriptPath}`);
+          } catch (err) {
+            console.error(`Failed to load request code for model ${modelId}:`, err);
+          }
+        }
+        
+        modelConfigs.set(modelId, modelConfig);
+      }
+      
       console.log('已加载模型配置:', Object.keys(data));
     } catch (error) {
       console.error('加载模型配置失败:', error);
@@ -106,6 +142,18 @@ export function pluginIPC() {
     try {
       if (modelConfigs.has(modelId)) {
         modelConfigs.delete(modelId);
+        
+        // 尝试删除独立的脚本文件
+        try {
+          const scriptPath = getModelScriptFile(modelId);
+          if (existsSync(scriptPath)) {
+            await fs.unlink(scriptPath);
+            console.log(`Deleted script file for model ${modelId}`);
+          }
+        } catch (err) {
+          console.warn(`Failed to delete script file for model ${modelId}:`, err);
+        }
+        
         await saveModelConfigs(); // 保存到文件
         return { success: true };
       } else {

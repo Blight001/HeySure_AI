@@ -4,7 +4,7 @@ export type { FlowNode, FlowEdge, FlowNodeType, NodePort };
 
 // 拖拽数据类型
 export interface DragData {
-  type: 'basic' | 'condition' | 'parallel' | 'aggregate' | 'aiChat' | 'python' | 'model' | 'canvas-node-move' | 'connection' | 'switch' | 'trigger' | 'simpleTrigger';
+  type: 'basic' | 'aiChat' | 'python' | 'model' | 'canvas-node-move' | 'connection' | 'switch' | 'trigger' | 'simpleTrigger';
   nodeType?: FlowNodeType;
   component?: PythonComponent;
   model?: ModelConfig;
@@ -75,12 +75,7 @@ export const BASIC_NODE_TYPES: NodeTypeInfo[] = [
   { type: 'end', label: '结束', icon: '🔴', category: 'basic', defaultInputs: [{ id: 'input', type: 'input', label: '输入' }], defaultOutputs: [] },
   { type: 'userInput', label: '用户输入', icon: '👤', category: 'basic', defaultInputs: [], defaultOutputs: [{ id: 'output', type: 'output', label: '输出' }] },
   { type: 'textDisplay', label: '文本显示', icon: '📄', category: 'basic', defaultInputs: [{ id: 'input', type: 'input', label: '输入' }], defaultOutputs: [{ id: 'output', type: 'output', label: '输出' }] },
-];
-
-export const LOGIC_NODE_TYPES: NodeTypeInfo[] = [
-  { type: 'condition', label: '条件分支', icon: '🔀', category: 'logic', defaultInputs: [{ id: 'input', type: 'input', label: '输入' }], defaultOutputs: [{ id: 'true', type: 'output', label: '是' }, { id: 'false', type: 'output', label: '否' }] },
-  { type: 'parallel', label: '并行执行', icon: '⚡', category: 'logic', defaultInputs: [{ id: 'input', type: 'input', label: '输入' }], defaultOutputs: [{ id: 'output1', type: 'output', label: '分支1' }, { id: 'output2', type: 'output', label: '分支2' }] },
-  { type: 'aggregate', label: '聚合汇总', icon: '📥', category: 'logic', defaultInputs: [{ id: 'input1', type: 'input', label: '输入1' }, { id: 'input2', type: 'input', label: '输入2' }], defaultOutputs: [{ id: 'output', type: 'output', label: '输出' }] },
+  { type: 'classifier', label: '分类器', icon: '🔀', category: 'basic', defaultInputs: [{ id: 'input', type: 'input', label: '信号输入' }], defaultOutputs: [{ id: 'output1', type: 'output', label: '输出 1' }, { id: 'output2', type: 'output', label: '输出 2' }, { id: 'output3', type: 'output', label: '输出 3' }] },
 ];
 
 // ============ 节点创建工厂函数 ============
@@ -96,48 +91,6 @@ export function createBasicNode(type: FlowNodeType, position: { x: number; y: nu
   };
 }
 
-export function createConditionNode(position: { x: number; y: number }): FlowNode {
-  return {
-    id: generateId(),
-    type: 'condition',
-    position,
-    data: { label: '条件分支' },
-    inputs: [{ id: 'input', type: 'input', label: '输入' }],
-    outputs: [
-      { id: 'true', type: 'output', label: '是' },
-      { id: 'false', type: 'output', label: '否' }
-    ]
-  };
-}
-
-export function createParallelNode(position: { x: number; y: number }): FlowNode {
-  return {
-    id: generateId(),
-    type: 'parallel',
-    position,
-    data: { label: '并行执行' },
-    inputs: [{ id: 'input', type: 'input', label: '输入' }],
-    outputs: [
-      { id: 'output1', type: 'output', label: '分支1' },
-      { id: 'output2', type: 'output', label: '分支2' }
-    ]
-  };
-}
-
-export function createAggregateNode(position: { x: number; y: number }): FlowNode {
-  return {
-    id: generateId(),
-    type: 'aggregate',
-    position,
-    data: { label: '聚合汇总' },
-    inputs: [
-      { id: 'input1', type: 'input', label: '输入1' },
-      { id: 'input2', type: 'input', label: '输入2' }
-    ],
-    outputs: [{ id: 'output', type: 'output', label: '输出' }]
-  };
-}
-
 export function createAIChatNode(position: { x: number; y: number }, model?: ModelConfig): FlowNode {
   return {
     id: generateId(),
@@ -147,6 +100,7 @@ export function createAIChatNode(position: { x: number; y: number }, model?: Mod
       label: model?.name || 'AI对话',
       modelId: model?.id,
       model: model?.model,
+      systemPrompt: '', // 系统提示词
       useMemory: true, // 默认开启上下文记忆
       messages: [], // 对话历史
     },
@@ -240,19 +194,38 @@ export function createTriggerNode(position: { x: number; y: number }, label: str
 }
 
 // ============ 简单触发按钮节点创建函数 ============
-export function createSimpleTriggerNode(position: { x: number; y: number }, label: string = '按钮'): FlowNode {
+export function createSimpleTriggerNode(position: { x: number; y: number }, label?: string): FlowNode {
   return {
     id: generateId(),
     type: 'simpleTrigger',
     position,
     data: {
-      label,
+      label: label || '触发',
       triggerCount: 0,
       lastTriggerTime: undefined
     },
     inputs: [],
     outputs: [
       { id: 'output', type: 'output', label: '信号' }
+    ]
+  };
+}
+
+export function createMindmapInfoNode(position: { x: number; y: number }): FlowNode {
+  return {
+    id: generateId(),
+    type: 'mindmapInfo',
+    position,
+    data: {
+      label: '思维导图信息',
+      status: 'idle',
+      infoType: 'markdown'
+    },
+    inputs: [
+      { id: 'input', type: 'input', label: '触发输入', allowMultiple: true }
+    ],
+    outputs: [
+      { id: 'output', type: 'output', label: '导图数据' }
     ]
   };
 }
@@ -274,4 +247,3 @@ export function createEdge(
     style: { stroke: '#64748b', strokeWidth: 2 }
   };
 }
-

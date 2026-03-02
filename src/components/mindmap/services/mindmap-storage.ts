@@ -412,6 +412,52 @@ export class MindmapStorage {
     return newMap;
   }
 
+  async deleteMap(mapId: string): Promise<boolean> {
+    // Find which category contains this map
+    let targetCategory: FileCategory | undefined;
+    for (const cat of this.categoryData.categories) {
+      if (cat.mapIds.includes(mapId)) {
+        targetCategory = cat;
+        break;
+      }
+    }
+
+    if (!targetCategory) return false;
+
+    // Remove from category
+    targetCategory.mapIds = targetCategory.mapIds.filter(id => id !== mapId);
+    
+    // Remove from maps storage
+    delete this.categoryData.maps[mapId];
+
+    // If we deleted the current map, we need to switch to another one
+    if (this.currentMapId === mapId) {
+      if (targetCategory.mapIds.length > 0) {
+        // Switch to the first available map in the same category
+        await this.loadMapFromCategory(targetCategory.id);
+      } else {
+        // If category is now empty, create a new default map
+        const newMap = this.createEmptyMap('新思维导图');
+        this.categoryData.maps[newMap.id] = newMap;
+        targetCategory.mapIds.push(newMap.id);
+        
+        this.currentMapId = newMap.id;
+        this.categoryData.selectedMapId = newMap.id;
+        this.currentMap = newMap;
+        this.rebuildIndex();
+      }
+    }
+
+    await this.save();
+    
+    // Update snapshot
+    if (this.currentMap) {
+      this.lastSavedSnapshot = JSON.stringify(this.currentMap);
+    }
+    
+    return true;
+  }
+
   async deleteCurrentMap(): Promise<boolean> {
     if (!this.currentMapId || !this.categoryData.selectedCategoryId) return false;
 

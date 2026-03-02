@@ -9,12 +9,16 @@ import { electronApp, is, optimizer } from '@electron-toolkit/utils';
 import { WindowManager } from './window/windowManager';
 import { setupIPCHandlers } from './ipc';
 import { initModels } from './ipc/pluginIPC';
+import { ensureDataDir } from './config/paths';
 
 app.whenReady().then(async () => {
   console.log('[Main] App Starting...');
   console.log('[Main] Environment:', is.dev ? 'Development' : 'Production');
   console.log('[Main] User Data Path:', app.getPath('userData'));
   console.log('[Main] App Path:', app.getAppPath());
+
+  // 确保数据目录存在（如果是首次运行，从资源复制数据）
+  await ensureDataDir();
   
   // 设置应用程序名称
   electronApp.setAppUserModelId('com.heysure.ai');

@@ -3853,7 +3853,7 @@
     "isTemplate": false
   },
   "createdAt": 1771228620084,
-  "updatedAt": 1771337599765,
+  "updatedAt": 1771990225480,
   "aiConfig": {
     "selectedModelId": "model-1770017328240",
     "allowReadFlow": true,
@@ -3861,10 +3861,10 @@
     "allowAiAutoExecution": true
   },
   "viewState": {
-    "zoom": 0.3,
+    "zoom": 0.7,
     "pan": {
-      "x": -174.13383283383348,
-      "y": 54.132858807859066
+      "x": 5.7210567210551915,
+      "y": 138.31000388500445
     },
     "animationSpeed": 0.01,
     "showGrid": true,

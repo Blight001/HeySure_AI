@@ -4,7 +4,7 @@
     "title": "你好",
     "type": "single",
     "createdAt": 1770473167855,
-    "updatedAt": 1770558722370,
+    "updatedAt": 1771392584321,
     "isPinned": false,
     "messages": [
       {
@@ -55,6 +55,32 @@
             "promptTokens": 102,
             "completionTokens": 253,
             "totalTokens": 355
+          },
+          "responseTime": 0
+        }
+      },
+      {
+        "id": "b449f1e7-0a16-4eea-8a9b-d47ed74df412",
+        "dialogId": "f4df7c88-6485-4bda-8e68-3c7d80801069",
+        "role": "user",
+        "content": "你好",
+        "timestamp": 1771392584321,
+        "metadata": {}
+      },
+      {
+        "id": "428497f8-b74b-47f4-a17a-c39e103d73bc",
+        "dialogId": "f4df7c88-6485-4bda-8e68-3c7d80801069",
+        "role": "assistant",
+        "aiId": "model-1770017328240",
+        "content": "你好！😊  \n不过需要澄清一下：我是 **通义千问（Qwen）**，由阿里巴巴集团研发的超大规模语言模型。刚才你提到“Kimi”，那是月之暗面（Moonshot）开发的另一款AI助手，和我不同哦～  \n\n我是通义千问，你可以叫我Qwen，或者亲切地叫“千问”。我擅长回答问题、创作文字（如写故事、公文、邮件、剧本）、逻辑推理、编程、多语言支持等，也乐于陪你思考、学习或放松。\n\n有什么想聊的、想问的、想一起完成的任务？我随时在这儿～ 🌟",
+        "timestamp": 1771392590623,
+        "metadata": {
+          "streamed": true,
+          "modelId": "qwen-plus",
+          "tokenUsage": {
+            "promptTokens": 152,
+            "completionTokens": 109,
+            "totalTokens": 261
           },
           "responseTime": 0
         }
@@ -519,6 +545,42 @@
             "promptTokens": 4154,
             "completionTokens": 13,
             "totalTokens": 4167
+          },
+          "responseTime": 0
+        }
+      }
+    ]
+  },
+  "floating_8cb34f33-16e4-4801-a955-660f22a3ab56": {
+    "id": "floating_8cb34f33-16e4-4801-a955-660f22a3ab56",
+    "title": "思维导图AI",
+    "type": "single",
+    "createdAt": 1771496579386,
+    "updatedAt": 1771496579386,
+    "isPinned": false,
+    "messages": [
+      {
+        "id": "180e5d92-8ebe-4f50-9c6a-9eee1ab3b774",
+        "dialogId": "floating_8cb34f33-16e4-4801-a955-660f22a3ab56",
+        "role": "user",
+        "content": "你好\n\n思维导图结构:\n└─ 生活日常 [ID: 1]\n  ├─ 日常操作 [ID: 2]\n    └─ 看下服务器使用情况 [ID: 3]\n      ├─ 打开浏览器 [ID: 4]\n      ├─ 观察收藏栏 [ID: 5]\n      ├─ 点击即梦AI [ID: 6]\n      ├─ 输入暗号：哈机密 [ID: 7]\n      └─ 点击进入 [ID: 8]\n  └─ 基础操作 [ID: 9]\n    └─ 打开浏览器 [ID: 10]\n      ├─ 方法1 [ID: 11]\n        └─ 点击右侧任务栏中edge图标 [ID: 12]\n          └─ 打开香蕉平台网页测试 [ID: 13]\n      ├─ 方法3 [ID: 14]\n        └─ 开始菜单搜索‘Edge’并点击 [ID: 15]\n          └─ 打开浏览器 [ID: 16]\n      └─ 方法4 [ID: 17]\n        └─ 双击桌面Edge快捷方式 [ID: 18]\n请简洁回答用户请求\n如需修改思维导图在尾部加上对应格式的修改请求。\n修改请求格式说明:\n1. 修改节点名称: {\"type\": \"rename\", \"nodeId\": \"序号\", \"name\": \"新名称\"}\n2. 添加子节点: {\"type\": \"add\", \"parentId\": \"父序号\", \"name\": \"节点名称\"}\n3. 删除节点: {\"type\": \"delete\", \"nodeId\": \"序号\"}\n4. 移动节点: {\"type\": \"move\", \"nodeId\": \"序号\", \"newParentId\": \"新父序号\", \"index\": 0} (index可选)\n例如:[{\"type\": \"add\", \"parentId\": \"1\", \"name\": \"\"}]",
+        "timestamp": 1771496579386,
+        "metadata": {}
+      },
+      {
+        "id": "7d311cc1-6d64-46b7-9d8a-3eb8da511603",
+        "dialogId": "floating_8cb34f33-16e4-4801-a955-660f22a3ab56",
+        "role": "assistant",
+        "aiId": "model-1770703248800",
+        "content": "你好！  \n根据你的思维导图结构，已理解内容。如需修改，请提供具体修改要求，我将按格式返回修改请求。\n\n示例：  \n若要添加“查看内存使用率”作为“看下服务器使用情况”的子节点，可请求：  \n[{\"type\": \"add\", \"parentId\": \"3\", \"name\": \"查看内存使用率\"}]",
+        "timestamp": 1771496581630,
+        "metadata": {
+          "streamed": true,
+          "modelId": "qwen-flash",
+          "tokenUsage": {
+            "promptTokens": 447,
+            "completionTokens": 78,
+            "totalTokens": 525
           },
           "responseTime": 0
         }
