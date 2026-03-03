@@ -45,7 +45,7 @@ class BackupScript:
         self.project_root = Path(__file__).parent.parent.resolve()
 
         # backup 文件夹路径
-        self.backup_dir = self.project_root / "backup"
+        self.backup_dir = Path(__file__).parent.resolve() / "backup"
 
         # 备份清单文件路径
         self.manifest_file = self.backup_dir / "manifest.json"
