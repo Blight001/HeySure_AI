@@ -13,6 +13,7 @@ import { Send, Clock, Zap, Play, Pause, StopCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import type { ThemeConfig } from '@/types/theme';
+import { BaseNodeContainer } from './common/BaseNodeContainer';
 
 // 触发器配置
 export interface TriggerConfig {
@@ -242,20 +243,81 @@ export function TriggerNodeContent({
     }
   };
 
-  return (
-    <div className="flex flex-col gap-2 p-2 min-w-[160px]" style={theme ? { color: theme.textColor } : undefined}>
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Zap size={14} className={isTriggering ? 'text-blue-500 animate-pulse' : 'text-muted-foreground'} style={!isTriggering && theme ? { color: theme.textColor } : undefined} />
-          <span className="text-sm font-medium">{data.label || '触发器'}</span>
+  const footer = (
+    <div className="flex items-center justify-between gap-2">
+      {triggerType === 'manual' ? (
+        <Button 
+          size="sm" 
+          className="w-full h-7 text-xs" 
+          onClick={handleTrigger}
+          disabled={isTriggering}
+          style={theme ? { 
+            backgroundColor: isTriggering ? theme.nodeBorderColor : theme.lineColor, 
+            color: '#fff',
+            opacity: isTriggering ? 0.7 : 1
+          } : undefined}
+        >
+          <Send size={12} className="mr-1" />
+          {isTriggering ? '触发中...' : '立即触发'}
+        </Button>
+      ) : (
+        <div className="flex items-center gap-1 w-full">
+          {timerStatus === 'running' ? (
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="flex-1 h-7 text-xs" 
+              onClick={pauseTimer}
+              style={theme ? { borderColor: theme.nodeBorderColor, color: theme.textColor } : undefined}
+            >
+              <Pause size={12} className="mr-1" />
+              暂停
+            </Button>
+          ) : (
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="flex-1 h-7 text-xs" 
+              onClick={startTimer}
+              style={theme ? { borderColor: theme.nodeBorderColor, color: theme.textColor } : undefined}
+            >
+              <Play size={12} className="mr-1" />
+              {timerStatus === 'paused' ? '继续' : '开始'}
+            </Button>
+          )}
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="h-7 w-7" 
+            onClick={stopTimer}
+            title="重置"
+            style={theme ? { color: theme.textColor } : undefined}
+          >
+            <StopCircle size={14} />
+          </Button>
         </div>
-        <Badge variant="outline" className="text-xs px-1.5 py-0" style={theme ? { borderColor: theme.nodeBorderColor, color: theme.textColor } : undefined}>
-          {triggerType === 'manual' ? '手动' : '定时'}
-        </Badge>
-      </div>
+      )}
+    </div>
+  );
 
+  return (
+    <BaseNodeContainer
+      label={data.label || '触发器'}
+      icon={<Zap size={14} className={isTriggering ? 'text-blue-500 animate-pulse' : 'text-muted-foreground'} style={!isTriggering && theme ? { color: theme.textColor } : undefined} />}
+      theme={theme}
+      status={triggerType === 'manual' ? 'manual' : 'scheduled'}
+      statusLabels={{ manual: '手动', scheduled: '定时' }}
+      statusColors={{ 
+        manual: 'bg-blue-500 text-white', 
+        scheduled: 'bg-purple-500 text-white' 
+      }}
+      footer={footer}
+      width="w-auto"
+      className="min-w-[160px]"
+      contentClassName="p-2 pt-0"
+    >
       {triggerType === 'scheduled' && (
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-1 mb-2">
           <div className="flex items-center justify-between text-xs text-muted-foreground" style={theme ? { color: theme.textColor, opacity: 0.8 } : undefined}>
             <div className="flex items-center gap-1">
               <Clock size={12} />
@@ -276,67 +338,12 @@ export function TriggerNodeContent({
         </div>
       )}
 
-      <div className="flex items-center justify-between gap-2">
-        {triggerType === 'manual' ? (
-          <Button 
-            size="sm" 
-            className="w-full h-7 text-xs" 
-            onClick={handleTrigger}
-            disabled={isTriggering}
-            style={theme ? { 
-              backgroundColor: isTriggering ? theme.nodeBorderColor : theme.lineColor, 
-              color: '#fff',
-              opacity: isTriggering ? 0.7 : 1
-            } : undefined}
-          >
-            <Send size={12} className="mr-1" />
-            {isTriggering ? '触发中...' : '立即触发'}
-          </Button>
-        ) : (
-          <div className="flex items-center gap-1 w-full">
-            {timerStatus === 'running' ? (
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="flex-1 h-7 text-xs" 
-                onClick={pauseTimer}
-                style={theme ? { borderColor: theme.nodeBorderColor, color: theme.textColor } : undefined}
-              >
-                <Pause size={12} className="mr-1" />
-                暂停
-              </Button>
-            ) : (
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="flex-1 h-7 text-xs" 
-                onClick={startTimer}
-                style={theme ? { borderColor: theme.nodeBorderColor, color: theme.textColor } : undefined}
-              >
-                <Play size={12} className="mr-1" />
-                {timerStatus === 'paused' ? '继续' : '开始'}
-              </Button>
-            )}
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="h-7 w-7" 
-              onClick={stopTimer}
-              title="重置"
-              style={theme ? { color: theme.textColor } : undefined}
-            >
-              <StopCircle size={14} />
-            </Button>
-          </div>
-        )}
-      </div>
-
       {triggerCount > 0 && (
         <div className="flex items-center justify-between text-[10px] text-muted-foreground pt-1 border-t" style={theme ? { borderColor: theme.nodeBorderColor, color: theme.textColor, opacity: 0.7 } : undefined}>
           <span>已触发: {triggerCount}次</span>
           {lastTriggerTime && <span>{lastTriggerTime}</span>}
         </div>
       )}
-    </div>
+    </BaseNodeContainer>
   );
 }

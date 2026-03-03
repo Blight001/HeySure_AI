@@ -12,7 +12,9 @@ Thumbs.db
 # 你的项目中可能需要额外忽略的
 *.pyc
 __pycache__/
-python/
+python/env/
+python/venv/
+python/.venv/
 
 # IDE
 .idea/

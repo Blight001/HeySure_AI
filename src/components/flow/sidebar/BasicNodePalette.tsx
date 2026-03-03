@@ -22,6 +22,7 @@ const BASIC_NODES: { type: FlowNodeType; label: string; icon: string }[] = [
   { type: 'textDisplay', label: '文本显示', icon: '📄' },
   { type: 'classifier', label: '分类器', icon: '🔀' },
   { type: 'mindmapInfo', label: '导图信息', icon: '🧠' },
+  { type: 'workflowRunner', label: '操作流程', icon: '⚙️' },
 ];
 
 interface BasicNodePaletteProps {

@@ -28,6 +28,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { useState } from 'react';
 import type { ModelConfig } from '../core/types';
+import type { ThemeConfig } from '@/types/theme';
+import { BaseNodeContainer } from './common/BaseNodeContainer';
 
 // Token 统计信息
 interface TokenStats {
@@ -37,8 +39,6 @@ interface TokenStats {
   completionTokens: number;    // 累计回复 tokens
   requestCount: number;        // 对话次数
 }
-
-import type { ThemeConfig } from '@/types/theme';
 
 interface AINodeContentProps {
   label: string;
@@ -52,6 +52,7 @@ interface AINodeContentProps {
   onModelChange?: (model: ModelConfig) => void;
   onPromptChange?: (prompt: string) => void; // 修改提示词的回调
   theme?: ThemeConfig;
+  status?: string;
 }
 
 // 格式化大数字
@@ -73,7 +74,8 @@ export function AINodeContent({
   onClearHistory,
   onModelChange,
   onPromptChange,
-  theme
+  theme,
+  status
 }: AINodeContentProps) {
   const currentModel = models.find((model) => model.id === modelId);
   const displayLabel = currentModel?.name || label;
@@ -90,49 +92,140 @@ export function AINodeContent({
     setIsPromptOpen(false);
   };
 
-  return (
-    <div className="flex flex-col gap-1 mb-2">
-      <div className="flex items-center gap-2">
-        <span className="text-lg">🤖</span>
-        {models.length > 0 ? (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button
-                type="button"
-                className="font-medium text-sm truncate inline-flex items-center gap-1 hover:text-primary"
-                onMouseDown={(e) => e.stopPropagation()}
-                onClick={(e) => e.stopPropagation()}
-                style={{ color: theme?.textColor }}
-              >
-                <span className="truncate max-w-[140px]">{displayLabel}</span>
-                <ChevronDown className="w-3 h-3 text-muted-foreground" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="max-h-60 overflow-y-auto">
-              {models.map((model) => (
-                <DropdownMenuItem
-                  key={model.id}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onModelChange?.(model);
-                  }}
-                >
-                  <span className="truncate">{model.name}</span>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        ) : (
-          <span className="font-medium text-sm truncate" style={{ color: theme?.textColor }}>{displayLabel}</span>
-        )}
+  const headerLabel = models.length > 0 ? (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button
+          type="button"
+          className="font-medium text-sm truncate inline-flex items-center gap-1 hover:text-primary"
+          onMouseDown={(e) => e.stopPropagation()}
+          onClick={(e) => e.stopPropagation()}
+          style={{ color: theme?.textColor }}
+        >
+          <span className="truncate max-w-[140px]">{displayLabel}</span>
+          <ChevronDown className="w-3 h-3 text-muted-foreground" />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start" className="max-h-60 overflow-y-auto">
+        {models.map((model) => (
+          <DropdownMenuItem
+            key={model.id}
+            onClick={(e) => {
+              e.stopPropagation();
+              onModelChange?.(model);
+            }}
+          >
+            <span className="truncate">{model.name}</span>
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  ) : (
+    <span className="font-medium text-sm truncate" style={{ color: theme?.textColor }}>{displayLabel}</span>
+  );
+
+  // 确定 title 属性，如果 displayLabel 是字符串则作为默认 title，否则使用 displayLabel（如果它也是字符串，虽然这里我们已经处理了 headerLabel）
+  // 实际上 headerLabel 是 ReactNode，而 title 需要 string。
+  // 我们应该使用 displayLabel (它是 string) 作为 title。
+  const tooltipTitle = typeof displayLabel === 'string' ? displayLabel : undefined;
+
+  const headerActions = (
+    <>
+      <Button
+        variant="ghost"
+        size="sm"
+        className="h-6 px-2 text-xs"
+        onClick={handleOpenPrompt}
+        title="设置系统提示词"
+        style={theme ? { color: theme.textColor } : undefined}
+      >
+        <Settings2 className="w-3 h-3" />
+      </Button>
+      {onClearHistory && (
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-6 px-2 text-xs"
+          onClick={onClearHistory}
+          title="清除历史消息"
+          style={theme ? { color: theme.textColor } : undefined}
+        >
+          <Trash2 className="w-3 h-3" />
+        </Button>
+      )}
+    </>
+  );
+
+  const footerContent = tokenStats && (
+    <div className="space-y-1">
+      {/* 当前对话消耗 */}
+      <div 
+        className={`flex items-center gap-1.5 text-[10px] px-1.5 py-0.5 rounded ${!theme ? 'bg-primary/5 border border-primary/10' : ''}`}
+        style={theme ? {
+          backgroundColor: `${theme.lineColor}0D`, // 5% opacity
+          borderColor: `${theme.lineColor}1A`, // 10% opacity
+          borderWidth: '1px'
+        } : undefined}
+      >
+        <Zap className={`w-3 h-3 ${!theme ? 'text-yellow-500' : ''}`} style={theme ? { color: theme.lineColor } : undefined} />
+        <span className={!theme ? "text-muted-foreground" : ""} style={theme ? { color: theme.textColor, opacity: 0.7 } : undefined}>本次:</span>
+        <span className={`font-medium ${!theme ? 'text-primary' : ''}`} style={theme ? { color: theme.textColor } : undefined}>{formatNumber(tokenStats.currentTokens)}</span>
       </div>
 
+      {/* 累计统计 */}
+      <div className="flex items-center gap-1.5">
+        <div 
+          className={`flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded flex-1 ${!theme ? 'bg-muted/50' : ''}`}
+          style={theme ? { backgroundColor: `${theme.nodeBorderColor}33` } : undefined} // 20% opacity
+        >
+          <BarChart3 className={`w-3 h-3 ${!theme ? 'text-muted-foreground' : ''}`} style={theme ? { color: theme.textColor, opacity: 0.7 } : undefined} />
+          <span className={!theme ? "text-muted-foreground" : ""} style={theme ? { color: theme.textColor, opacity: 0.7 } : undefined}>累计:</span>
+          <span className="font-medium" style={theme ? { color: theme.textColor } : undefined}>{formatNumber(tokenStats.totalTokens)}</span>
+        </div>
+        <div className={`text-[10px] ${!theme ? 'text-muted-foreground' : ''}`} style={theme ? { color: theme.textColor, opacity: 0.7 } : undefined}>
+          {tokenStats.requestCount}次
+        </div>
+      </div>
+
+      {/* 分布详情 */}
+      <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
+        <span 
+          className={`px-1 rounded ${!theme ? 'bg-blue-50 text-blue-600' : ''}`}
+          style={theme ? { backgroundColor: `${theme.lineColor}1A`, color: theme.lineColor } : undefined}
+        >
+          P: {formatNumber(tokenStats.promptTokens)}
+        </span>
+        <span 
+          className={`px-1 rounded ${!theme ? 'bg-green-50 text-green-600' : ''}`}
+          style={theme ? { backgroundColor: `${theme.nodeBorderColor}33`, color: theme.textColor } : undefined}
+        >
+          C: {formatNumber(tokenStats.completionTokens)}
+        </span>
+      </div>
+    </div>
+  );
+
+  return (
+    <BaseNodeContainer
+      label={headerLabel}
+      title={tooltipTitle}
+      icon={<span className="text-lg">🤖</span>}
+      theme={theme}
+      status={status}
+      headerActions={headerActions}
+      footer={footerContent}
+      width="w-64"
+      statusLabels={{
+        running: "生成中",
+        thinking: "思考中"
+      }}
+    >
       {/* 上下文记忆切换按钮 */}
-      <div className="flex items-center gap-1 mt-1">
+      <div className="flex items-center gap-1">
         <Button
           variant={useMemory ? "default" : "outline"}
           size="sm"
-          className="h-6 px-2 text-xs gap-1"
+          className="h-6 px-2 text-xs gap-1 flex-1"
           onClick={() => onToggleMemory?.(true)}
           title="开启上下文记忆"
           style={theme ? (useMemory ? { backgroundColor: theme.lineColor, color: '#fff' } : { borderColor: theme.nodeBorderColor, color: theme.textColor }) : undefined}
@@ -143,7 +236,7 @@ export function AINodeContent({
         <Button
           variant={!useMemory ? "destructive" : "outline"}
           size="sm"
-          className="h-6 px-2 text-xs gap-1"
+          className="h-6 px-2 text-xs gap-1 flex-1"
           onClick={() => onToggleMemory?.(false)}
           title="单次对话，不保存历史"
           style={theme ? (!useMemory ? { backgroundColor: theme.lineColor, color: '#fff' } : { borderColor: theme.nodeBorderColor, color: theme.textColor }) : undefined}
@@ -151,28 +244,6 @@ export function AINodeContent({
           <Clock className="w-3 h-3" />
           <span>单次</span>
         </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-6 px-2 text-xs"
-          onClick={handleOpenPrompt}
-          title="设置系统提示词"
-          style={theme ? { color: theme.textColor } : undefined}
-        >
-          <Settings2 className="w-3 h-3" />
-        </Button>
-        {onClearHistory && (
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-6 px-2 text-xs"
-            onClick={onClearHistory}
-            title="清除历史消息"
-            style={theme ? { color: theme.textColor } : undefined}
-          >
-            <Trash2 className="w-3 h-3" />
-          </Button>
-        )}
       </div>
 
       <Dialog open={isPromptOpen} onOpenChange={setIsPromptOpen}>
@@ -201,57 +272,6 @@ export function AINodeContent({
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
-
-      {/* Token 统计显示 */}
-      {tokenStats && (
-        <div className="mt-1 space-y-1">
-          {/* 当前对话消耗 */}
-          <div 
-            className={`flex items-center gap-1.5 text-[10px] px-1.5 py-0.5 rounded ${!theme ? 'bg-primary/5 border border-primary/10' : ''}`}
-            style={theme ? {
-              backgroundColor: `${theme.lineColor}0D`, // 5% opacity
-              borderColor: `${theme.lineColor}1A`, // 10% opacity
-              borderWidth: '1px'
-            } : undefined}
-          >
-            <Zap className={`w-3 h-3 ${!theme ? 'text-yellow-500' : ''}`} style={theme ? { color: theme.lineColor } : undefined} />
-            <span className={!theme ? "text-muted-foreground" : ""} style={theme ? { color: theme.textColor, opacity: 0.7 } : undefined}>本次:</span>
-            <span className={`font-medium ${!theme ? 'text-primary' : ''}`} style={theme ? { color: theme.textColor } : undefined}>{formatNumber(tokenStats.currentTokens)}</span>
-          </div>
-
-          {/* 累计统计 */}
-          <div className="flex items-center gap-1.5">
-            <div 
-              className={`flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded flex-1 ${!theme ? 'bg-muted/50' : ''}`}
-              style={theme ? { backgroundColor: `${theme.nodeBorderColor}33` } : undefined} // 20% opacity
-            >
-              <BarChart3 className={`w-3 h-3 ${!theme ? 'text-muted-foreground' : ''}`} style={theme ? { color: theme.textColor, opacity: 0.7 } : undefined} />
-              <span className={!theme ? "text-muted-foreground" : ""} style={theme ? { color: theme.textColor, opacity: 0.7 } : undefined}>累计:</span>
-              <span className="font-medium" style={theme ? { color: theme.textColor } : undefined}>{formatNumber(tokenStats.totalTokens)}</span>
-            </div>
-            <div className={`text-[10px] ${!theme ? 'text-muted-foreground' : ''}`} style={theme ? { color: theme.textColor, opacity: 0.7 } : undefined}>
-              {tokenStats.requestCount}次
-            </div>
-          </div>
-
-          {/* 分布详情 */}
-          <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
-            <span 
-              className={`px-1 rounded ${!theme ? 'bg-blue-50 text-blue-600' : ''}`}
-              style={theme ? { backgroundColor: `${theme.lineColor}1A`, color: theme.lineColor } : undefined}
-            >
-              P: {formatNumber(tokenStats.promptTokens)}
-            </span>
-            <span 
-              className={`px-1 rounded ${!theme ? 'bg-green-50 text-green-600' : ''}`}
-              style={theme ? { backgroundColor: `${theme.nodeBorderColor}33`, color: theme.textColor } : undefined}
-            >
-              C: {formatNumber(tokenStats.completionTokens)}
-            </span>
-          </div>
-        </div>
-      )}
-    </div>
+    </BaseNodeContainer>
   );
 }

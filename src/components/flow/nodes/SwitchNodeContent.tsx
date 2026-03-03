@@ -13,6 +13,7 @@ import { Power, Signal, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import type { ThemeConfig } from '@/types/theme';
+import { BaseNodeContainer } from './common/BaseNodeContainer';
 
 interface SwitchNodeData {
   label?: string;
@@ -57,103 +58,115 @@ export function SwitchNodeContent({
     setWasOff(!isOn);
   }, [isOn, hasPendingSignal, wasOff, onSend]);
 
-  return (
-    <div className="flex flex-col gap-2 p-2 min-w-[160px]">
-      {/* 标题行 */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Power size={14} className={isOn ? 'text-green-500' : 'text-muted-foreground'} />
-          <span className="text-sm font-medium" style={{ color: theme?.textColor }}>{data.label || '开关'}</span>
-        </div>
-        {/* 状态指示器 */}
-        <Badge
-          variant={isOn ? 'default' : 'outline'}
-          className={`text-xs px-1.5 py-0 ${!theme && isOn ? 'bg-green-500' : ''}`}
-          style={theme ? { 
-            backgroundColor: isOn ? theme.lineColor : 'transparent',
-            borderColor: theme.nodeBorderColor, 
-            color: isOn ? '#fff' : theme.textColor 
-          } : undefined}
-        >
-          {isOn ? 'ON' : 'OFF'}
-        </Badge>
-      </div>
+  const headerActions = (
+    <Badge
+      variant={isOn ? 'default' : 'outline'}
+      className={`text-xs px-1.5 py-0 ${!theme && isOn ? 'bg-green-500' : ''}`}
+      style={theme ? { 
+        backgroundColor: isOn ? theme.lineColor : 'transparent',
+        borderColor: theme.nodeBorderColor, 
+        color: isOn ? '#fff' : theme.textColor 
+      } : undefined}
+    >
+      {isOn ? 'ON' : 'OFF'}
+    </Badge>
+  );
 
-      {/* 信号状态显示 */}
-      <div 
-        className={`flex items-center gap-1.5 text-xs px-2 py-1 rounded ${
-          !theme ? (hasPendingSignal
-            ? 'bg-amber-50 border border-amber-200 text-amber-700'
-            : 'text-muted-foreground') : ''
-        }`}
-        style={theme ? {
-          color: hasPendingSignal ? theme.lineColor : theme.textColor,
-          borderColor: hasPendingSignal ? theme.lineColor : 'transparent',
-          borderWidth: hasPendingSignal ? '1px' : '0',
-          backgroundColor: hasPendingSignal ? `${theme.lineColor}1A` : 'transparent' // 10% opacity
+  const footer = (
+    <div className="flex gap-1">
+      {/* 开关按钮 */}
+      <Button
+        size="sm"
+        variant={isOn ? 'default' : 'outline'}
+        className={`flex-1 h-7 text-xs ${!theme && isOn ? 'bg-green-500 hover:bg-green-600' : ''}`}
+        onClick={(e) => {
+          e.stopPropagation();
+          onToggle?.(!isOn);
+        }}
+        // BaseNodeContainer handles stopPropagation on header/footer usually but explicit is safe
+        style={theme ? { 
+          backgroundColor: isOn ? theme.lineColor : 'transparent',
+          borderColor: theme.nodeBorderColor, 
+          color: isOn ? '#fff' : theme.textColor 
         } : undefined}
       >
-        {hasPendingSignal ? (
-          <>
-            <Signal size={12} className={!theme ? "text-amber-500" : ""} style={theme ? { color: theme.lineColor } : undefined} />
-            <span>信号待转发</span>
-          </>
-        ) : isOn ? (
-          <>
-            <Signal size={12} className={!theme ? "text-green-500" : ""} style={theme ? { color: theme.lineColor } : undefined} />
-            <span>开启中，自动转发</span>
-          </>
-        ) : (
-          <>
-            <Signal size={12} style={theme ? { color: theme.textColor, opacity: 0.7 } : undefined} />
-            <span>等待信号...</span>
-          </>
-        )}
-      </div>
+        <Power size={12} className="mr-1" />
+        {isOn ? '关闭' : '开启'}
+      </Button>
 
-      {/* 时间戳 */}
-      {data.lastSignalTime && (
-        <div className="flex items-center gap-1 text-[10px]" style={{ color: theme ? theme.textColor : undefined, opacity: theme ? 0.7 : undefined }}>
-          <Clock size={10} className={!theme ? "text-muted-foreground" : ""} />
-          <span className={!theme ? "text-muted-foreground" : ""}>最后信号: {data.lastSignalTime}</span>
-        </div>
-      )}
-
-      {/* 控制按钮行 */}
-      <div className="flex gap-1 mt-1">
-        {/* 开关按钮 */}
+      {/* 清空信号按钮 */}
+      {hasPendingSignal && (
         <Button
           size="sm"
-          variant={isOn ? 'default' : 'outline'}
-          className={`flex-1 h-7 text-xs ${!theme && isOn ? 'bg-green-500 hover:bg-green-600' : ''}`}
-          onClick={() => onToggle?.(!isOn)}
-          onPointerDown={(e) => e.stopPropagation()}
-          style={theme ? { 
-            backgroundColor: isOn ? theme.lineColor : 'transparent',
-            borderColor: theme.nodeBorderColor, 
-            color: isOn ? '#fff' : theme.textColor 
+          variant="ghost"
+          className="h-7 px-2 text-xs text-muted-foreground hover:text-destructive"
+          onClick={(e) => {
+            e.stopPropagation();
+            onClearSignal?.();
+          }}
+          title="清空暂存的信号"
+          style={theme ? { color: theme.textColor } : undefined}
+        >
+          清空
+        </Button>
+      )}
+    </div>
+  );
+
+  return (
+    <BaseNodeContainer
+      label={data.label || '开关'}
+      icon={<Power size={14} className={isOn ? 'text-green-500' : 'text-muted-foreground'} />}
+      theme={theme}
+      headerActions={headerActions}
+      footer={footer}
+      showStatus={false}
+      width="w-auto"
+      className="min-w-[160px]"
+      contentClassName="p-2 pt-0"
+    >
+      <div className="flex flex-col gap-2">
+        {/* 信号状态显示 */}
+        <div 
+          className={`flex items-center gap-1.5 text-xs px-2 py-1 rounded ${
+            !theme ? (hasPendingSignal
+              ? 'bg-amber-50 border border-amber-200 text-amber-700'
+              : 'text-muted-foreground') : ''
+          }`}
+          style={theme ? {
+            color: hasPendingSignal ? theme.lineColor : theme.textColor,
+            borderColor: hasPendingSignal ? theme.lineColor : 'transparent',
+            borderWidth: hasPendingSignal ? '1px' : '0',
+            backgroundColor: hasPendingSignal ? `${theme.lineColor}1A` : 'transparent' // 10% opacity
           } : undefined}
         >
-          <Power size={12} className="mr-1" />
-          {isOn ? '关闭' : '开启'}
-        </Button>
+          {hasPendingSignal ? (
+            <>
+              <Signal size={12} className={!theme ? "text-amber-500" : ""} style={theme ? { color: theme.lineColor } : undefined} />
+              <span>信号待转发</span>
+            </>
+          ) : isOn ? (
+            <>
+              <Signal size={12} className={!theme ? "text-green-500" : ""} style={theme ? { color: theme.lineColor } : undefined} />
+              <span>开启中，自动转发</span>
+            </>
+          ) : (
+            <>
+              <Signal size={12} style={theme ? { color: theme.textColor, opacity: 0.7 } : undefined} />
+              <span>等待信号...</span>
+            </>
+          )}
+        </div>
 
-        {/* 清空信号按钮 */}
-        {hasPendingSignal && (
-          <Button
-            size="sm"
-            variant="ghost"
-            className="h-7 px-2 text-xs text-muted-foreground hover:text-destructive"
-            onClick={onClearSignal}
-            onPointerDown={(e) => e.stopPropagation()}
-            title="清空暂存的信号"
-            style={theme ? { color: theme.textColor } : undefined}
-          >
-            清空
-          </Button>
+        {/* 时间戳 */}
+        {data.lastSignalTime && (
+          <div className="flex items-center gap-1 text-[10px]" style={{ color: theme ? theme.textColor : undefined, opacity: theme ? 0.7 : undefined }}>
+            <Clock size={10} className={!theme ? "text-muted-foreground" : ""} />
+            <span className={!theme ? "text-muted-foreground" : ""}>最后信号: {data.lastSignalTime}</span>
+          </div>
         )}
       </div>
-    </div>
+    </BaseNodeContainer>
   );
 }
 

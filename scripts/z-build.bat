@@ -1,5 +1,6 @@
 @echo off
 chcp 65001 >nul
+cd ..
 title HeySure AI - Packaging to EXE
 echo ============================================
 echo   HeySure AI - Packaging Process
@@ -7,7 +8,7 @@ echo ============================================
 echo.
 
 echo [1/3] Installing dependencies...
-call npm install
+call cnpm install
 if %errorlevel% neq 0 (
     echo [Error] Dependency installation failed.
     pause

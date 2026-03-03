@@ -21,6 +21,7 @@ import {
   SimpleTriggerButton,
   MindmapInfoNodeContent,
   ClassifierNodeContent,
+  WorkflowRunnerNodeContent,
 } from '../nodes';
 import type { FlowNode as FlowNodeType } from '@/types/flow';
 import type { LocalModelConfig } from '@/types/flow';
@@ -52,6 +53,7 @@ interface FlowCanvasNodesProps {
   onSwitchSend: (nodeId: string) => void;
   onTrigger: (nodeId: string) => void;
   onSimpleTrigger: (nodeId: string) => void;
+  onWorkflowControl: (nodeId: string, instanceId: string, command: 'pause' | 'resume' | 'stop') => void;
 }
 
 export function FlowCanvasNodes({
@@ -75,7 +77,8 @@ export function FlowCanvasNodes({
   onUserInputSend,
   onSwitchSend,
   onTrigger,
-  onSimpleTrigger
+  onSimpleTrigger,
+  onWorkflowControl
 }: FlowCanvasNodesProps) {
 
   const renderNodeContent = useCallback((node: FlowNodeType) => {
@@ -124,6 +127,7 @@ export function FlowCanvasNodes({
             portCount={node.outputs?.length || 3}
             keywords={node.data?.keywords || []}
             activeIndex={node.data?.activeIndex}
+            trimKeyword={node.data?.trimKeyword !== false} // 默认为 true
             onPortCountChange={(count) => {
               const newOutputs = Array.from({ length: Math.max(1, count) }, (_, i) => ({
                 id: `output${i + 1}`,
@@ -157,6 +161,9 @@ export function FlowCanvasNodes({
                const currentKeywords = [...(node.data?.keywords || [])];
                currentKeywords[index] = keyword;
                onUpdate(node.id, { keywords: currentKeywords });
+            }}
+            onTrimKeywordChange={(trim) => {
+                onUpdate(node.id, { trimKeyword: trim });
             }}
             onClear={() => {
                 onUpdate(node.id, { activeIndex: undefined, lastValue: undefined });
@@ -217,6 +224,15 @@ export function FlowCanvasNodes({
             onUpdate={(newData) => onUpdate(node.id, newData)}
           />
         );
+      case 'workflowRunner':
+        return (
+          <WorkflowRunnerNodeContent 
+            data={node.data} 
+            id={node.id} 
+            theme={theme}
+            onControl={(instanceId, command) => onWorkflowControl?.(node.id, instanceId, command)}
+          />
+        );
       case 'start':
       case 'end':
         return (
@@ -227,7 +243,7 @@ export function FlowCanvasNodes({
       default:
         return <BasicNodeContent type={node.type} label={node.data?.label || '节点'} icon={node.data?.icon} theme={theme} />;
     }
-  }, [models, theme, onTogglePythonMode, onToggleMemory, onClearHistory, onUpdate, onUserInputSend, onSwitchSend, onTrigger, onSimpleTrigger]);
+  }, [models, theme, onTogglePythonMode, onToggleMemory, onClearHistory, onUpdate, onUserInputSend, onSwitchSend, onTrigger, onSimpleTrigger, onWorkflowControl]);
 
   return (
     <div className="relative" style={{ zIndex: 1 }}>

@@ -185,6 +185,7 @@ export function useFlowController() {
     handleSwitchSend,
     handleTrigger,
     handleSimpleTrigger,
+    handleWorkflowControl,
     flowStatus,
     runFlow,
     pauseFlow,
@@ -599,6 +600,7 @@ export function useFlowController() {
       onSwitchSend: handleSwitchSend,
       onTrigger: handleTrigger,
       onSimpleTrigger: handleSimpleTrigger,
+      onWorkflowControl: handleWorkflowControl,
       
       onDoubleClickCapture: (e: React.MouseEvent) => {
         if (connectionState.isConnecting) return;

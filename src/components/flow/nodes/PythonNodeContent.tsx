@@ -8,6 +8,7 @@
  */
 // ============ Python节点内容组件 ============
 import type { ThemeConfig } from '@/types/theme';
+import { BaseNodeContainer } from './common/BaseNodeContainer';
 
 interface PythonNodeContentProps {
   label: string;
@@ -18,12 +19,14 @@ interface PythonNodeContentProps {
 
 export function PythonNodeContent({ label, unifiedInput, onToggleMode, theme }: PythonNodeContentProps) {
   return (
-    <div className="flex flex-col items-start gap-1 w-full">
-      <div className="flex items-center gap-2">
-        <span className="text-lg">🐍</span>
-        <span className="font-medium text-sm truncate" style={{ color: theme?.textColor }}>{label}</span>
-      </div>
-
+    <BaseNodeContainer
+      label={label}
+      icon={<span className="text-lg">🐍</span>}
+      theme={theme}
+      width="w-auto" // 自动宽度，或者指定一个默认宽度
+      contentClassName="pb-2"
+      showStatus={false}
+    >
       {/* 模式切换按钮 */}
       {onToggleMode && (
         <button
@@ -31,7 +34,7 @@ export function PythonNodeContent({ label, unifiedInput, onToggleMode, theme }: 
             e.stopPropagation();
             onToggleMode();
           }}
-          className="text-xs px-2 py-0.5 rounded border bg-muted hover:bg-muted/80 transition-colors flex items-center gap-1"
+          className="text-xs px-2 py-0.5 rounded border bg-muted hover:bg-muted/80 transition-colors flex items-center gap-1 mt-1"
           style={theme ? { 
             color: theme.textColor, 
             borderColor: theme.nodeBorderColor,
@@ -52,7 +55,7 @@ export function PythonNodeContent({ label, unifiedInput, onToggleMode, theme }: 
           )}
         </button>
       )}
-    </div>
+    </BaseNodeContainer>
   );
 }
 

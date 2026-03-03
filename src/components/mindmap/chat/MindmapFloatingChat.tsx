@@ -296,15 +296,11 @@ export const MindmapFloatingChat = forwardRef<MindmapFloatingChatHandle, Mindmap
       return;
     }
 
-    const fullContent = contextAppendix 
-      ? `${rawContent}\n\n${contextAppendix}`
-      : rawContent;
-
     const userMessage: ChatMessage = {
       id: uuidv4(),
       role: 'user',
       content: rawContent,
-      fullContent: fullContent,
+      fullContent: contextAppendix ? `[System Prompt]:\n${contextAppendix}\n\n[User Content]:\n${rawContent}` : rawContent,
       timestamp: Date.now()
     };
 
@@ -332,7 +328,8 @@ export const MindmapFloatingChat = forwardRef<MindmapFloatingChatHandle, Mindmap
       // Use messageSend to trigger backend and persistence
       const response = await window.electronAPI?.messageSend({
         dialogId: dialogIdRef.current,
-        content: fullContent,
+        content: rawContent,
+        systemPrompt: contextAppendix,
         aiIds: [currentModel.id]
       });
 

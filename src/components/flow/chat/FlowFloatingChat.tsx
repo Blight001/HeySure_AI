@@ -89,8 +89,6 @@ export const FlowFloatingChat = forwardRef<FlowFloatingChatHandle, FlowFloatingC
   const [showControlPanel, setShowControlPanel] = useState(false);
   const [showContextDetails, setShowContextDetails] = useState(false);
   const [showInteractionLog, setShowInteractionLog] = useState(true);
-  const [lastSentStructure, setLastSentStructure] = useState<string | null>(null);
-  const [hasSentInstructions, setHasSentInstructions] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -158,8 +156,6 @@ export const FlowFloatingChat = forwardRef<FlowFloatingChatHandle, FlowFloatingC
     setMessages([]);
     setShowHistory(false);
     onUpdateMessages?.([]);
-    setLastSentStructure(null);
-    setHasSentInstructions(false);
     setTimeout(() => inputRef.current?.focus(), 100);
   }, [onUpdateMessages]);
 
@@ -169,14 +165,6 @@ export const FlowFloatingChat = forwardRef<FlowFloatingChatHandle, FlowFloatingC
       loadHistory();
     }
   }, [showHistory, loadHistory]);
-
-  // 当流程ID变化时，重置发送状态，以便重新发送新的流程结构和指令
-  useEffect(() => {
-    if (currentFlowId) {
-      setHasSentInstructions(false);
-      setLastSentStructure(null);
-    }
-  }, [currentFlowId]);
 
   // Sync messages from props (保留输入状态)
   useEffect(() => {
@@ -306,44 +294,26 @@ export const FlowFloatingChat = forwardRef<FlowFloatingChatHandle, FlowFloatingC
       return;
     }
 
-    // 构建上下文，优化发送逻辑
+    // 构建上下文，总是发送完整上下文作为 System Prompt
     const contextParts: string[] = [];
-    let newStructure = lastSentStructure;
-    let newInstructionsSent = hasSentInstructions;
 
-    // 1. 结构发生变化时发送
     if (flowStructureMd) {
-      if (flowStructureMd !== lastSentStructure) {
-        contextParts.push(flowStructureMd);
-        newStructure = flowStructureMd;
-      }
+      contextParts.push(flowStructureMd);
     }
 
-    // 2. 操作指令只发送一次
     if (editInstructionsMd) {
-      if (!hasSentInstructions) {
-        contextParts.push(editInstructionsMd);
-        newInstructionsSent = true;
-      }
+      contextParts.push(editInstructionsMd);
     }
     
     // Fallback if separate props are not provided
     if (!flowStructureMd && !editInstructionsMd && flowAppendixMd) {
-      // 简单处理 fallback 情况，如果内容变化则发送
-      if (flowAppendixMd !== lastSentStructure) {
-        contextParts.push(flowAppendixMd);
-        newStructure = flowAppendixMd;
-      }
+      contextParts.push(flowAppendixMd);
     }
     
     if (contextAppendix) contextParts.push(contextAppendix);
 
-    const context = contextParts.join('\n\n');
-    const fullContent = context ? `${rawContent}\n\n${context}` : rawContent;
-
-    // 更新发送状态
-    if (newStructure !== lastSentStructure) setLastSentStructure(newStructure);
-    if (newInstructionsSent !== hasSentInstructions) setHasSentInstructions(newInstructionsSent);
+    const systemPrompt = contextParts.join('\n\n');
+    const fullContent = systemPrompt ? `[System Prompt]:\n${systemPrompt}\n\n[User Content]:\n${rawContent}` : rawContent;
 
     const userMessage: ChatMessage = {
       id: uuidv4(),
@@ -368,7 +338,8 @@ export const FlowFloatingChat = forwardRef<FlowFloatingChatHandle, FlowFloatingC
     try {
       const response = await window.electronAPI?.messageSend({
         dialogId: dialogIdRef.current,
-        content: fullContent,
+        content: rawContent,
+        systemPrompt: systemPrompt,
         aiIds: [currentModel.id]
       });
 
@@ -424,7 +395,7 @@ export const FlowFloatingChat = forwardRef<FlowFloatingChatHandle, FlowFloatingC
     } finally {
       setIsLoading(false);
     }
-  }, [input, isLoading, model, messages, onUpdateMessages, onResponse, flowStructureMd, editInstructionsMd, flowAppendixMd, contextAppendix, lastSentStructure, hasSentInstructions, extractJson]);
+  }, [input, isLoading, model, messages, onUpdateMessages, onResponse, flowStructureMd, editInstructionsMd, flowAppendixMd, contextAppendix, extractJson]);
 
   useImperativeHandle(ref, () => ({
     sendMessage: (content: string) => sendMessage(content)

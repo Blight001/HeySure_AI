@@ -28,9 +28,9 @@ export function messageIPC() {
   // 发送消息
   ipcMain.handle(
     'message:send',
-    async (event, data: { dialogId: string; content: string; aiIds?: string[]; id?: string }) => {
+    async (event, data: { dialogId: string; content: string; aiIds?: string[]; id?: string; systemPrompt?: string }) => {
       try {
-        const { dialogId, content, aiIds, id } = data;
+        const { dialogId, content, aiIds, id, systemPrompt } = data;
 
         // 确保对话存在
         if (!dialogStore.has(dialogId)) {
@@ -97,6 +97,11 @@ export function messageIPC() {
                   role: m.role,
                   content: m.content
                 }));
+
+                // 如果有系统提示词，添加到上下文消息的最前面
+                if (systemPrompt) {
+                  contextMessages.unshift({ role: 'system', content: systemPrompt });
+                }
 
                 console.log(`[MessageIPC] Sending chat request to custom model ${aiId}`);
                 // 预先生成 ID

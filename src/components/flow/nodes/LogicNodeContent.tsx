@@ -7,6 +7,7 @@
  */
 // ============ 逻辑节点内容组件 ============
 import type { ThemeConfig } from '@/types/theme';
+import { BaseNodeContainer } from './common/BaseNodeContainer';
 
 interface LogicNodeContentProps {
   type: 'condition' | 'parallel' | 'aggregate';
@@ -22,10 +23,15 @@ export function LogicNodeContent({ type, label, theme }: LogicNodeContentProps) 
   };
 
   return (
-    <div className="flex items-center gap-2 mb-2" style={theme ? { color: theme.textColor } : undefined}>
-      <span className="text-lg">{icons[type]}</span>
-      <span className="font-medium text-sm truncate">{label}</span>
-    </div>
+    <BaseNodeContainer
+      label={label}
+      icon={<span className="text-lg">{icons[type]}</span>}
+      theme={theme}
+      width="w-auto"
+      showStatus={false}
+      className="min-w-[120px]"
+      contentClassName="p-0"
+    />
   );
 }
 

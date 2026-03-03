@@ -12,3 +12,4 @@ export * from './SwitchNodeContent';
 export * from './TriggerNodeContent';
 export * from './SimpleTriggerButton';
 export * from './MindmapInfoNodeContent';
+export { default as WorkflowRunnerNodeContent } from './WorkflowRunnerNodeContent';

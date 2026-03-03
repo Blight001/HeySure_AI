@@ -30,18 +30,81 @@
       "id": "node_1771991185965_r442cnrne",
       "type": "aiChat",
       "position": {
-        "x": 1050.3426377544035,
-        "y": 530.4263815819552
+        "x": 1056.5926377544035,
+        "y": 496.6763815819552
       },
       "data": {
         "label": "千问-plus",
         "modelId": "model-1770017328240",
         "model": "qwen-plus",
-        "systemPrompt": "你是一位新来的思维导图分析员，这里有大量的思维导图资料，我将给你一份记忆检索清单，需要你整理出相关信息并返回给我：",
-        "useMemory": false,
-        "messages": [],
-        "savedAt": "2026-02-27T06:20:33.211Z",
-        "isTriggering": false
+        "systemPrompt": "你是一位新来的无知的工具执行员，这里有不同的电脑的工具，你需要主动去通过json的返回格式调用这些工具（流程：好...），然后正常格式向我汇报（用户：我...），注意返回的格式要精简，完全遵循用户的意思行动\n\n获取信息的方式如下：\n\n2.1 简单模式：直接启动\n如果您只想运行一个特定的流程，只需向输入端发送该流程的名称（字符串）。\n输入内容:目标流程的名称（字符串）。\n2.2 高级控制模式：JSON 指令\n如果您需要更精细的控制（如传递参数、暂停、停止流程），可以发送一个 JSON 对象。\n基本结构:\n流程：\n{\n  \"flowName\": \"目标流程名称\",\n  \"command\": \"start | pause | stop | list\",\n  \"input\": \"传递给子流程的初始数据\",\n  \"outputMode\": \"default | all_text\"\n}\n\n`flowName`: 要操作的目标流程名称。\n`command`: 选填。默认为 `start`。\n`start`: 启动新实例。\n`pause`: 暂停该流程名称下所有正在运行的实例。\n`stop`: 停止该流程名称下所有正在运行的实例。\n`list`: 获取所有可用工作流的列表。\n`input`**: 选填。传递给子流程 **开始节点** 的数据。\n`outputMode`**: 选填。默认为 `default`。\n`default`: 仅输出子流程 **结束 (End)** 节点接收到的数据。\n`all_text`: 收集子流程中所有 **文本显示** 和 **AI 对话** 节点的文本输出，作为数组返回。\n\n注意回答前，你需要搞清楚你需要和哪位说话，流程调用就以流程开头，用户对话就以用户开头\n例如：\n流程：好...\n用户：我...",
+        "useMemory": true,
+        "messages": [
+          {
+            "id": "beca3e15-d164-455a-87c4-8cbf990f5bc8",
+            "role": "user",
+            "content": "你看看现在有哪些操作你可以运行",
+            "timestamp": 1772509030598
+          },
+          {
+            "id": "991b4f84-3955-4acb-900b-5493bdd9730a",
+            "role": "assistant",
+            "content": "流程：{\"flowName\": \"list\", \"command\": \"list\"}",
+            "timestamp": 1772509031359
+          },
+          {
+            "id": "a8172841-6539-4cf0-846e-cb3544709210",
+            "role": "user",
+            "content": "千问基础对话,打开浏览器,AI自我对话测试,测试AI控基础脚本,打开香蕉平台网页测试,基础对话测试",
+            "timestamp": 1772509031409
+          },
+          {
+            "id": "b0dbcb44-98e9-4418-8bce-c6d4d1839941",
+            "role": "assistant",
+            "content": "用户：当前可用的操作有：  \n- 千问基础对话  \n- 打开浏览器  \n- AI自我对话测试  \n- 测试AI控基础脚本  \n- 打开香蕉平台网页测试  \n- 基础对话测试",
+            "timestamp": 1772509032910
+          },
+          {
+            "id": "ef209ed5-d5e4-4bd6-98fb-b0b25a97a0ab",
+            "role": "user",
+            "content": "运行一下基础对话测试",
+            "timestamp": 1772509046005
+          },
+          {
+            "id": "fe215194-340b-4bd9-8860-0cd8d3d78d67",
+            "role": "assistant",
+            "content": "流程：{\"flowName\": \"基础对话测试\", \"command\": \"start\"}",
+            "timestamp": 1772509046815
+          },
+          {
+            "id": "6b02fd62-63ab-49cb-ad14-1bef62e0c8da",
+            "role": "user",
+            "content": "I see you've entered `[object Object]` — that's the string representation of a JavaScript object (what you get when you convert an object to a string without specifying how).\n\nIt looks like something might have been lost in translation. Did you mean to:\n\n1. **Share JSON data?** (Paste the actual object contents)\n2. **Debug a coding issue?** (I can help explain why you're seeing this output)\n3. **Convert an object to a readable format?** (I can help stringify it properly)\n\nWhat were you trying to do? If you paste the actual object or code, I can give you more specific help.",
+            "timestamp": 1772509057607
+          },
+          {
+            "id": "8f6fe91a-a933-4bd1-aad8-fda7670d1fdd",
+            "role": "assistant",
+            "content": "用户：已启动“基础对话测试”，正在运行中……",
+            "timestamp": 1772509058412
+          }
+        ],
+        "savedAt": "2026-03-03T03:37:09.767Z",
+        "isTriggering": false,
+        "status": "completed",
+        "value": "用户：已启动“基础对话测试”，正在运行中……",
+        "usage": {
+          "prompt_tokens": 706,
+          "completion_tokens": 13,
+          "total_tokens": 719
+        },
+        "tokenStats": {
+          "currentTokens": 719,
+          "totalTokens": 2256,
+          "promptTokens": 2159,
+          "completionTokens": 97,
+          "requestCount": 4
+        }
       },
       "inputs": [
         {
@@ -59,44 +122,11 @@
       ]
     },
     {
-      "id": "node_1771991236482_cz8kluikl",
-      "type": "textDisplay",
-      "position": {
-        "x": 1359.8652262769922,
-        "y": 549.4379255934994
-      },
-      "data": {
-        "label": "文本显示",
-        "icon": "📄",
-        "value": "已记录并确认以下信息：\n\n✅ 服务器使用情况查看流程为纯图形化操作路径：  \n → 使用 Microsoft Edge 浏览器  \n → 访问「即梦AI」平台  \n → 在平台内输入关键词「哈机密」触发查询  \n\n❌ 当前无任何 Linux 终端命令需求（如 `top`、`df -h`、`htop` 等）  \n❌ 不涉及员工B的协同或执行任务（无需转派、通知或调用）  \n\n📌 备注：该流程属于内部授权可视化监控方式，关键词「哈机密」为安全访问令牌/快捷入口标识，非明文密码，符合当前权限管控策略。\n\n如后续需补充该流程的截图指引、访问时效说明、或异常响应预案，我可立即为您结构化整理。",
-        "receivedData": "已记录并确认以下信息：\n\n✅ 服务器使用情况查看流程为纯图形化操作路径：  \n → 使用 Microsoft Edge 浏览器  \n → 访问「即梦AI」平台  \n → 在平台内输入关键词「哈机密」触发查询  \n\n❌ 当前无任何 Linux 终端命令需求（如 `top`、`df -h`、`htop` 等）  \n❌ 不涉及员工B的协同或执行任务（无需转派、通知或调用）  \n\n📌 备注：该流程属于内部授权可视化监控方式，关键词「哈机密」为安全访问令牌/快捷入口标识，非明文密码，符合当前权限管控策略。\n\n如后续需补充该流程的截图指引、访问时效说明、或异常响应预案，我可立即为您结构化整理。",
-        "displayText": "已记录并确认以下信息：\n\n✅ 服务器使用情况查看流程为纯图形化操作路径：  \n → 使用 Microsoft Edge 浏览器  \n → 访问「即梦AI」平台  \n → 在平台内输入关键词「哈机密」触发查询  \n\n❌ 当前无任何 Linux 终端命令需求（如 `top`、`df -h`、`htop` 等）  \n❌ 不涉及员工B的协同或执行任务（无需转派、通知或调用）  \n\n📌 备注：该流程属于内部授权可视化监控方式，关键词「哈机密」为安全访问令牌/快捷入口标识，非明文密码，符合当前权限管控策略。\n\n如后续需补充该流程的截图指引、访问时效说明、或异常响应预案，我可立即为您结构化整理。",
-        "isExpanded": true,
-        "layout": "default",
-        "presetText": "",
-        "isTriggering": false
-      },
-      "inputs": [
-        {
-          "id": "input",
-          "type": "input",
-          "label": "输入"
-        }
-      ],
-      "outputs": [
-        {
-          "id": "output",
-          "type": "output",
-          "label": "输出"
-        }
-      ]
-    },
-    {
       "id": "node_1772014423587_ws0h4r52j",
       "type": "textDisplay",
       "position": {
-        "x": 490.7884337884333,
-        "y": 60.0468836718836
+        "x": 518.9828782328777,
+        "y": 95.60243922743919
       },
       "data": {
         "label": "文本显示",
@@ -315,8 +345,9 @@
         "label": "用户输入",
         "icon": "👤",
         "layout": "reversed",
-        "value": "我刚才问了你什么",
-        "isTriggering": false
+        "value": "你看看现在有哪些操作你可以运行",
+        "isTriggering": false,
+        "status": "completed"
       },
       "inputs": [],
       "outputs": [
@@ -338,7 +369,7 @@
         "label": "千问-plus",
         "modelId": "model-1770017328240",
         "model": "qwen-plus",
-        "systemPrompt": "你是一位新来的思维导图分析员，这里有大量的思维导图资料，需要你主动获取并整理出相关信息并返回给我，注意返回的格式要精简，获取信息的方式如下：\n1. 需要你先主动去获取导图文件列表，然后再做回复决定\n发送以下指令可获取所有思维导图的列表：- `ls`\n2. 获取指定节点及其子节点：`node:<节点名称>` 或 `节点:<节点名称>`\n3. 指定查询深度：`depth:<层级数>` 或 `深度:<层级数>` 或 `level:<层级数>`\n4. 跨导图查询：`map:<导图名称>` 或 `导图:<导图名称>`\n组合指令示例：获取 \"产品规划\" 导图中 \"Q1目标\" 节点下的所有层级内容---`map:产品规划 node:Q1目标 depth:99`\n注意回答前，你需要搞清楚你需要和哪位说话，\n例如返回：\ntool：获取...\nuser：我找到了...",
+        "systemPrompt": "你是一位新来的无知的思维导图分析员，这里有大量的思维导图资料，需要你主动获取并整理出相关信息并返回给我，注意返回的格式要精简，获取信息的方式如下：\n1. 需要你先主动去获取导图文件列表，然后再做回复决定\n发送以下指令可获取所有思维导图的列表：- `ls`\n2. 获取指定节点及其子节点：`node:<节点名称>` 或 `节点:<节点名称>`\n3. 指定查询深度：`depth:<层级数>` 或 `深度:<层级数>` 或 `level:<层级数>`\n4. 跨导图查询：`map:<导图名称>` 或 `导图:<导图名称>`\n组合指令示例：获取 \"产品规划\" 导图中 \"Q1目标\" 节点下的所有层级内容---`map:产品规划 node:Q1目标 depth:99`\n注意回答前，你需要搞清楚你需要和哪位说话，\n例如返回：\ntool：获取...\nuser：我...",
         "useMemory": true,
         "messages": [
           {
@@ -484,13 +515,13 @@
       "id": "node_1772168506242_nh9orgk81",
       "type": "textDisplay",
       "position": {
-        "x": 1055.8209225415087,
-        "y": -167.13836000600634
+        "x": 760.2653669859528,
+        "y": -174.9161377837841
       },
       "data": {
         "label": "文本显示",
         "icon": "📄",
-        "layout": "default",
+        "layout": "reversed",
         "value": "节点 \"看下服务器使用情况\" 的子节点 (深度: 99级):\n看下服务器使用情况\n   ├─ 打开浏览器\n   ├─ 观察收藏栏\n   ├─ 点击即梦AI\n   ├─ 输入暗号：哈机密\n   └─ 点击进入",
         "receivedData": "节点 \"看下服务器使用情况\" 的子节点 (深度: 99级):\n看下服务器使用情况\n   ├─ 打开浏览器\n   ├─ 观察收藏栏\n   ├─ 点击即梦AI\n   ├─ 输入暗号：哈机密\n   └─ 点击进入",
         "displayText": "节点 \"看下服务器使用情况\" 的子节点 (深度: 99级):\n看下服务器使用情况\n   ├─ 打开浏览器\n   ├─ 观察收藏栏\n   ├─ 点击即梦AI\n   ├─ 输入暗号：哈机密\n   └─ 点击进入",
@@ -564,21 +595,176 @@
         }
       ],
       "outputs": []
+    },
+    {
+      "id": "node_1772508148340_y115adhg1",
+      "type": "workflowRunner",
+      "position": {
+        "x": 1700.9097226303088,
+        "y": 468.61508099743435
+      },
+      "data": {
+        "label": "操作流程",
+        "icon": "⚙️",
+        "value": "{\"flowName\": \"基础对话测试\", \"command\": \"start\"}",
+        "status": "idle",
+        "instances": [
+          {
+            "id": "3e866056-4db2-42e0-929a-74efcb56d2bf",
+            "workflowName": "打开浏览器",
+            "status": "completed",
+            "progress": {
+              "total": 1,
+              "completed": 0,
+              "running": 0
+            },
+            "runningNodes": [],
+            "startTime": 1772508383933
+          },
+          {
+            "id": "c762b19b-10c7-4217-946f-190aff3c48af",
+            "workflowName": "打开浏览器",
+            "status": "completed",
+            "progress": {
+              "total": 1,
+              "completed": 0,
+              "running": 0
+            },
+            "runningNodes": [],
+            "startTime": 1772508443645
+          },
+          {
+            "id": "72c808b2-4360-432a-810b-ab419bdbe850",
+            "workflowName": "基础对话测试",
+            "status": "completed",
+            "progress": {
+              "total": 7,
+              "completed": 4,
+              "running": 0
+            },
+            "runningNodes": [],
+            "startTime": 1772509046858
+          }
+        ]
+      },
+      "inputs": [
+        {
+          "id": "input",
+          "type": "input",
+          "label": "流程名"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "output",
+          "type": "output",
+          "label": "执行结果"
+        }
+      ]
+    },
+    {
+      "id": "node_1772508168855_xu5l7wltm",
+      "type": "classifier",
+      "position": {
+        "x": 1383.4097226303086,
+        "y": 506.11508099743435
+      },
+      "data": {
+        "label": "分类器",
+        "icon": "🔀",
+        "status": "completed",
+        "value": "用户：已启动“基础对话测试”，正在运行中……",
+        "lastValue": "已启动“基础对话测试”，正在运行中……",
+        "activeIndex": 1,
+        "keywords": [
+          "流程：",
+          "用户："
+        ]
+      },
+      "inputs": [
+        {
+          "id": "input",
+          "type": "input",
+          "label": "信号输入"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "output1",
+          "type": "output",
+          "label": "输出 1"
+        },
+        {
+          "id": "output2",
+          "type": "output",
+          "label": "输出 2"
+        }
+      ]
+    },
+    {
+      "id": "node_1772508178955_lpobjmlh2",
+      "type": "textDisplay",
+      "position": {
+        "x": 1378.4097226303084,
+        "y": 758.6150809974346
+      },
+      "data": {
+        "label": "文本显示",
+        "icon": "📄",
+        "value": "用户：已启动“基础对话测试”，正在运行中……",
+        "status": "completed",
+        "receivedData": "用户：已启动“基础对话测试”，正在运行中……",
+        "displayText": "用户：已启动“基础对话测试”，正在运行中……",
+        "isExpanded": true
+      },
+      "inputs": [
+        {
+          "id": "input",
+          "type": "input",
+          "label": "输入"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "output",
+          "type": "output",
+          "label": "输出"
+        }
+      ]
+    },
+    {
+      "id": "node_1772508179798_mtok5b7yk",
+      "type": "textDisplay",
+      "position": {
+        "x": 2175.9097226303093,
+        "y": 419.86508099743435
+      },
+      "data": {
+        "label": "文本显示",
+        "icon": "📄",
+        "value": "I see you've entered `[object Object]` — that's the string representation of a JavaScript object (what you get when you convert an object to a string without specifying how).\n\nIt looks like something might have been lost in translation. Did you mean to:\n\n1. **Share JSON data?** (Paste the actual object contents)\n2. **Debug a coding issue?** (I can help explain why you're seeing this output)\n3. **Convert an object to a readable format?** (I can help stringify it properly)\n\nWhat were you trying to do? If you paste the actual object or code, I can give you more specific help.",
+        "status": "completed",
+        "receivedData": "I see you've entered `[object Object]` — that's the string representation of a JavaScript object (what you get when you convert an object to a string without specifying how).\n\nIt looks like something might have been lost in translation. Did you mean to:\n\n1. **Share JSON data?** (Paste the actual object contents)\n2. **Debug a coding issue?** (I can help explain why you're seeing this output)\n3. **Convert an object to a readable format?** (I can help stringify it properly)\n\nWhat were you trying to do? If you paste the actual object or code, I can give you more specific help.",
+        "displayText": "I see you've entered `[object Object]` — that's the string representation of a JavaScript object (what you get when you convert an object to a string without specifying how).\n\nIt looks like something might have been lost in translation. Did you mean to:\n\n1. **Share JSON data?** (Paste the actual object contents)\n2. **Debug a coding issue?** (I can help explain why you're seeing this output)\n3. **Convert an object to a readable format?** (I can help stringify it properly)\n\nWhat were you trying to do? If you paste the actual object or code, I can give you more specific help.",
+        "isExpanded": true
+      },
+      "inputs": [
+        {
+          "id": "input",
+          "type": "input",
+          "label": "输入"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "output",
+          "type": "output",
+          "label": "输出"
+        }
+      ]
     }
   ],
   "edges": [
-    {
-      "id": "edge_1771991238103_k12xtha6x",
-      "source": "node_1771991185965_r442cnrne",
-      "target": "node_1771991236482_cz8kluikl",
-      "sourceHandle": "output",
-      "targetHandle": "input",
-      "type": "default",
-      "style": {
-        "stroke": "#64748b",
-        "strokeWidth": 2
-      }
-    },
     {
       "id": "edge_1772014435054_wv4ksv2p2",
       "source": "node_1771381617334_u76hnthyy",
@@ -758,6 +944,66 @@
         "stroke": "#64748b",
         "strokeWidth": 2
       }
+    },
+    {
+      "id": "edge_1772508172018_9lh1j9uwy",
+      "source": "node_1771991185965_r442cnrne",
+      "target": "node_1772508168855_xu5l7wltm",
+      "sourceHandle": "output",
+      "targetHandle": "input",
+      "type": "default",
+      "style": {
+        "stroke": "#64748b",
+        "strokeWidth": 2
+      }
+    },
+    {
+      "id": "edge_1772508173759_dz507yomc",
+      "source": "node_1772508168855_xu5l7wltm",
+      "target": "node_1772508148340_y115adhg1",
+      "sourceHandle": "output1",
+      "targetHandle": "input",
+      "type": "default",
+      "style": {
+        "stroke": "#64748b",
+        "strokeWidth": 2
+      }
+    },
+    {
+      "id": "edge_1772508184104_co129nelc",
+      "source": "node_1772508148340_y115adhg1",
+      "target": "node_1772508179798_mtok5b7yk",
+      "sourceHandle": "output",
+      "targetHandle": "input",
+      "type": "default",
+      "style": {
+        "stroke": "#64748b",
+        "strokeWidth": 2
+      }
+    },
+    {
+      "id": "edge_1772508187989_b44qmkmlj",
+      "source": "node_1772508148340_y115adhg1",
+      "target": "node_1771991185965_r442cnrne",
+      "sourceHandle": "output",
+      "targetHandle": "input",
+      "type": "default",
+      "style": {
+        "stroke": "#64748b",
+        "strokeWidth": 2
+      }
+    },
+    {
+      "id": "edge_1772508291467_wicao6s98",
+      "source": "node_1771991185965_r442cnrne",
+      "target": "node_1772508178955_lpobjmlh2",
+      "sourceHandle": "output",
+      "targetHandle": "input",
+      "type": "default",
+      "style": {
+        "stroke": "#64748b",
+        "strokeWidth": 2
+      }
     }
   ],
   "settings": {
@@ -772,18 +1018,18 @@
     "isTemplate": false
   },
   "createdAt": 1771379924355,
-  "updatedAt": 1772450741563,
+  "updatedAt": 1772511031030,
   "aiConfig": {
     "selectedModelId": "model-1770017328240",
-    "allowReadFlow": true,
-    "allowAiEdit": true,
-    "allowAiAutoExecution": true
+    "allowReadFlow": false,
+    "allowAiEdit": false,
+    "allowAiAutoExecution": false
   },
   "viewState": {
-    "zoom": 1.4999999999999996,
+    "zoom": 0.7999999999999993,
     "pan": {
-      "x": -165.3337397896173,
-      "y": -433.9497193982495
+      "x": -154.51421389068048,
+      "y": 66.71861341273132
     },
     "animationSpeed": 0.01,
     "showGrid": true,

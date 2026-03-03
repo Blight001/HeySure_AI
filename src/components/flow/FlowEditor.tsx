@@ -156,6 +156,7 @@ export function FlowEditor() {
               onSwitchSend={canvasProps.onSwitchSend}
               onTrigger={canvasProps.onTrigger}
               onSimpleTrigger={canvasProps.onSimpleTrigger}
+              onWorkflowControl={canvasProps.onWorkflowControl}
             />
           </div>
 

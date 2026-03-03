@@ -179,6 +179,16 @@ export function FlowNode({
       <div 
         className={`${selected ? 'bg-primary/10' : 'bg-card'} rounded-lg shadow-sm p-3 hover:shadow-md transition-shadow h-full relative z-10 ${contentBorderClass} group`}
         style={contentStyle}
+        onMouseDown={(e) => {
+          // 阻止事件冒泡，防止触发节点拖拽
+          // 允许在内容区域进行交互（如选择文本、拖动滑块）
+          // 只有点击非交互区域时才允许冒泡到外层触发拖拽
+          const target = e.target as HTMLElement;
+          const isInteractive = target.matches('input, textarea, button, a, [role="button"], [role="slider"]');
+          if (isInteractive) {
+            e.stopPropagation();
+          }
+        }}
       >
         {/* 交换端口按钮 - 悬停显示 */}
         <button

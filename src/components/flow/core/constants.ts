@@ -35,6 +35,7 @@ export const NODE_TYPE_ICONS: Record<string, string> = {
   math: '🔢',
   template: '📝',
   code: '💻',
+  workflowRunner: '⚙️',
 };
 
 // 节点类型标签映射
@@ -54,6 +55,7 @@ export const NODE_TYPE_LABELS: Record<string, string> = {
   math: '数学运算',
   template: '模板',
   code: '代码',
+  workflowRunner: '操作流程',
 };
 
 // 快捷键映射
@@ -121,5 +123,6 @@ export const NODE_TYPE_CATEGORY: Record<string, string> = {
   math: 'python',
   template: 'basic',
   code: 'python',
+  workflowRunner: 'basic',
 };
 

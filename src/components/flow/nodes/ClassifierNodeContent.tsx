@@ -1,5 +1,9 @@
+import React from 'react';
 import type { ThemeConfig } from '@/types/theme';
-import { GitBranch, Minus, Plus, X } from 'lucide-react';
+import { GitBranch, Minus, Plus, X, Scissors, Type } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/utils/helpers';
+import { BaseNodeContainer } from './common/BaseNodeContainer';
 
 interface ClassifierNodeContentProps {
   label: string;
@@ -8,10 +12,12 @@ interface ClassifierNodeContentProps {
   portCount: number;
   keywords?: string[];
   activeIndex?: number;
+  trimKeyword?: boolean;
   onPortCountChange: (count: number) => void;
   onAddPort: () => void;
   onRemovePort: () => void;
   onKeywordChange: (index: number, keyword: string) => void;
+  onTrimKeywordChange?: (trim: boolean) => void;
   onClear: () => void;
 }
 
@@ -22,63 +28,90 @@ export function ClassifierNodeContent({
   portCount, 
   keywords = [], 
   activeIndex,
+  trimKeyword = true,
   onPortCountChange, 
   onAddPort, 
-  onRemovePort,
+  onRemovePort, 
   onKeywordChange,
+  onTrimKeywordChange,
   onClear
 }: ClassifierNodeContentProps) {
-  return (
-    <div className="flex flex-col items-center gap-2 mb-1 p-2 min-w-[140px]" 
-         style={{ 
-           color: theme?.textColor,
-           minHeight: `${40 + portCount * 30}px` 
-         }}>
-      <div className="flex items-center gap-2 w-full justify-center relative">
-        <GitBranch size={16} />
-        <span className="font-medium text-sm truncate">{label}</span>
+  
+  const headerActions = (
+    <div className="flex items-center gap-1">
+        {/* Trim toggle */}
+        <Button
+            variant={trimKeyword ? "default" : "ghost"}
+            size="icon"
+            className={cn(
+                "h-5 w-5 rounded-sm", 
+                trimKeyword ? "bg-primary/20 text-primary hover:bg-primary/30" : "text-muted-foreground hover:text-foreground"
+            )}
+            onClick={(e) => { e.stopPropagation(); onTrimKeywordChange?.(!trimKeyword); }}
+            title={trimKeyword ? "移除关键词: 开启" : "移除关键词: 关闭"}
+            style={theme && trimKeyword ? { backgroundColor: `${theme.lineColor}33`, color: theme.lineColor } : undefined}
+        >
+            {trimKeyword ? <Scissors size={10} /> : <Type size={10} />}
+        </Button>
+
         {activeIndex !== undefined && activeIndex !== -1 && (
-            <button 
+            <Button 
+                variant="ghost"
+                size="icon"
                 onClick={(e) => { e.stopPropagation(); onClear(); }}
-                className="absolute -right-1 top-0.5 p-0.5 rounded-full hover:bg-muted/20 opacity-60 hover:opacity-100 transition-opacity"
+                className="h-5 w-5 rounded-full hover:bg-muted/20 text-muted-foreground hover:text-foreground"
                 title="清除状态"
-                style={{ color: theme?.textColor }}
             >
                 <X size={10} />
-            </button>
+            </Button>
         )}
-      </div>
-      
+    </div>
+  );
+
+  return (
+    <BaseNodeContainer
+      label={label}
+      icon={<GitBranch size={16} />}
+      theme={theme}
+      headerActions={headerActions}
+      showStatus={false}
+      width="w-auto"
+      className="min-w-[140px]"
+      contentClassName="p-2 pt-0 flex flex-col items-center gap-2"
+    >
       {/* Port configuration controls - Stepper Style */}
       <div 
-        className="flex items-center justify-between rounded-md border p-0.5 w-full max-w-[100px] bg-background/50 mb-2"
+        className="flex items-center justify-between rounded-md border p-0.5 w-full max-w-[100px] bg-background/50"
         style={{ 
-          borderColor: theme?.nodeBorderColor ? `${theme.nodeBorderColor}80` : undefined, // 50% opacity
+          borderColor: theme?.nodeBorderColor ? `${theme.nodeBorderColor}80` : undefined,
           backgroundColor: theme?.nodeBackgroundColor ? undefined : 'rgba(0,0,0,0.05)'
         }}
       >
-        <button 
+        <Button 
+          variant="ghost"
+          size="icon"
           onClick={(e) => { e.stopPropagation(); onRemovePort(); }}
-          className="p-1 hover:bg-muted/20 rounded disabled:opacity-30 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
+          className="h-5 w-5 p-0 hover:bg-muted/20"
           disabled={portCount <= 1}
           title="减少端口"
-          style={{ color: theme?.textColor }}
         >
           <Minus size={12} />
-        </button>
+        </Button>
 
         <span className="text-xs font-mono font-medium select-none min-w-[20px] text-center">
           {portCount}
         </span>
-
-        <button 
+        
+        <Button 
+          variant="ghost"
+          size="icon"
           onClick={(e) => { e.stopPropagation(); onAddPort(); }}
-          className="p-1 hover:bg-muted/20 rounded transition-colors flex items-center justify-center"
+          className="h-5 w-5 p-0 hover:bg-muted/20"
+          disabled={portCount >= 10}
           title="增加端口"
-          style={{ color: theme?.textColor }}
         >
           <Plus size={12} />
-        </button>
+        </Button>
       </div>
 
       {/* Keywords Inputs */}
@@ -109,6 +142,6 @@ export function ClassifierNodeContent({
           );
         })}
       </div>
-    </div>
+    </BaseNodeContainer>
   );
 }

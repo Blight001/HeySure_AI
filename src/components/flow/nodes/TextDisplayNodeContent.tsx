@@ -11,6 +11,7 @@ import { FileText, Trash2, Maximize2, Minimize2, Plus, RefreshCw, Zap } from 'lu
 import { Button } from '@/components/ui/button';
 import { useState, useEffect, useRef } from 'react';
 import type { ThemeConfig } from '@/types/theme';
+import { BaseNodeContainer } from './common/BaseNodeContainer';
 
 type InputMode = 'overwrite' | 'append' | 'trigger';
 
@@ -172,51 +173,53 @@ export function TextDisplayNodeContent({ data, onClear, onUpdate, theme }: TextD
 
   const displayValue = (data.displayText ?? editValue) || '';
 
-  return (
-    <div className="flex flex-col gap-2 p-1 w-[220px]" style={theme ? { color: theme.textColor } : undefined}>
-      {/* 标题栏 */}
-      <div className="flex items-center justify-between text-sm font-medium text-muted-foreground">
-        <div className="flex items-center gap-2" style={theme ? { color: theme.textColor } : undefined}>
-          <FileText size={14} />
-          <span>文本显示</span>
-        </div>
-        <div className="flex gap-1">
-            {/* 模式切换按钮 */}
-            <Button
-                variant="ghost"
-                size="icon"
-                className="h-6 w-6 nodrag"
-                onClick={cycleInputMode}
-                title={getModeTitle()}
-                style={theme ? { color: theme.textColor } : undefined}
-            >
-                {getModeIcon()}
-            </Button>
-            {/* 展开/收起按钮 */}
-            <Button
-                variant="ghost"
-                size="icon"
-                className="h-6 w-6 nodrag"
-                onClick={handleToggleExpand}
-                title={isExpanded ? "收起内容" : "展开全部内容"}
-                style={theme ? { color: theme.textColor } : undefined}
-            >
-                {isExpanded ? <Minimize2 size={12} /> : <Maximize2 size={12} />}
-            </Button>
-            {/* 清空按钮 */}
-            <Button
-                variant="ghost"
-                size="icon"
-                className="h-6 w-6 nodrag"
-                onClick={handleClear}
-                title="清空内容"
-                style={theme ? { color: theme.textColor } : undefined}
-            >
-                <Trash2 size={12} />
-            </Button>
-        </div>
-      </div>
+  const headerActions = (
+    <>
+        {/* 模式切换按钮 */}
+        <Button
+            variant="ghost"
+            size="icon"
+            className="h-6 w-6 nodrag"
+            onClick={cycleInputMode}
+            title={getModeTitle()}
+            style={theme ? { color: theme.textColor } : undefined}
+        >
+            {getModeIcon()}
+        </Button>
+        {/* 展开/收起按钮 */}
+        <Button
+            variant="ghost"
+            size="icon"
+            className="h-6 w-6 nodrag"
+            onClick={handleToggleExpand}
+            title={isExpanded ? "收起内容" : "展开全部内容"}
+            style={theme ? { color: theme.textColor } : undefined}
+        >
+            {isExpanded ? <Minimize2 size={12} /> : <Maximize2 size={12} />}
+        </Button>
+        {/* 清空按钮 */}
+        <Button
+            variant="ghost"
+            size="icon"
+            className="h-6 w-6 nodrag"
+            onClick={handleClear}
+            title="清空内容"
+            style={theme ? { color: theme.textColor } : undefined}
+        >
+            <Trash2 size={12} />
+        </Button>
+    </>
+  );
 
+  return (
+    <BaseNodeContainer
+      label="文本显示"
+      icon={<FileText size={14} />}
+      theme={theme}
+      headerActions={headerActions}
+      width="w-[220px]"
+      showStatus={false}
+    >
       {/* 可编辑区域 */}
       <textarea
         ref={textareaRef}
@@ -234,6 +237,6 @@ export function TextDisplayNodeContent({ data, onClear, onUpdate, theme }: TextD
         onClick={(e) => e.stopPropagation()}
         onDoubleClick={(e) => e.stopPropagation()}
       />
-    </div>
+    </BaseNodeContainer>
   );
 }

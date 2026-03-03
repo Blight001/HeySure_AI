@@ -9,10 +9,10 @@
  * - 自动保存状态提示
  */
 import React, { useState, useEffect } from 'react';
-import { MindmapHeader } from './components/MindmapHeader';
-import { MindmapToolbar } from './components/MindmapToolbar';
-import { MindmapCanvas } from './components/MindmapCanvas';
-import { MindmapShortcutHelp } from './components/MindmapShortcutHelp';
+import { MindmapHeader } from './header/MindmapHeader';
+import { MindmapToolbar } from './canvas/MindmapToolbar';
+import { MindmapCanvas } from './canvas/MindmapCanvas';
+import { MindmapShortcutHelp } from './canvas/MindmapShortcutHelp';
 import { MindmapFloatingChat } from './chat/MindmapFloatingChat';
 import { MindmapNode } from './types';
 import { useMindmapController } from './hooks/useMindmapController';

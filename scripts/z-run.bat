@@ -1,5 +1,6 @@
 @echo off
 chcp 65001 >nul
+cd ..
 title HeySure AI - 开发模式
 echo ============================================
 echo   HeySure AI - 开发环境启动中...

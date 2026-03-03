@@ -16,6 +16,7 @@ import {
   createAIChatNode,
   generateEdgeId
 } from '../core/types';
+import { extractFlowUpdateActionsFromText } from '@/utils/aiEditProtocol';
 
 // Define UpdateAction types
 export type FlowUpdateAction = 
@@ -159,21 +160,22 @@ ${markdown}
     return `你是一个流程图助手，可以帮助用户修改流程图。
 当前流程图包含以下节点和连线（见上文结构）。
 如需修改流程，请在回复中附加 JSON 数组格式的操作指令。
-操作格式：
-1. 添加节点：{"操作": "添加节点", "节点类型": "AI对话", "标签": "AI助手", "x": 100, "y": 100}
+统一操作格式（推荐）：
+1. 添加节点：{"target":"flow","op":"addNode","nodeType":"aiChat","label":"AI助手","x":100,"y":100}
    （节点类型支持：开始, 结束, 用户输入, AI对话, 文本显示, 开关, 触发器）
-2. 删除节点：{"操作": "删除节点", "节点ID": "节点_id"} (请使用 [] 中显示的ID)
-3. 添加连线：{"操作": "添加连线", "源节点ID": "源节点_id", "目标节点ID": "目标节点_id", "源句柄": "output", "目标句柄": "input"}
-4. 删除连线：{"操作": "删除连线", "连线ID": "连线_id"}
-5. 修改节点数据：{"操作": "修改节点数据", "节点ID": "节点_id", "数据": {"value": "新文本", "label": "新标签", "isOn": true}}
+2. 删除节点：{"target":"flow","op":"deleteNode","nodeId":"节点_id"} (请使用 [] 中显示的ID)
+3. 添加连线：{"target":"flow","op":"addEdge","sourceId":"源节点_id","targetId":"目标节点_id","sourceHandle":"output","targetHandle":"input"}
+4. 删除连线：{"target":"flow","op":"deleteEdge","edgeId":"连线_id"}
+5. 修改节点数据：{"target":"flow","op":"updateNodeData","nodeId":"节点_id","data":{"value":"新文本","label":"新标签","isOn":true}}
    （支持修改文本显示内容、开关状态等。例如打开开关请设置 "isOn": true）
-6. 控制运行：{"操作": "控制运行", "命令": "run"}
+6. 控制运行：{"target":"flow","op":"controlExecution","command":"run"}
    （命令支持：run (开始/继续), pause (暂停), stop (停止)）
-7. 打开流程：{"操作": "打开流程", "流程ID": "flow_id"}
+7. 打开流程：{"target":"flow","op":"openFlow","flowId":"flow_id"}
    （可以直接切换到其他流程图）
 
 ${availableFlows.length > 0 ? `当前可用的流程列表：\n${availableFlows.map(f => `- ${f.name} (ID: ${f.id})`).join('\n')}\n` : ''}
-示例：[{"操作": "添加节点", "节点类型": "AI对话", "标签": "新建AI", "x": 200, "y": 200}]`;
+兼容说明：也兼容旧格式 {"操作":"添加节点"} / {"操作":"删除节点"} 等键名。
+示例：[{"target":"flow","op":"addNode","nodeType":"aiChat","label":"新建AI","x":200,"y":200}]`;
   }, [allowAiEdit, availableFlows]);
 
   const flowAppendixMd = useMemo(() => {
@@ -293,163 +295,9 @@ ${availableFlows.length > 0 ? `当前可用的流程列表：\n${availableFlows.
       return;
     }
 
-    // Helper to find all valid JSON blocks in text
-    const extractAllJsonBlocks = (text: string, startChar: string, endChar: string): any[] => {
-      const results: any[] = [];
-      let startIndex = text.indexOf(startChar);
-      
-      while (startIndex !== -1) {
-        let balance = 0;
-        let endIndex = -1;
-        let inString = false;
-        let escape = false;
-
-        for (let i = startIndex; i < text.length; i++) {
-          const char = text[i];
-          if (escape) { escape = false; continue; }
-          if (char === '\\') { escape = true; continue; }
-          if (char === '"') { inString = !inString; continue; }
-          if (!inString) {
-            if (char === startChar) balance++;
-            else if (char === endChar) {
-              balance--;
-              if (balance === 0) { endIndex = i; break; }
-            }
-          }
-        }
-
-        if (endIndex !== -1) {
-          const potentialJson = text.substring(startIndex, endIndex + 1);
-          try {
-            let cleanJson = potentialJson.replace(/^```json\s*/, '').replace(/^```\s*/, '').replace(/\s*```$/, '');
-            cleanJson = cleanJson.replace(/,\s*([\]}])/g, '$1'); // Remove trailing commas
-            const parsed = JSON.parse(cleanJson);
-            results.push(parsed);
-          } catch (e) { 
-            // Failed to parse, ignore
-          }
-        }
-        startIndex = text.indexOf(startChar, startIndex + 1);
-      }
-      return results;
-    };
-
-    let actions: FlowUpdateAction[] | null = null;
-
-    // Mapping helper to convert Chinese/English JSON to internal FlowUpdateAction
-    const mapAction = (item: any): FlowUpdateAction | null => {
-       if (!item || typeof item !== 'object') return null;
-
-       let type = item.type || item.操作;
-       const typeMap: Record<string, string> = {
-           '添加节点': 'addNode',
-           '删除节点': 'deleteNode',
-           '添加连线': 'addEdge',
-           '删除连线': 'deleteEdge',
-           '修改节点数据': 'updateNodeData',
-           '控制运行': 'controlExecution',
-           '打开流程': 'openFlow',
-           '切换流程': 'openFlow'
-       };
-       if (typeMap[type]) type = typeMap[type];
-       
-       if (!['addNode', 'deleteNode', 'addEdge', 'deleteEdge', 'updateNodeData', 'controlExecution', 'openFlow'].includes(type)) return null;
-
-       const result: any = { type };
-       
-       if (type === 'addNode') {
-           let nodeType = item.nodeType || item.节点类型;
-           const nodeTypeMap: Record<string, string> = {
-               '开始': 'start', 'start': 'start',
-               '结束': 'end', 'end': 'end',
-               '用户输入': 'userInput', 'userInput': 'userInput',
-               '文本显示': 'textDisplay', 'textDisplay': 'textDisplay',
-               'AI对话': 'aiChat', 'aiChat': 'aiChat',
-               '开关': 'switch', 'switch': 'switch',
-               '触发器': 'trigger', 'trigger': 'trigger'
-           };
-           result.nodeType = nodeTypeMap[nodeType] || nodeType;
-           result.label = item.label || item.标签;
-           result.x = item.x;
-           result.y = item.y;
-       } else if (type === 'deleteNode') {
-           result.nodeId = item.nodeId || item.节点ID;
-       } else if (type === 'addEdge') {
-           result.sourceId = item.sourceId || item.源节点ID;
-           result.targetId = item.targetId || item.目标节点ID;
-           result.sourceHandle = item.sourceHandle || item.源句柄;
-           result.targetHandle = item.targetHandle || item.目标句柄;
-       } else if (type === 'deleteEdge') {
-           result.edgeId = item.edgeId || item.连线ID;
-       } else if (type === 'updateNodeData') {
-           result.nodeId = item.nodeId || item.节点ID;
-           result.data = item.data || item.数据;
-       } else if (type === 'controlExecution') {
-           const command = item.command || item.命令;
-           const commandMap: Record<string, string> = {
-               '开始': 'run', 'run': 'run',
-               '运行': 'run',
-               '暂停': 'pause', 'pause': 'pause',
-               '停止': 'stop', 'stop': 'stop'
-           };
-           result.command = commandMap[command] || command;
-       } else if (type === 'openFlow') {
-           result.flowId = item.flowId || item.流程ID;
-       }
-       
-       return result as FlowUpdateAction;
-    };
-    
-    // 1. Try to find an array of actions
-    const potentialArrays = extractAllJsonBlocks(content, '[', ']');
-    for (const parsed of potentialArrays) {
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        const mappedList = parsed.map(mapAction);
-        if (mappedList.every(a => a !== null)) {
-            actions = mappedList as FlowUpdateAction[];
-            break;
-        }
-      }
-    }
-
-    // 2. If no array found, try to find a single action object
-    if (!actions) {
-       const potentialObjects = extractAllJsonBlocks(content, '{', '}');
-       for (const parsed of potentialObjects) {
-          const mapped = mapAction(parsed);
-          if (mapped) {
-             actions = [mapped];
-             break;
-          }
-       }
-    }
-
-    if (actions) {
-       const { aiToReal } = idMapping;
-       const mappedActions = actions.map(action => {
-          const newAction = { ...action };
-          
-          if (newAction.type === 'deleteNode' && newAction.nodeId) {
-             newAction.nodeId = aiToReal.get(newAction.nodeId) || newAction.nodeId;
-          }
-          
-          if (newAction.type === 'addEdge') {
-             if (newAction.sourceId) newAction.sourceId = aiToReal.get(newAction.sourceId) || newAction.sourceId;
-             if (newAction.targetId) newAction.targetId = aiToReal.get(newAction.targetId) || newAction.targetId;
-          }
-          
-          if (newAction.type === 'deleteEdge' && newAction.edgeId) {
-             newAction.edgeId = aiToReal.get(newAction.edgeId) || newAction.edgeId;
-          }
-
-          if (newAction.type === 'updateNodeData' && newAction.nodeId) {
-             newAction.nodeId = aiToReal.get(newAction.nodeId) || newAction.nodeId;
-          }
-          
-          return newAction;
-       });
-
-       applyFlowUpdates(mappedActions);
+    const actions = extractFlowUpdateActionsFromText(content, idMapping);
+    if (actions.length > 0) {
+      applyFlowUpdates(actions);
     }
   }, [allowAiEdit, allowReadFlow, applyFlowUpdates, idMapping]);
 

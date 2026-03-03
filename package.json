@@ -130,6 +130,15 @@
       "dist-electron/**/*",
       "!dist-electron/**/*.map"
     ],
+    "extraResources": [
+      {
+        "from": "resources",
+        "to": ".",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
     "extraFiles": [
       {
         "from": "public/image",

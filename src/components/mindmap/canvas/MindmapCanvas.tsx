@@ -13,7 +13,7 @@ import React, { useCallback, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { MindmapNode, PendingChange } from '../types';
 import type { ThemeConfig } from '@/types/theme';
-import { MindmapNodeItem } from './MindmapNodeItem';
+import { MindmapNodeItem } from '../nodes/MindmapNodeItem';
 import { NODE_WIDTH, NODE_HEIGHT, NODE_COLORS } from '../constants';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';

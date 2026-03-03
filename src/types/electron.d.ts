@@ -96,7 +96,7 @@ interface Window {
     dialogBatchDelete: (ids: string[]) => Promise<any>;
     dialogBatchUpdate: (ids: string[], updates: any) => Promise<any>;
     dialogOpenFile: (options: any) => Promise<any>;
-    messageSend: (data: { dialogId: string; content: string; aiIds?: string[]; id?: string }) => Promise<any>;
+    messageSend: (data: { dialogId: string; content: string; aiIds?: string[]; id?: string; systemPrompt?: string }) => Promise<any>;
     messageList: (data: any) => Promise<any>;
     messageDelete: (data: any) => Promise<any>;
     messageUpdate: (data: any) => Promise<any>;

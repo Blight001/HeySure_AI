@@ -11,6 +11,7 @@ import { useState, useCallback, useMemo } from 'react';
 import { MindmapUpdateAction, PendingChange, MindmapNode } from '../types';
 import { mindmapStorage } from '../services/mindmap-storage';
 import { useToast } from '@/hooks/use-toast';
+import { extractMindmapUpdateActionsFromText } from '@/utils/aiEditProtocol';
 
 interface UseMindmapAIProps {
   nodes: MindmapNode[];
@@ -102,11 +103,13 @@ ${markdown}
       content += `
 如需修改思维导图在尾部加上对应格式的修改请求。
 修改请求格式说明:
-1. 修改节点名称: {"type": "rename", "nodeId": "序号", "name": "新名称"}
-2. 添加子节点: {"type": "add", "parentId": "父序号", "name": "节点名称"}
-3. 删除节点: {"type": "delete", "nodeId": "序号"}
-4. 移动节点: {"type": "move", "nodeId": "序号", "newParentId": "新父序号", "index": 0} (index可选)
-例如:[{"type": "add", "parentId": "1", "name": ""}]`;
+统一操作格式（推荐，和流程图一致）:
+1. 修改节点名称: {"target":"mindmap","op":"rename","nodeId":"序号","name":"新名称"}
+2. 添加子节点: {"target":"mindmap","op":"add","parentId":"父序号","name":"节点名称"}
+3. 删除节点: {"target":"mindmap","op":"delete","nodeId":"序号"}
+4. 移动节点: {"target":"mindmap","op":"move","nodeId":"序号","newParentId":"新父序号","index":0} (index可选)
+兼容说明：也兼容旧格式 {"type":"rename/add/delete/move"}。
+例如:[{"target":"mindmap","op":"add","parentId":"1","name":""}]`;
     }
 
     return { content, idMap: buildMindmapMarkdown(nodes).idMap };
@@ -201,106 +204,20 @@ ${markdown}
   const handleAiResponse = useCallback((content: string) => {
     if (!allowAiEdit || !allowReadMindmap) return;
 
-    // 辅助函数：尝试解析 JSON 结构（数组或对象）
-    const extractJsonBlock = (text: string, startChar: string, endChar: string): any | null => {
-      let startIndex = text.indexOf(startChar);
-      while (startIndex !== -1) {
-        let balance = 0;
-        let endIndex = -1;
-        let inString = false;
-        let escape = false;
-
-        for (let i = startIndex; i < text.length; i++) {
-          const char = text[i];
-          
-          if (escape) {
-            escape = false;
-            continue;
-          }
-
-          if (char === '\\') {
-            escape = true;
-            continue;
-          }
-
-          if (char === '"') {
-            inString = !inString;
-            continue;
-          }
-
-          if (!inString) {
-            if (char === startChar) {
-              balance++;
-            } else if (char === endChar) {
-              balance--;
-              if (balance === 0) {
-                endIndex = i;
-                break;
-              }
-            }
-          }
-        }
-
-        if (endIndex !== -1) {
-          const potentialJson = text.substring(startIndex, endIndex + 1);
-          try {
-            // 尝试解析
-            // 预处理：移除 Markdown 代码块标记（如果存在于截取片段内）
-            let cleanJson = potentialJson.replace(/^```json\s*/, '').replace(/^```\s*/, '').replace(/\s*```$/, '');
-             // 预处理：修复末尾逗号
-            cleanJson = cleanJson.replace(/,\s*([\]}])/g, '$1');
-            
-            const parsed = JSON.parse(cleanJson);
-            return parsed;
-          } catch (e) {
-            // 解析失败，继续寻找下一个起始符
-          }
-        }
-        
-        // 如果当前块不是有效 JSON，寻找下一个起始符
-        startIndex = text.indexOf(startChar, startIndex + 1);
-      }
-      return null;
-    };
-
-    let actions: MindmapUpdateAction[] | null = null;
-
-    // 1. 尝试解析数组
-    const parsedArray = extractJsonBlock(content, '[', ']');
-    if (Array.isArray(parsedArray) && parsedArray.length > 0) {
-      const firstItem = parsedArray[0];
-      if (firstItem && typeof firstItem === 'object' && 'type' in firstItem) {
-         actions = parsedArray as MindmapUpdateAction[];
-      }
+    const actions = extractMindmapUpdateActionsFromText(content);
+    if (actions.length > 0) {
+      const { idMap } = buildMindmapMarkdown(nodes);
+      void applyMindmapUpdates(actions, idMap);
+      return;
     }
 
-    // 2. 如果没有数组，尝试解析单个对象
-    if (!actions) {
-       const parsedObject = extractJsonBlock(content, '{', '}');
-       if (parsedObject && typeof parsedObject === 'object' && 'type' in parsedObject) {
-          // 确保它看起来像是一个操作指令
-          if (['add', 'delete', 'rename', 'move'].includes((parsedObject as any).type)) {
-             actions = [parsedObject as MindmapUpdateAction];
-          }
-       }
-    }
-
-    if (actions) {
-       // 获取当前的序号->真实ID映射
-       const { idMap } = buildMindmapMarkdown(nodes);
-       void applyMindmapUpdates(actions, idMap);
-    } else {
-      // 只有在明确看到类似 JSON 结构但解析失败时才报错，或者静默失败
-      // 这里如果完全没找到，可能 AI 只是在闲聊，不报错
-      // 但为了调试，我们可以检查是否包含 "type" 关键字
-      if (content.includes('"type"')) {
-         console.warn('Failed to extract valid JSON actions from content:', content);
-         toast({
-            title: 'AI 响应解析警告',
-            description: '检测到可能的操作指令，但无法解析为有效的 JSON 格式',
-            variant: 'destructive'
-          });
-      }
+    if (content.includes('"type"') || content.includes('"op"') || content.includes('"target"')) {
+      console.warn('Failed to extract valid JSON actions from content:', content);
+      toast({
+        title: 'AI 响应解析警告',
+        description: '检测到可能的操作指令，但无法解析为有效的 JSON 格式',
+        variant: 'destructive'
+      });
     }
   }, [allowAiEdit, allowReadMindmap, nodes, buildMindmapMarkdown, applyMindmapUpdates, toast]);
 

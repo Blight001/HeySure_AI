@@ -92,8 +92,44 @@ export function FlowCanvasEdges({
         targetY = calculatePortY(targetNode.position.y, targetOutputIndex, targetNode.outputs.length, targetSize.height);
       }
 
-      const controlOffset = Math.abs(targetX - sourceX) * 0.5;
-      const pathD = `M ${sourceX} ${sourceY} C ${sourceX + controlOffset} ${sourceY}, ${targetX - controlOffset} ${targetY}, ${targetX} ${targetY}`;
+      // 动态判断连线方向与控制点计算
+      // 1. 确定端口的基础方向向量
+      const sourceDir = isSourceReversed ? -1 : 1; // 1 = Right, -1 = Left
+      const targetDir = isTargetReversed ? 1 : -1; // -1 = Left (Input standard), 1 = Right (Input reversed)
+
+      const deltaX = targetX - sourceX;
+      const deltaY = targetY - sourceY;
+      const dist = Math.sqrt(deltaX ** 2 + deltaY ** 2);
+
+      // 2. 智能计算控制点偏移量 (Smart Bezier)
+      // 基础偏移：基于水平距离，但也受总距离影响
+      let controlDist = Math.abs(deltaX) * 0.5;
+
+      // 场景 A: 垂直排列优化
+      // 当水平距离较近，但垂直距离较远时，强制增加水平伸出距离，形成 S 型
+      if (Math.abs(deltaX) < 150 && Math.abs(deltaY) > 30) {
+          controlDist = Math.max(Math.abs(deltaX) * 0.8, Math.min(Math.abs(deltaY) * 0.4, 150));
+      }
+
+      // 场景 B: 回环优化 (Loopback)
+      // 判断是否发生“视觉回环”：即目标在源的“后方”
+      // 对于标准布局(L->R)，targetX < sourceX 即为回环
+      const isLoopback = (sourceDir === 1 && targetX < sourceX) || (sourceDir === -1 && targetX > sourceX);
+      
+      if (isLoopback) {
+          controlDist = Math.max(Math.abs(deltaX) * 0.6, Math.min(Math.abs(deltaY) * 0.6, 200));
+          controlDist = Math.max(controlDist, 120);
+      } else {
+          controlDist = Math.max(controlDist, 60);
+      }
+
+      // 3. 生成贝塞尔路径
+      const c1x = sourceX + sourceDir * controlDist;
+      const c1y = sourceY;
+      const c2x = targetX + targetDir * controlDist;
+      const c2y = targetY;
+
+      const pathD = `M ${sourceX} ${sourceY} C ${c1x} ${c1y}, ${c2x} ${c2y}, ${targetX} ${targetY}`;
       const isAnimating = animatingEdges.has(edge.id);
       const hitStrokeWidth = Math.max(6, connectionStrokeWidth);
       const pendingStatus = pendingChangeState.edges[edge.id];
@@ -147,19 +183,74 @@ export function FlowCanvasEdges({
     if (!sourceNode) return null;
     
     const sourceSize = nodeSizes.get(sourceNode.id) || { width: NODE_WIDTH, height: NODE_HEIGHT };
-    let startX = sourceNode.position.x + sourceSize.width;
+    const isSourceReversed = sourceNode.data?.layout === 'reversed';
+    
+    let startX = isSourceReversed ? sourceNode.position.x : sourceNode.position.x + sourceSize.width;
     let startY = calculatePortY(sourceNode.position.y, 0, 1, sourceSize.height);
     
     if (connectionState.sourceHandleType === 'input') {
-      startX = sourceNode.position.x;
+      startX = isSourceReversed ? sourceNode.position.x + sourceSize.width : sourceNode.position.x;
       const idx = sourceNode.inputs.findIndex(i => i.id === connectionState.sourceHandleId);
       if (idx !== -1) startY = calculatePortY(sourceNode.position.y, idx, sourceNode.inputs.length, sourceSize.height);
     } else {
+      startX = isSourceReversed ? sourceNode.position.x : sourceNode.position.x + sourceSize.width;
       const idx = sourceNode.outputs.findIndex(o => o.id === connectionState.sourceHandleId);
       if (idx !== -1) startY = calculatePortY(sourceNode.position.y, idx, sourceNode.outputs.length, sourceSize.height);
     }
 
-    return <path d={`M ${startX} ${startY} L ${connectionState.mouseX} ${connectionState.mouseY}`} stroke="#3b82f6" strokeWidth={connectionStrokeWidth} strokeDasharray="5,5" fill="none" className="pointer-events-none" />;
+    // 动态计算控制点方向
+    // Determine source direction based on handle type and layout
+    let sourceDir = 1;
+    if (connectionState.sourceHandleType === 'input') {
+        sourceDir = isSourceReversed ? 1 : -1;
+    } else {
+        sourceDir = isSourceReversed ? -1 : 1;
+    }
+
+    const deltaX = connectionState.mouseX - startX;
+    const deltaY = connectionState.mouseY - startY;
+    const dist = Math.sqrt(deltaX ** 2 + deltaY ** 2);
+    
+    // 智能偏移量计算
+    let controlDist = Math.abs(deltaX) * 0.5;
+
+    // 场景 A: 垂直排列优化
+    if (Math.abs(deltaX) < 150 && Math.abs(deltaY) > 30) {
+        controlDist = Math.max(Math.abs(deltaX) * 0.8, Math.min(Math.abs(deltaY) * 0.4, 150));
+    }
+
+    // 场景 B: 回环优化
+    // 鼠标是否在源的"后方"
+    const isLoopback = (sourceDir === 1 && deltaX < 0) || (sourceDir === -1 && deltaX > 0);
+
+    if (isLoopback) {
+        controlDist = Math.max(Math.abs(deltaX) * 0.6, Math.min(Math.abs(deltaY) * 0.6, 200));
+        controlDist = Math.max(controlDist, 120);
+    } else {
+        controlDist = Math.max(controlDist, 60);
+    }
+
+    // 目标方向 (鼠标端)
+    // 总是试图以相反方向进入，形成平滑曲线
+    // 如果鼠标在右边 (deltaX > 0)，targetDir 应为 -1 (向左伸出控制点)
+    // 如果鼠标在左边 (deltaX < 0)，targetDir 应为 1 (向右伸出控制点)
+    // 但如果发生了回环，我们可能希望保持方向一致以形成 C 型
+    
+    let targetDir = deltaX > 0 ? -1 : 1;
+    if (isLoopback) {
+         // 在回环情况下，如果源向右且鼠标在左，鼠标端控制点应该向右 (1)，这样形成 C 型
+         // 如果源向左且鼠标在右，鼠标端控制点应该向左 (-1)
+         targetDir = sourceDir; 
+    }
+
+    const c1x = startX + sourceDir * controlDist;
+    const c1y = startY;
+    const c2x = connectionState.mouseX + targetDir * controlDist;
+    const c2y = connectionState.mouseY;
+
+    const pathD = `M ${startX} ${startY} C ${c1x} ${c1y}, ${c2x} ${c2y}, ${connectionState.mouseX} ${connectionState.mouseY}`;
+
+    return <path d={pathD} stroke="#3b82f6" strokeWidth={connectionStrokeWidth} strokeDasharray="5,5" fill="none" className="pointer-events-none" />;
   }, [connectionState, nodes, nodeSizes, connectionStrokeWidth]);
 
   return (

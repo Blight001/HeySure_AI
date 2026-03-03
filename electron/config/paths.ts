@@ -113,9 +113,7 @@ export async function ensureDataDir(): Promise<void> {
   if (!existsSync(FLOW_DIR)) {
     await fs.mkdir(FLOW_DIR, { recursive: true });
   }
-  if (!existsSync(PYTHON_SCRIPT_DIR)) {
-    await fs.mkdir(PYTHON_SCRIPT_DIR, { recursive: true });
-  }
+  // PYTHON_SCRIPT_DIR is now in resources, no need to create it in data dir
 }
 
 
@@ -155,12 +153,16 @@ export const getMindmapFile = (mapId: string) =>
 export const getMindmapNodeFile = getMindmapFile;
 
 // 思维导图脚本文件目录
-export const MINDMAP_SCRIPT_DIR = join(DATA_DIR, 'script');
+export const MINDMAP_SCRIPT_DIR = is.dev
+  ? join(PROJECT_ROOT, 'resources', 'python')
+  : join(process.resourcesPath, 'python');
 
 // ========== Python 脚本路径 ==========
 
 // Python 脚本主目录
-export const PYTHON_SCRIPT_DIR = join(DATA_DIR, 'script');
+export const PYTHON_SCRIPT_DIR = is.dev
+  ? join(PROJECT_ROOT, 'resources', 'python')
+  : join(process.resourcesPath, 'python');
 
 // Python 模式脚本目录
 export const PYTHON_MODE_DIR = join(PYTHON_SCRIPT_DIR, 'mode');

@@ -10,11 +10,12 @@ HeySure AI 一键备份脚本
 - 默认使用 ZIP 压缩备份
 
 备份内容：
-- data/      - 用户数据（对话、流程、思维导图、脚本、配置等）
-- python/    - Python 脚本
+- data/      - 用户数据（对话、流程、思维导图、配置等）
+- resources/ - 资源文件（Python 脚本等）
 - src/       - 前端源代码（React）
 - electron/  - Electron 主进程代码
 - public/    - 静态资源
+- scripts/   - 维护脚本
 """
 
 import os
@@ -40,8 +41,8 @@ class BackupScript:
     """HeySure AI 备份脚本"""
 
     def __init__(self):
-        # 项目根目录
-        self.project_root = Path(__file__).parent.resolve()
+        # 项目根目录 (脚本在 scripts/ 目录下，所以是上上级目录)
+        self.project_root = Path(__file__).parent.parent.resolve()
 
         # backup 文件夹路径
         self.backup_dir = self.project_root / "backup"
@@ -52,10 +53,11 @@ class BackupScript:
         # 需要备份的目录（相对路径）
         self.backup_dirs: List[Path] = [
             Path("data"),            # 用户数据
-            Path("python"),          # Python 脚本
+            Path("resources"),       # 资源文件（含 Python 脚本）
             Path("src"),             # 前端源代码
             Path("electron"),        # Electron 主进程代码
-            Path("public"),           # 静态资源
+            Path("public"),          # 静态资源
+            Path("scripts"),         # 脚本文件
         ]
 
         # 需要备份的配置文件（相对路径）

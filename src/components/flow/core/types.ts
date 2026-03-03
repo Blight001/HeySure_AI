@@ -76,6 +76,7 @@ export const BASIC_NODE_TYPES: NodeTypeInfo[] = [
   { type: 'userInput', label: '用户输入', icon: '👤', category: 'basic', defaultInputs: [], defaultOutputs: [{ id: 'output', type: 'output', label: '输出' }] },
   { type: 'textDisplay', label: '文本显示', icon: '📄', category: 'basic', defaultInputs: [{ id: 'input', type: 'input', label: '输入' }], defaultOutputs: [{ id: 'output', type: 'output', label: '输出' }] },
   { type: 'classifier', label: '分类器', icon: '🔀', category: 'basic', defaultInputs: [{ id: 'input', type: 'input', label: '信号输入' }], defaultOutputs: [{ id: 'output1', type: 'output', label: '输出 1' }, { id: 'output2', type: 'output', label: '输出 2' }, { id: 'output3', type: 'output', label: '输出 3' }] },
+  { type: 'workflowRunner', label: '操作流程', icon: '⚙️', category: 'basic', defaultInputs: [{ id: 'input', type: 'input', label: '流程名' }], defaultOutputs: [{ id: 'output', type: 'output', label: '执行结果' }] },
 ];
 
 // ============ 节点创建工厂函数 ============

@@ -14,6 +14,9 @@ import { useToast } from '@/hooks/use-toast';
 import type { FlowNode, FlowEdge } from '@/types/flow';
 import { mindmapStorage } from '@/components/mindmap/services/mindmap-storage';
 import { mindmapToMarkdown } from '@/components/mindmap/utils/mindmap-to-markdown';
+import { parseMindmapInfoPayload, parseWorkflowRunnerPayload } from '@/utils/controlProtocol';
+import { HeadlessFlowExecutor } from '../services/HeadlessFlowExecutor';
+import { flowStorage } from '../flow-storage';
 
 interface UseFlowExecutionProps {
   nodes: FlowNode[];
@@ -40,6 +43,9 @@ export function useFlowExecution({
   const pendingTasksRef = useRef<Array<() => void>>([]);
   const resetTimerRef = useRef<NodeJS.Timeout | null>(null);
   const isStoppedRef = useRef(false);
+  
+  // 存储子流程执行器实例
+  const workflowRunnersRef = useRef<Map<string, HeadlessFlowExecutor>>(new Map());
 
   // 同步状态到 ref
   useEffect(() => {
@@ -253,6 +259,8 @@ export function useFlowExecution({
           handleUserInputSend(targetNode.id, undefined, isForced);
         } else if (targetNode.type === 'mindmapInfo') {
           handleMindmapInfoExecution(targetNode.id, payload, isForced);
+        } else if (targetNode.type === 'workflowRunner') {
+          handleWorkflowRunnerExecution(targetNode.id, payload, isForced);
         } else if (targetNode.type === 'end') {
           stopFlow();
           if (resetTimerRef.current) clearTimeout(resetTimerRef.current);
@@ -337,7 +345,17 @@ export function useFlowExecution({
      }
 
      // 正常数据处理 (Overwrite / Append)
-     const stringPayload = String(payload ?? '');
+     let stringPayload = '';
+     if (typeof payload === 'object' && payload !== null) {
+         try {
+             stringPayload = JSON.stringify(payload, null, 2);
+         } catch (e) {
+             stringPayload = String(payload);
+         }
+     } else {
+         stringPayload = String(payload ?? '');
+     }
+
      let newDisplayText = stringPayload;
      
      if (inputMode === 'append') {
@@ -654,6 +672,21 @@ export function useFlowExecution({
     if (keywordIndex !== -1) {
       outputIndex = keywordIndex;
       console.log(`[Classifier] Keyword match: "${keywords[keywordIndex]}" -> Output Index ${outputIndex}`);
+      
+      // 处理关键词移除逻辑
+      const trimKeyword = node.data?.trimKeyword !== false; // 默认为 true
+      if (trimKeyword && typeof payload === 'string') {
+          const keyword = keywords[keywordIndex];
+          // 仅当 payload 以关键词开头时移除，或者替换所有出现？
+          // 通常是前缀命令模式，比如 "tool: open browser" -> " open browser"
+          // 这里使用简单的 replace，只替换第一次出现
+          // 更好的体验可能是：如果关键词在开头，移除它并trim
+          if (payloadStr.startsWith(keyword)) {
+              payload = payloadStr.slice(keyword.length).trim();
+          } else {
+              payload = payloadStr.replace(keyword, '').trim();
+          }
+      }
     } else {
       // 2. Numeric index fallback
       let value = parseInt(String(payload), 10);
@@ -959,6 +992,182 @@ export function useFlowExecution({
     }
   }, [nodes, setNodes, triggerDataTransfer, toast]);
 
+  const handleWorkflowRunnerExecution = useCallback((nodeId: string, payload: any, isForced: boolean = false) => {
+    const node = nodesRef.current.find(n => n.id === nodeId);
+    if (!node) return;
+
+    const parsed = parseWorkflowRunnerPayload(payload, node.data?.targetFlowName || '');
+    const targetFlowName = parsed.flowName;
+    const command = parsed.command;
+    const inputData = parsed.input;
+    const outputMode = parsed.outputMode;
+
+    // 允许空 flowName 用于 list 命令，但对于其他命令 flowName 不能为空
+    if (!targetFlowName && command !== 'list') {
+        console.warn(`[WorkflowRunner] 未指定目标流程名，输入:`, payload);
+        return;
+    }
+
+    if (command === 'list') {
+        // 仅返回流程名称列表，过滤掉没有名称的（可能是临时节点或未命名流程）
+        const flows = flowStorage.getAllFlows()
+            .filter(f => f.name && f.name.trim() !== '')
+            .map(f => f.name);
+            
+        // 触发输出
+        triggerDataTransfer(nodeId, flows, 'output', isForced);
+        return;
+    }
+
+    // 处理停止/暂停指令
+    if (command === 'stop' || command === 'pause') {
+        const instances = node.data?.instances || [];
+        const targetInstances = instances.filter((i: any) => i.workflowName === targetFlowName && i.status === 'running');
+        
+        targetInstances.forEach((inst: any) => {
+            const executor = workflowRunnersRef.current.get(inst.id);
+            if (executor) {
+                if (command === 'stop') executor.stop();
+                if (command === 'pause') executor.pause();
+                
+                // 这里我们不需要手动 setNodes 更新状态，因为 executor.stop() 会触发 internal status change
+                // 但 HeadlessExecutor 的 stop 是同步的，可能不触发 update callback?
+                // 检查 HeadlessFlowExecutor: stop() 只是设置 status='idle'，没有调用 updateNode/callback
+                // 所以这里需要手动更新 UI 状态
+                
+                setNodes(prev => prev.map(n => {
+                    if (n.id === nodeId) {
+                        const newInstances = (n.data.instances || []).map((i: any) => 
+                            i.id === inst.id ? { ...i, status: command === 'stop' ? 'completed' : 'paused' } : i
+                        );
+                        return { ...n, data: { ...n.data, instances: newInstances } };
+                    }
+                    return n;
+                }));
+            }
+        });
+        return;
+    }
+
+    // 查找流程定义
+    const allFlows = flowStorage.getAllFlows();
+    const targetFlow = allFlows.find(f => f.name === targetFlowName);
+
+    if (!targetFlow) {
+        toast({
+            title: "流程启动失败",
+            description: `找不到名为 "${targetFlowName}" 的流程`,
+            variant: "destructive"
+        });
+        return;
+    }
+
+    const instanceId = uuidv4();
+
+    // 创建执行器
+    const executor = new HeadlessFlowExecutor(targetFlow, {
+        outputMode,
+        onNodeUpdate: (subNodeId, subNodeData) => {
+            setNodes(prev => {
+                 return prev.map(n => {
+                     if (n.id === nodeId) {
+                         const currentInstances = n.data?.instances || [];
+                         const instanceIndex = currentInstances.findIndex((i: any) => i.id === instanceId);
+                         if (instanceIndex === -1) return n;
+
+                         const exec = workflowRunnersRef.current.get(instanceId);
+                         if (!exec) return n;
+
+                         const progress = exec.getProgress();
+                         const status = exec.getStatus();
+                         const runningNodes = exec.getRunningNodeLabels();
+                         
+                         const currentInst = currentInstances[instanceIndex];
+                         if (currentInst && currentInst.status === status && 
+                             currentInst.progress.completed === progress.completed && 
+                             currentInst.progress.running === progress.running &&
+                             JSON.stringify(currentInst.runningNodes) === JSON.stringify(runningNodes)) {
+                             return n;
+                         }
+
+                         const newInstances = [...currentInstances];
+                         newInstances[instanceIndex] = {
+                             ...currentInst,
+                             status,
+                             progress,
+                             runningNodes
+                         };
+                         return { ...n, data: { ...n.data, instances: newInstances } };
+                     }
+                     return n;
+                 });
+            });
+        },
+        onFlowComplete: (output) => {
+             // 只有当流程真正完成时才触发下游
+             triggerDataTransfer(nodeId, output, 'output', isForced);
+        },
+        onFlowError: (err: any) => {
+             toast({
+                title: `子流程 "${targetFlowName}" 出错`,
+                description: err.message,
+                variant: "destructive"
+             });
+        }
+    });
+
+    workflowRunnersRef.current.set(instanceId, executor);
+
+    // 初始化实例状态到节点数据
+    setNodes(prev => prev.map(n => {
+        if (n.id === nodeId) {
+            const instances = n.data?.instances || [];
+            return {
+                ...n,
+                data: {
+                    ...n.data,
+                    instances: [...instances, {
+                        id: instanceId,
+                        workflowName: targetFlowName,
+                        status: 'running',
+                        progress: { total: targetFlow.nodes.length, completed: 0, running: 0 },
+                        runningNodes: [],
+                        startTime: Date.now()
+                    }]
+                }
+            };
+        }
+        return n;
+    }));
+
+    // 启动
+    executor.start(inputData);
+
+  }, [nodes, setNodes, triggerDataTransfer, toast]);
+
+  const handleWorkflowControl = useCallback((nodeId: string, instanceId: string, command: 'pause' | 'resume' | 'stop') => {
+      const node = nodesRef.current.find(n => n.id === nodeId);
+      if (!node) return;
+
+      const executor = workflowRunnersRef.current.get(instanceId);
+      if (!executor) return;
+
+      if (command === 'pause') executor.pause();
+      if (command === 'resume') executor.resume();
+      if (command === 'stop') executor.stop();
+
+      // 手动更新 UI 状态，因为 HeadlessExecutor 的控制方法可能不触发回调（或者是同步的）
+      setNodes(prev => prev.map(n => {
+          if (n.id === nodeId) {
+              const newInstances = (n.data.instances || []).map((i: any) => 
+                  i.id === instanceId ? { ...i, status: command === 'stop' ? 'completed' : command === 'pause' ? 'paused' : 'running' } : i
+              );
+              return { ...n, data: { ...n.data, instances: newInstances } };
+          }
+          return n;
+      }));
+  }, [setNodes]);
+
   const handleMindmapInfoExecution = useCallback(async (nodeId: string, payload: any, isForced: boolean = false) => {
     const node = nodes.find(n => n.id === nodeId);
     if (!node) return;
@@ -976,113 +1185,70 @@ export function useFlowExecution({
       
       let mapData = mindmapStorage.getCurrentMap();
       let output = '';
-      let mapName = mapData?.name || '';
+      let currentMapName = mapData?.name || '';
       const infoType = node.data?.infoType || 'markdown';
       
-      // 解析指令
-      let isCommand = false;
-      let targetMapName = '';
-      let targetNodeName = '';
-      let depth = 1;
+      const parsed = parseMindmapInfoPayload(payload, {
+        currentNodeNames: mapData?.nodes?.map(n => n.name) || []
+      });
 
-      // 简单的指令解析逻辑
-      // 支持格式：
-      // 1. "files" / "list" -> 文件列表
-      // 2. "map:名称" -> 切换/指定导图
-      // 3. "node:名称" -> 指定节点
-      // 4. "depth:数字" -> 指定深度
-      // 5. 纯文本如果匹配当前导图的节点名，视为指定节点
-      
-      if (typeof payload === 'string' && payload.trim()) {
-        const p = payload.trim();
-        
-        // 文件列表指令
-        if (/^(files|list|ls|文件列表|导图列表)$/i.test(p)) {
-            const maps = mindmapStorage.getMapsInCategory();
-            output = "思维导图文件列表:\n" + maps.map(m => `- ${m.name} (ID: ${m.id})`).join('\n');
-            isCommand = true;
-        } else {
-            // 解析参数
-            const mapMatch = p.match(/(?:map|导图)[:：]\s*([^\s]+)/i);
-            if (mapMatch) targetMapName = mapMatch[1];
+      const { command, mapName: targetMapName, nodeName: targetNodeName, depth } = parsed;
 
-            const nodeMatch = p.match(/(?:node|节点)[:：]\s*([^\s]+)/i);
-            if (nodeMatch) {
-                targetNodeName = nodeMatch[1];
-            }
-
-            const depthMatch = p.match(/(?:depth|深度|level|层级)[:：]\s*(\d+)/i);
-            if (depthMatch) depth = parseInt(depthMatch[1], 10);
-            
-            // 如果没有显式指定 node，但 payload 匹配当前导图中的某个节点名
-            if (!targetNodeName && !mapMatch && !depthMatch && mapData) {
-                // 检查 payload 是否就是节点名
-                // 为了避免误匹配普通文本，这里要求完全匹配
-                if (mapData.nodes.some(n => n.name === p)) {
-                    targetNodeName = p;
-                    isCommand = true;
-                }
-            }
-
-            if (mapMatch || nodeMatch || depthMatch) {
-                isCommand = true;
-            }
-        }
+      // 1. 处理 List 指令
+      if (command === 'list') {
+        const maps = mindmapStorage.getMapsInCategory();
+        output = "思维导图文件列表:\n" + maps.map(m => `- ${m.name} (ID: ${m.id})`).join('\n');
       }
+      // 2. 处理 Get 指令 (指定了导图或节点)
+      else if (targetMapName || targetNodeName) {
+         // 如果指定了导图，尝试切换上下文
+         if (targetMapName) {
+            const maps = mindmapStorage.getMapsInCategory();
+            const foundMap = maps.find(m => m.name === targetMapName);
+            if (foundMap) {
+                mapData = foundMap;
+                currentMapName = foundMap.name;
+            } else {
+                output = `未找到名为 "${targetMapName}" 的思维导图。`;
+            }
+         }
 
-      if (isCommand && !output) {
-          // 如果指定了导图，先尝试切换上下文（仅用于本次查询）
-          if (targetMapName) {
-              const maps = mindmapStorage.getMapsInCategory();
-              const foundMap = maps.find(m => m.name === targetMapName);
-              if (foundMap) {
-                  mapData = foundMap;
-                  mapName = foundMap.name;
-              } else {
-                  output = `未找到名为 "${targetMapName}" 的思维导图。`;
-              }
-          }
+         if (!output) {
+             if (!mapData) {
+                 output = "未找到思维导图数据。";
+             } else {
+                 let targetNodeId = undefined;
+                 if (targetNodeName) {
+                     const targetNode = mapData.nodes.find(n => n.name === targetNodeName);
+                     if (targetNode) {
+                         targetNodeId = targetNode.id;
+                     } else {
+                          output = `在导图 "${currentMapName}" 中未找到节点 "${targetNodeName}"。`;
+                     }
+                 }
 
-          if (!output) {
-              if (!mapData) {
-                  output = "未找到思维导图数据。";
-              } else {
-                  let targetNodeId = undefined;
-                  if (targetNodeName) {
-                      const targetNode = mapData.nodes.find(n => n.name === targetNodeName);
-                      if (targetNode) {
-                          targetNodeId = targetNode.id;
-                      } else {
-                           output = `在导图 "${mapName}" 中未找到节点 "${targetNodeName}"。`;
-                      }
-                  }
-
-                  if (!output) {
-                      // 使用 mindmapToMarkdown 获取指定结构
-                      // 如果指定了 targetNodeName，depth 默认为 1（只看直接子级）
-                      // 除非显式指定了 depth
-                      // 用户需求：获取指定某一个思维导图或节点的n级子节点，默认为1级
-                      
-                      const result = mindmapToMarkdown(mapData.nodes, {
-                          rootId: targetNodeId,
-                          maxDepth: depth
-                      });
-                      
-                      const depthStr = depth === Infinity ? "全部" : `${depth}级`;
-                      const targetStr = targetNodeName ? `节点 "${targetNodeName}"` : `导图 "${mapName}"`;
-                      
-                      if (!result) {
-                          output = `${targetStr} 下无内容 (深度: ${depthStr})`;
-                      } else {
-                          output = `${targetStr} 的子节点 (深度: ${depthStr}):\n${result}`;
-                      }
-                  }
-              }
-          }
-      } else if (!output) {
-        // 如果不是指令，或者是空指令，或者是触发器信号，则回退到 infoType 配置
+                 if (!output) {
+                     const result = mindmapToMarkdown(mapData.nodes, {
+                         rootId: targetNodeId,
+                         maxDepth: depth
+                     });
+                     
+                     const depthStr = depth === Infinity ? "全部" : `${depth}级`;
+                     const targetStr = targetNodeName ? `节点 "${targetNodeName}"` : `导图 "${currentMapName}"`;
+                     
+                     if (!result) {
+                         output = `${targetStr} 下无内容 (深度: ${depthStr})`;
+                     } else {
+                         output = `${targetStr} 的子节点 (深度: ${depthStr}):\n${result}`;
+                     }
+                 }
+             }
+         }
+      }
+      // 3. 回退到 infoType 配置 (无特定指令参数)
+      else {
         if (mapData && mapData.nodes) {
-            mapName = mapData.name;
+            currentMapName = mapData.name;
             
             switch (infoType) {
             case 'json':
@@ -1100,14 +1266,13 @@ export function useFlowExecution({
                 break;
                 
             case 'summary':
-                // 获取根节点和一级子节点
                 const root = mapData.nodes.find((n: any) => n.isRoot);
                 if (root) {
-                const children = root.children?.map((id: string) => mapData!.nodes.find((n: any) => n.id === id)).filter(Boolean);
-                const childrenNames = children?.map((c: any) => c.name).join('、');
-                output = `思维导图摘要:\n中心主题: ${root.name}\n主要分支: ${childrenNames || '无'}`;
+                    const children = root.children?.map((id: string) => mapData!.nodes.find((n: any) => n.id === id)).filter(Boolean);
+                    const childrenNames = children?.map((c: any) => c.name).join('、');
+                    output = `思维导图摘要:\n中心主题: ${root.name}\n主要分支: ${childrenNames || '无'}`;
                 } else {
-                output = '未找到中心主题';
+                    output = '未找到中心主题';
                 }
                 break;
                 
@@ -1127,7 +1292,7 @@ export function useFlowExecution({
         }
       }
 
-      // 模拟一点延迟以显示状态变化
+      // 模拟延迟
       await new Promise(resolve => setTimeout(resolve, 300));
 
       setNodes(prev => prev.map(n =>
@@ -1138,7 +1303,7 @@ export function useFlowExecution({
               ...n.data,
               status: 'completed',
               value: output,
-              mapName: mapName,
+              mapName: currentMapName,
               lastUpdate: new Date().toLocaleTimeString()
             }
           }
@@ -1173,6 +1338,8 @@ export function useFlowExecution({
     handleSimpleTrigger,
     handleTextDisplayExecution,
     handleMindmapInfoExecution,
+    handleWorkflowRunnerExecution,
+    handleWorkflowControl,
     flowStatus,
     runFlow,
     pauseFlow,
