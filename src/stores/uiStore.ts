@@ -32,8 +32,8 @@ interface UiState {
   loadingMessage: string;
 
   // 对话模式
-  chatMode: 'default' | 'mindmap' | 'flow';
-  setChatMode: (mode: 'default' | 'mindmap' | 'flow') => void;
+  chatMode: 'default' | 'mindmap' | 'flow' | 'process_flow';
+  setChatMode: (mode: 'default' | 'mindmap' | 'flow' | 'process_flow') => void;
 
   // Actions - 侧边栏
   setSidebarCollapsed: (collapsed: boolean) => void;
@@ -70,7 +70,7 @@ const initialState = {
   showShortcutsPanel: false,
   globalLoading: false,
   loadingMessage: '',
-  chatMode: 'default' as 'default' | 'mindmap' | 'flow',
+  chatMode: 'default' as 'default' | 'mindmap' | 'flow' | 'process_flow',
 };
 
 export const useUiStore = create<UiState>()((set, get) => ({

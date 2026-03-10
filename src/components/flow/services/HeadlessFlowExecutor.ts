@@ -45,14 +45,25 @@ export class HeadlessFlowExecutor {
     });
 
     const startNodes = this.nodes.filter(n => n.type === 'start');
-    if (startNodes.length === 0) {
-        this.options.onFlowError?.(new Error("No start node found in workflow"));
+    if (startNodes.length > 0) {
+      startNodes.forEach(node => {
+        this.triggerDataTransfer(node.id, input ?? { button: true }, 'output');
+      });
+    } else {
+      // Fallback: Check for UserInput nodes with values (injected by caller)
+      const userInputNodes = this.nodes.filter(n => n.type === 'userInput' && n.data?.value);
+      if (userInputNodes.length > 0) {
+        userInputNodes.forEach(node => {
+           // Mark as completed for visualization/state purposes if needed
+           this.updateNode(node.id, { status: 'completed' });
+           // Trigger downstream nodes with the value
+           this.triggerDataTransfer(node.id, node.data.value, 'output');
+        });
+      } else {
+        this.options.onFlowError?.(new Error("No start node or active user input found in workflow"));
         return;
+      }
     }
-
-    startNodes.forEach(node => {
-      this.triggerDataTransfer(node.id, input ?? { button: true }, 'output');
-    });
   }
 
   public stop() {
@@ -196,10 +207,12 @@ export class HeadlessFlowExecutor {
                   this.runningNodes.delete(nodeId);
                   return; 
               case 'end':
-                  this.status = 'completed';
-                  this.updateNode(nodeId, { status: 'completed' });
-                  const finalOutput = this.options.outputMode === 'all_text' ? this.textOutputs : input;
-                  this.options.onFlowComplete?.(finalOutput);
+                  if (this.status === 'running') {
+                      this.status = 'completed';
+                      this.updateNode(nodeId, { status: 'completed' });
+                      const finalOutput = this.options.outputMode === 'all_text' ? this.textOutputs : input;
+                      this.options.onFlowComplete?.(finalOutput);
+                  }
                   this.runningNodes.delete(nodeId);
                   return; 
               case 'userInput':
@@ -237,6 +250,13 @@ export class HeadlessFlowExecutor {
           }
 
           this.triggerDataTransfer(nodeId, output, 'output');
+
+          // Check for completion if no nodes are running
+          if (this.runningNodes.size === 0 && this.status === 'running') {
+              this.status = 'completed';
+              const finalOutput = this.options.outputMode === 'all_text' ? this.textOutputs : null;
+              this.options.onFlowComplete?.(finalOutput);
+          }
 
       } catch (error: any) {
           console.error(`Node ${nodeId} execution failed:`, error);

@@ -35,6 +35,7 @@ export interface MessageMetadata {
   streamed?: boolean;
   optimistic?: boolean;
   lastSequence?: number;
+  isError?: boolean;
 }
 
 export interface TokenUsage {

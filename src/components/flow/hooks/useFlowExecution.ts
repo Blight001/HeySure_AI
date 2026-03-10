@@ -376,11 +376,108 @@ export function useFlowExecution({
 
 
   // 处理 AI 节点执行
-  const handleAINodeExecution = useCallback(async (nodeId: string, input: string, isForced: boolean = false) => {
+  const handleAINodeExecution = useCallback(async (nodeId: string, input: string | any, isForced: boolean = false) => {
+    let parsedInput = input;
+    
+    // 尝试解析 JSON 字符串
+    if (typeof input === 'string') {
+      const trimmed = input.trim();
+      if (trimmed.startsWith('{') && trimmed.endsWith('}')) {
+        try {
+          parsedInput = JSON.parse(trimmed);
+        } catch (e) {
+          // 不是有效的 JSON，保持原样作为普通文本处理
+        }
+      }
+    }
+
+    // 检查是否为配置指令
+    if (typeof parsedInput === 'object' && parsedInput !== null && parsedInput.type === 'config') {
+      try {
+        let updateMsg = "Configuration updated";
+        let isConfigUpdate = false;
+
+        // 使用 Promise 来确保状态更新完成后再触发下一步
+        // 但 React 状态更新是异步的，这里主要处理数据逻辑
+        setNodes(prev => {
+          let hasChange = false;
+          const nextNodes = prev.map(n => {
+            if (n.id === nodeId) {
+              const dataUpdates: any = {};
+              
+              // 1. 设置系统提示词
+              if (parsedInput.systemPrompt !== undefined) {
+                 dataUpdates.systemPrompt = parsedInput.systemPrompt;
+                 hasChange = true;
+              }
+
+              // 2. 设置记忆模式 (单次/记忆)
+              if (parsedInput.useMemory !== undefined) {
+                 dataUpdates.useMemory = Boolean(parsedInput.useMemory);
+                 hasChange = true;
+              }
+              
+              // 3. 设置模型
+              if (parsedInput.modelId) {
+                  dataUpdates.modelId = parsedInput.modelId;
+                  hasChange = true;
+              }
+
+              // 4. 清理历史记录
+              if (parsedInput.clearHistory === true) {
+                 dataUpdates.messages = [];
+                 
+                 // 清理 Token 统计
+                 dataUpdates.tokenStats = {
+                    totalTokens: 0,
+                    promptTokens: 0,
+                    completionTokens: 0,
+                    requestCount: 0,
+                    currentTokens: 0
+                 };
+                 
+                 hasChange = true;
+                 updateMsg = "History cleared";
+              }
+
+              if (hasChange) {
+                 isConfigUpdate = true;
+                 if (parsedInput.debug) {
+                    console.log(`[AI Node Config] Node ${nodeId} updated:`, dataUpdates);
+                 }
+                 return {
+                   ...n,
+                   data: {
+                     ...n.data,
+                     ...dataUpdates,
+                     status: 'completed',
+                     value: updateMsg
+                   }
+                 };
+              }
+            }
+            return n;
+          });
+          
+          return hasChange ? nextNodes : prev;
+        });
+
+        // 只有当检测到配置更新时才中断并返回
+        if (parsedInput.systemPrompt !== undefined || parsedInput.useMemory !== undefined || parsedInput.modelId || parsedInput.clearHistory === true) {
+             if (parsedInput.debug) {
+                 triggerDataTransfer(nodeId, updateMsg, 'output', isForced);
+             }
+             return;
+        }
+      } catch (e) {
+         console.error("AI Node Config Error:", e);
+      }
+    }
+
     const userMessage = {
       id: uuidv4(),
       role: 'user',
-      content: String(input),
+      content: String(input), // 使用原始 input 作为消息内容
       timestamp: Date.now()
     };
 
@@ -578,7 +675,13 @@ export function useFlowExecution({
             messages: [],
             value: undefined,
             usage: undefined,
-            tokenStats: undefined,
+            tokenStats: {
+              totalTokens: 0,
+              promptTokens: 0,
+              completionTokens: 0,
+              requestCount: 0,
+              currentTokens: 0
+            },
             savedAt: new Date().toISOString()
           }
         };
@@ -1054,11 +1157,12 @@ export function useFlowExecution({
     const targetFlow = allFlows.find(f => f.name === targetFlowName);
 
     if (!targetFlow) {
-        toast({
-            title: "流程启动失败",
-            description: `找不到名为 "${targetFlowName}" 的流程`,
-            variant: "destructive"
-        });
+        console.error(`流程启动失败: 找不到名为 "${targetFlowName}" 的流程`);
+        const errorMsg = `流程启动失败: 找不到名为 "${targetFlowName}" 的流程`;
+        setNodes(prev => prev.map(n => 
+            n.id === nodeId ? { ...n, data: { ...n.data, status: 'error', value: errorMsg } } : n
+        ));
+        triggerDataTransfer(nodeId, errorMsg, 'output', isForced);
         return;
     }
 
@@ -1108,11 +1212,14 @@ export function useFlowExecution({
              triggerDataTransfer(nodeId, output, 'output', isForced);
         },
         onFlowError: (err: any) => {
-             toast({
-                title: `子流程 "${targetFlowName}" 出错`,
-                description: err.message,
-                variant: "destructive"
-             });
+             console.error(`子流程 "${targetFlowName}" 出错:`, err);
+             // 只有在非用户手动停止的情况下才可能是错误，但 HeadlessFlowExecutor 的错误通常是执行错误
+             // 用户反馈不需要弹窗，直接输出错误即可
+             const errorMsg = `子流程 "${targetFlowName}" 出错: ${err.message || err}`;
+             setNodes(prev => prev.map(n => 
+                n.id === nodeId ? { ...n, data: { ...n.data, status: 'error', value: errorMsg } } : n
+             ));
+             triggerDataTransfer(nodeId, errorMsg, 'output', isForced);
         }
     });
 

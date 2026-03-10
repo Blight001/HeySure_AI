@@ -156,7 +156,15 @@ export function AINodeContent({
     </>
   );
 
-  const footerContent = tokenStats && (
+  const displayStats = tokenStats || {
+    currentTokens: 0,
+    totalTokens: 0,
+    promptTokens: 0,
+    completionTokens: 0,
+    requestCount: 0
+  };
+
+  const footerContent = (
     <div className="space-y-1">
       {/* 当前对话消耗 */}
       <div 
@@ -169,7 +177,7 @@ export function AINodeContent({
       >
         <Zap className={`w-3 h-3 ${!theme ? 'text-yellow-500' : ''}`} style={theme ? { color: theme.lineColor } : undefined} />
         <span className={!theme ? "text-muted-foreground" : ""} style={theme ? { color: theme.textColor, opacity: 0.7 } : undefined}>本次:</span>
-        <span className={`font-medium ${!theme ? 'text-primary' : ''}`} style={theme ? { color: theme.textColor } : undefined}>{formatNumber(tokenStats.currentTokens)}</span>
+        <span className={`font-medium ${!theme ? 'text-primary' : ''}`} style={theme ? { color: theme.textColor } : undefined}>{formatNumber(displayStats.currentTokens)}</span>
       </div>
 
       {/* 累计统计 */}
@@ -180,10 +188,10 @@ export function AINodeContent({
         >
           <BarChart3 className={`w-3 h-3 ${!theme ? 'text-muted-foreground' : ''}`} style={theme ? { color: theme.textColor, opacity: 0.7 } : undefined} />
           <span className={!theme ? "text-muted-foreground" : ""} style={theme ? { color: theme.textColor, opacity: 0.7 } : undefined}>累计:</span>
-          <span className="font-medium" style={theme ? { color: theme.textColor } : undefined}>{formatNumber(tokenStats.totalTokens)}</span>
+          <span className="font-medium" style={theme ? { color: theme.textColor } : undefined}>{formatNumber(displayStats.totalTokens)}</span>
         </div>
         <div className={`text-[10px] ${!theme ? 'text-muted-foreground' : ''}`} style={theme ? { color: theme.textColor, opacity: 0.7 } : undefined}>
-          {tokenStats.requestCount}次
+          {displayStats.requestCount}次
         </div>
       </div>
 
@@ -193,13 +201,13 @@ export function AINodeContent({
           className={`px-1 rounded ${!theme ? 'bg-blue-50 text-blue-600' : ''}`}
           style={theme ? { backgroundColor: `${theme.lineColor}1A`, color: theme.lineColor } : undefined}
         >
-          P: {formatNumber(tokenStats.promptTokens)}
+          P: {formatNumber(displayStats.promptTokens)}
         </span>
         <span 
           className={`px-1 rounded ${!theme ? 'bg-green-50 text-green-600' : ''}`}
           style={theme ? { backgroundColor: `${theme.nodeBorderColor}33`, color: theme.textColor } : undefined}
         >
-          C: {formatNumber(tokenStats.completionTokens)}
+          C: {formatNumber(displayStats.completionTokens)}
         </span>
       </div>
     </div>

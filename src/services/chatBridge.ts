@@ -1,9 +1,9 @@
 /**
  * HeySure AI - 聊天桥接服务
- * 实现不同聊天模式（普通对话、思维导图、操作流程）之间的消息通信
+ * 实现不同聊天模式（普通对话、思维导图、操作流程、流程对话）之间的消息通信
  * 使用事件发布/订阅模式，支持消息传递和处理器注册
  */
-export type ChatMode = 'default' | 'mindmap' | 'flow';
+export type ChatMode = 'default' | 'mindmap' | 'flow' | 'process_flow';
 
 export interface BridgeMessage {
   id: string;

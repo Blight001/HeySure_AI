@@ -1,0 +1,40 @@
+{
+  "id": "node_1772604234804_5e6pq5b7o",
+  "type": "aiChat",
+  "position": {
+    "x": 579.6373561079375,
+    "y": 828.2578548902085
+  },
+  "data": {
+    "label": "千问-plus",
+    "modelId": "model-1770017328240",
+    "model": "qwen-plus",
+    "systemPrompt": "",
+    "useMemory": true,
+    "messages": [],
+    "isTriggering": false,
+    "tokenStats": {
+      "totalTokens": 0,
+      "promptTokens": 0,
+      "completionTokens": 0,
+      "requestCount": 0,
+      "currentTokens": 0
+    },
+    "status": "completed",
+    "savedAt": "2026-03-04T06:07:50.934Z"
+  },
+  "inputs": [
+    {
+      "id": "input",
+      "type": "input",
+      "label": "用户输入"
+    }
+  ],
+  "outputs": [
+    {
+      "id": "output",
+      "type": "output",
+      "label": "AI回复"
+    }
+  ]
+}

@@ -684,5 +684,14 @@
         }
       }
     ]
+  },
+  "6fc92431-3b14-4379-988d-43979562d1ea": {
+    "id": "6fc92431-3b14-4379-988d-43979562d1ea",
+    "title": "新对话",
+    "type": "single",
+    "createdAt": 1772606021688,
+    "updatedAt": 1772606021688,
+    "isPinned": false,
+    "messages": []
   }
 }

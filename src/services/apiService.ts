@@ -131,7 +131,7 @@ export class DialogService {
 export class FlowService {
   // 保存流程
   static async save(flow: any): Promise<any> {
-    const response = await window.electronAPI.flowSave(flow);
+    const response = await window.electronAPI.flowSave({ flow });
     if (!response.success) {
       throw new Error(response.error || '保存流程失败');
     }
@@ -140,7 +140,7 @@ export class FlowService {
 
   // 获取流程
   static async get(id: string): Promise<any> {
-    const response = await window.electronAPI.flowGet(id);
+    const response = await window.electronAPI.flowGet({ id });
     if (!response.success) {
       throw new Error(response.error || '获取流程失败');
     }
@@ -158,7 +158,7 @@ export class FlowService {
 
   // 删除流程
   static async delete(id: string): Promise<void> {
-    const response = await window.electronAPI.flowDelete(id);
+    const response = await window.electronAPI.flowDelete({ id });
     if (!response.success) {
       throw new Error(response.error || '删除流程失败');
     }
@@ -166,11 +166,21 @@ export class FlowService {
 
   // 执行流程
   static async execute(id: string, input: any): Promise<any> {
-    const response = await window.electronAPI.flowExecute({ id, input });
+    const response = await window.electronAPI.flowExecute({ flowId: id, input, mode: 'async' });
     if (!response.success) {
       throw new Error(response.error || '执行流程失败');
     }
     return response.data;
+  }
+
+  // 获取流程分类
+  static async getCategories(): Promise<any> {
+    const response = await window.electronAPI.flowGetCategories();
+    // flowGetCategories returns raw data, not wrapped in { success, data } in electron/ipc/flowIPC.ts
+    // Wait, I didn't change flowGetCategories in flowIPC.ts, so it returns raw data directly.
+    // However, looking at flow-storage.ts, it treats the return value as the data itself.
+    // Let's check flowIPC.ts again to be sure.
+    return response;
   }
 }
 

@@ -217,12 +217,20 @@ class FlowStorageService {
       }
 
       // 2. 加载所有流程文件
-      const flows = await this.api.flowList();
+      const response = await this.api.flowList();
+      let flows: FlowDefinition[] = [];
+      
+      if (Array.isArray(response)) {
+        // 兼容旧格式
+        flows = response;
+      } else if (response && response.success && Array.isArray(response.data)) {
+        // 新格式 { success: true, data: [...] }
+        flows = response.data;
+      }
+
       this.data.flows = {};
-      if (Array.isArray(flows)) {
-        for (const flow of flows) {
-          this.data.flows[flow.id] = flow;
-        }
+      for (const flow of flows) {
+        this.data.flows[flow.id] = flow;
       }
     } catch (error) {
       console.error('加载数据失败:', error);
@@ -703,14 +711,21 @@ class FlowStorageService {
     return JSON.stringify(flow, null, 2);
   }
 
-  async importFlow(data: string, name?: string): Promise<FlowDefinition> {
+  async importFlow(data: string, name?: string): Promise<FlowDefinition | null> {
     const categoryId = this.data.selectedCategoryId;
     if (!categoryId) throw new Error('没有选中的分类');
 
-    const parsed = JSON.parse(data) as FlowDefinition;
+    let parsed: FlowDefinition;
+    try {
+      parsed = JSON.parse(data) as FlowDefinition;
+    } catch (error) {
+      console.warn('Failed to parse flow data:', error);
+      return null;
+    }
 
-    if (!parsed.id || !parsed.nodes) {
-      throw new Error('无效的数据格式');
+    if (!parsed || !parsed.id || !parsed.nodes) {
+      console.warn('Invalid flow data format');
+      return null;
     }
 
     // 创建新的流程，保留数据但使用新的ID

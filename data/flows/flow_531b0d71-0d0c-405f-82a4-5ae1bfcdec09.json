@@ -31,8 +31,8 @@
       "id": "node_1770448530757_ipwxd6eig",
       "type": "aiChat",
       "position": {
-        "x": 515,
-        "y": 193
+        "x": 518,
+        "y": 190
       },
       "data": {
         "label": "kimi-k2.5",
@@ -183,8 +183,8 @@
       "id": "node_1770469118984_ku0l4bg25",
       "type": "textDisplay",
       "position": {
-        "x": 516,
-        "y": 39
+        "x": 523,
+        "y": 2
       },
       "data": {
         "label": "文本显示",
@@ -296,12 +296,12 @@
     "isTemplate": false
   },
   "createdAt": 1770448364917,
-  "updatedAt": 1771337524437,
+  "updatedAt": 1772606045347,
   "viewState": {
     "zoom": 1,
     "pan": {
-      "x": 120,
-      "y": 160
+      "x": 23,
+      "y": 140
     },
     "animationSpeed": 0.3,
     "showGrid": true,

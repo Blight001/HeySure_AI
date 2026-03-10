@@ -5,7 +5,8 @@ import {
   FLOW_DIR, 
   getFlowFile, 
   FLOW_CATEGORIES_FILE,
-  ensureDataDir 
+  ensureDataDir,
+  FLOW_FILE_PREFIX
 } from '../config/paths';
 
 export interface FlowDefinition {
@@ -75,10 +76,10 @@ export class FlowService {
         const content = await fs.promises.readFile(filePath, 'utf-8');
         return JSON.parse(content);
       }
-      return null;
+      throw new Error(`File not found: ${filePath}`);
     } catch (error) {
       console.error(`Failed to get flow ${id}:`, error);
-      return null;
+      throw error;
     }
   }
 
@@ -92,10 +93,18 @@ export class FlowService {
       const flows: FlowDefinition[] = [];
 
       for (const file of files) {
-        if (file.endsWith('.json')) {
+        if (file.endsWith('.json') && file.startsWith(FLOW_FILE_PREFIX)) {
           try {
             const content = await fs.promises.readFile(path.join(FLOW_DIR, file), 'utf-8');
             const flow = JSON.parse(content);
+            
+            // 确保 ID 与文件名一致，否则 getFlow 无法找到文件
+            const filenameId = file.slice(FLOW_FILE_PREFIX.length, -5); // remove prefix and .json
+            if (flow.id !== filenameId) {
+              console.warn(`Flow ID mismatch in ${file}: content=${flow.id}, filename=${filenameId}. Using filename ID.`);
+              flow.id = filenameId;
+            }
+            
             flows.push(flow);
           } catch (e) {
             console.warn(`Failed to parse flow file ${file}:`, e);

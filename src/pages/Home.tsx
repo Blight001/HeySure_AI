@@ -6,7 +6,7 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useMessageStore, useDialogStore, useUiStore } from '@/stores';
-import { MessageServiceWrapper, MessageService, ModelService } from '@/services/apiService';
+import { MessageServiceWrapper, MessageService, ModelService, FlowService } from '@/services/apiService';
 import { ChatInput, MessageList } from '@/components/chat';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useExtendedToast, ExtendedToast } from '../hooks/useExtendedToast';
@@ -14,8 +14,9 @@ import { useAiStreamListener } from '@/hooks/useAiStreamListener';
 import type { Message } from '@/types';
 import { v4 as uuidv4 } from 'uuid';
 import { cn } from '@/utils/helpers';
-import { MessageSquare, Map as MapIcon, GitBranch } from 'lucide-react';
+import { MessageSquare, Map as MapIcon, GitBranch, PlayCircle } from 'lucide-react';
 import { chatBridge, ChatMode, BridgeMessage } from '@/services/chatBridge';
+import { HeadlessFlowExecutor } from '@/components/flow/services/HeadlessFlowExecutor';
 
 interface ModelConfig {
   id: string;
@@ -24,6 +25,11 @@ interface ModelConfig {
   enabled: boolean;
   model: string;
   apiKey?: string;
+}
+
+interface FlowConfig {
+  id: string;
+  name: string;
 }
 
 export default function HomePage() {
@@ -37,9 +43,11 @@ export default function HomePage() {
   // 是否正在等待 AI 回复（显示加载动画）
   const { isWaitingForAI, setIsWaitingForAI } = useAiStreamListener(dialogId);
   const [models, setModels] = useState<ModelConfig[]>([]);
+  const [flows, setFlows] = useState<FlowConfig[]>([]);
   const [selectedModelId, setSelectedModelId] = useState<string>('');
   const [bridgeMessages, setBridgeMessages] = useState<Message[]>([]);
   const [isBridgeReady, setIsBridgeReady] = useState(false);
+  const [processFlowMessages, setProcessFlowMessages] = useState<Message[]>([]);
 
   // 监听 ChatBridge 消息
   useEffect(() => {
@@ -176,7 +184,7 @@ export default function HomePage() {
         setModels(enabledModels);
         
         // 如果有启用的模型，自动选择第一个
-        if (enabledModels.length > 0 && !selectedModelId) {
+        if (enabledModels.length > 0 && !selectedModelId && chatMode !== 'process_flow') {
           setSelectedModelId(enabledModels[0].id);
         }
       } catch (error) {
@@ -186,9 +194,175 @@ export default function HomePage() {
     loadModels();
   }, []);
 
+  // 加载流程列表 (当模式为 process_flow 时)
+  useEffect(() => {
+    if (chatMode === 'process_flow') {
+      const loadFlows = async () => {
+        try {
+          // 1. 获取所有流程
+          const list = await FlowService.list();
+
+          // 2. 获取分类数据
+          const categoryData = await FlowService.getCategories();
+          const categories = categoryData?.categories || [];
+
+          // 3. 筛选 "对话流程" 分类的流程
+          // 如果没有 "对话流程" 分类，或者该分类下没有流程，则列表为空
+          const dialogueCategory = categories.find((c: any) => c.name === '对话流程');
+          let filteredFlows: any[] = [];
+          
+          if (dialogueCategory && Array.isArray(dialogueCategory.flowIds)) {
+             filteredFlows = list.filter((f: any) => dialogueCategory.flowIds.includes(f.id));
+          } else {
+             // 尝试查找包含 "对话" 关键字的分类作为备选? 
+             // 严格按照需求: "操作流程中的对话流程文件夹" -> 必须是 "对话流程" 分类
+             // 如果没有找到，就为空
+             console.warn('未找到 "对话流程" 分类，流程列表将为空');
+          }
+
+          setFlows(filteredFlows.map((f: any) => ({ id: f.id, name: f.name })));
+          
+          if (filteredFlows.length > 0) {
+            setSelectedModelId(filteredFlows[0].id);
+          } else {
+            setSelectedModelId('');
+          }
+        } catch (error) {
+          console.error('加载流程列表失败:', error);
+          toast({
+            title: '加载失败',
+            description: '无法加载流程列表',
+            variant: 'destructive',
+          } as ExtendedToast);
+        }
+      };
+      loadFlows();
+    } else if (chatMode === 'default' && models.length > 0) {
+       // Switch back to default model if switching back to default mode
+       // But we don't know which one was selected before. Just pick first enabled.
+       const enabled = models.filter(m => m.enabled);
+       if (enabled.length > 0) setSelectedModelId(enabled[0].id);
+    }
+  }, [chatMode, models]);
+
   // 发送消息处理
   const handleSendMessage = async (content: string, modelId?: string) => {
     if (!content.trim()) return;
+
+    // 处理流程对话模式
+    if (chatMode === 'process_flow') {
+      const flowId = modelId || selectedModelId;
+      if (!flowId) {
+        toast({
+          title: '无法发送',
+          description: '请先选择一个流程',
+          variant: 'destructive',
+        } as ExtendedToast);
+        return;
+      }
+
+      // 添加用户消息
+      const userMsg: Message = {
+        id: uuidv4(),
+        role: 'user',
+        content: content,
+        timestamp: Date.now(),
+        dialogId: 'process_flow',
+        metadata: {},
+      };
+      setProcessFlowMessages(prev => [...prev, userMsg]);
+      setIsWaitingForAI(true);
+
+      try {
+        const flowData = await FlowService.get(flowId);
+        if (!flowData) throw new Error(`无法获取流程数据: ${flowId}`);
+
+        // 执行流程
+         await new Promise<void>(async (resolve, reject) => {
+           // 注入用户输入 - 必须在创建 executor 之前修改 flowData
+           const userInputNode = flowData.nodes.find((n: any) => n.type === 'userInput');
+           if (userInputNode) {
+             if (!userInputNode.data) userInputNode.data = {};
+             userInputNode.data.value = content;
+             // 立即保存以更新文件中的输入内容
+             try {
+               await FlowService.save(flowData);
+             } catch (e) {
+               console.error("保存流程输入失败", e);
+             }
+           }
+
+           const executor = new HeadlessFlowExecutor(flowData, {
+             outputMode: 'all_text',
+             onNodeUpdate: (nodeId, data) => {
+               // 同步更新本地 flowData，以便最后保存执行结果
+               const node = flowData.nodes.find((n: any) => n.id === nodeId);
+               if (node) {
+                 node.data = { ...node.data, ...data };
+               }
+             },
+             onFlowComplete: async (outputs: string[]) => {
+               // 保存最终执行状态到文件
+               try {
+                 await FlowService.save(flowData);
+               } catch (e) {
+                 console.error("保存流程执行结果失败", e);
+               }
+
+              // 将所有输出作为助手消息添加
+              if (Array.isArray(outputs) && outputs.length > 0) {
+                 const assistantMsgs = outputs.map(out => ({
+                    id: uuidv4(),
+                    role: 'assistant' as const,
+                    content: out,
+                    timestamp: Date.now(),
+                    dialogId: 'process_flow',
+                    metadata: {},
+                 }));
+                 setProcessFlowMessages(prev => [...prev, ...assistantMsgs]);
+              } else if (outputs && !Array.isArray(outputs)) {
+                 // Fallback if output is not array
+                 setProcessFlowMessages(prev => [...prev, {
+                    id: uuidv4(),
+                    role: 'assistant',
+                    content: String(outputs),
+                    timestamp: Date.now(),
+                    dialogId: 'process_flow',
+                    metadata: {},
+                 }]);
+              }
+              resolve();
+            },
+            onFlowError: (err) => {
+               reject(err);
+             }
+           });
+ 
+           executor.start();
+         });
+
+      } catch (error: any) {
+        console.error('流程执行失败:', error);
+        toast({
+          title: '执行失败',
+          description: error.message || '流程执行出错',
+          variant: 'destructive',
+        } as ExtendedToast);
+        
+        // 添加错误消息
+        setProcessFlowMessages(prev => [...prev, {
+            id: uuidv4(),
+            role: 'assistant',
+            content: `执行出错: ${error.message}`,
+            timestamp: Date.now(),
+            dialogId: 'process_flow',
+            metadata: { isError: true },
+        }]);
+      } finally {
+        setIsWaitingForAI(false);
+      }
+      return;
+    }
 
     // 处理 Bridge 模式消息发送
     if (chatMode !== 'default') {
@@ -307,13 +481,16 @@ export default function HomePage() {
 
   const currentDialog = Array.isArray(dialogs) ? dialogs.find((d) => d.id === dialogId) : null;
   const filteredMessages = useMemo(() => {
+    if (chatMode === 'process_flow') {
+      return processFlowMessages;
+    }
     if (chatMode !== 'default') {
       return bridgeMessages;
     }
     return dialogId
       ? messages.filter((m) => m.dialogId === dialogId)
       : messages;
-  }, [dialogId, messages, chatMode, bridgeMessages]);
+  }, [dialogId, messages, chatMode, bridgeMessages, processFlowMessages]);
 
   return (
     <div className="flex h-full w-full bg-background transition-all duration-300">
@@ -355,26 +532,43 @@ export default function HomePage() {
                     <span>操作流程</span>
                   </span>
                 </SelectItem>
+                <SelectItem value="process_flow">
+                  <span className="flex items-center gap-2">
+                    <PlayCircle size={14} />
+                    <span>流程对话</span>
+                  </span>
+                </SelectItem>
               </SelectContent>
             </Select>
 
-            {/* 模型选择 */}
+            {/* 模型/流程选择 */}
             <Select
               value={selectedModelId}
               onValueChange={setSelectedModelId}
             >
               <SelectTrigger className="w-[140px]">
-                <SelectValue placeholder="选择模型" />
+                <SelectValue placeholder={chatMode === 'process_flow' ? "选择流程" : "选择模型"} />
               </SelectTrigger>
               <SelectContent>
-                {models.map((model) => (
-                  <SelectItem key={model.id} value={model.id}>
-                    <span className="flex items-center gap-2">
-                      <span>🤖</span>
-                      <span className="truncate max-w-[100px]">{model.name}</span>
-                    </span>
-                  </SelectItem>
-                ))}
+                {chatMode === 'process_flow' ? (
+                  flows.map((flow) => (
+                    <SelectItem key={flow.id} value={flow.id}>
+                      <span className="flex items-center gap-2">
+                        <GitBranch size={14} />
+                        <span className="truncate max-w-[100px]">{flow.name}</span>
+                      </span>
+                    </SelectItem>
+                  ))
+                ) : (
+                  models.map((model) => (
+                    <SelectItem key={model.id} value={model.id}>
+                      <span className="flex items-center gap-2">
+                        <span>🤖</span>
+                        <span className="truncate max-w-[100px]">{model.name}</span>
+                      </span>
+                    </SelectItem>
+                  ))
+                )}
               </SelectContent>
             </Select>
           </div>
@@ -382,7 +576,7 @@ export default function HomePage() {
 
         {/* 消息列表 */}
         <div className="flex-1 overflow-auto">
-          {chatMode !== 'default' && !isBridgeReady ? (
+          {chatMode !== 'default' && chatMode !== 'process_flow' && !isBridgeReady ? (
              <div className="flex h-full items-center justify-center text-muted-foreground">
                请先在对应的{chatMode === 'mindmap' ? '思维导图' : '操作流程'}中选择一个模型以激活对话
              </div>
@@ -392,9 +586,12 @@ export default function HomePage() {
                 <div className="mb-4 text-6xl">🤖</div>
                 <h2 className="text-xl font-semibold mb-2">HeySure AI</h2>
                 <p className="text-muted-foreground mb-4">
-                  {models.length === 0 
-                    ? '请先在"插件配置"页面添加自定义模型'
-                    : '选择一个模型开始对话'}
+                  {chatMode === 'process_flow' 
+                    ? (flows.length === 0 ? '暂无流程文件' : '选择一个流程开始对话')
+                    : (models.length === 0 
+                        ? '请先在"插件配置"页面添加自定义模型'
+                        : '选择一个模型开始对话')
+                  }
                 </p>
               </div>
             </div>

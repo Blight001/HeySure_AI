@@ -30,17 +30,35 @@ export function flowIPC() {
 
   // 保存流程
   ipcMain.handle('flow:save', async (_, data: { flow: any }) => {
-    return await flowService.saveFlow(data.flow);
+    try {
+      const result = await flowService.saveFlow(data.flow);
+      return { success: true, data: result };
+    } catch (error: any) {
+      return { success: false, error: error.message };
+    }
   });
 
   // 获取流程
   ipcMain.handle('flow:get', async (_, { id }: { id: string }) => {
-    return await flowService.getFlow(id);
+    try {
+      const result = await flowService.getFlow(id);
+      if (!result) {
+        return { success: false, error: `Flow not found: ${id}` };
+      }
+      return { success: true, data: result };
+    } catch (error: any) {
+      return { success: false, error: error.message };
+    }
   });
 
   // 获取流程列表
   ipcMain.handle('flow:list', async (_, data?: { isTemplate?: boolean }) => {
-    return await flowService.listFlows();
+    try {
+      const result = await flowService.listFlows();
+      return { success: true, data: result };
+    } catch (error: any) {
+      return { success: false, error: error.message };
+    }
   });
 
   // 删除流程
@@ -51,7 +69,12 @@ export function flowIPC() {
 
   // 执行流程
   ipcMain.handle('flow:execute', async (_, data: { flowId: string; input: any; mode: 'sync' | 'async' }) => {
-    return await flowService.executeFlow(data.flowId, data.input, data.mode);
+    try {
+      const result = await flowService.executeFlow(data.flowId, data.input, data.mode);
+      return { success: true, data: result };
+    } catch (error: any) {
+      return { success: false, error: error.message };
+    }
   });
 
   // 获取执行状态
