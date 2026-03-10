@@ -28,3 +28,6 @@ backup/
 *.exe
 *.dmg
 *.AppImage
+
+# 数据
+data/
