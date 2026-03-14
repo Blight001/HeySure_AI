@@ -79,9 +79,12 @@ const electronAPI = {
     readFile: (path: string, encoding?: string) => ipcRenderer.invoke('fs:readFile', path, encoding),
     writeFile: (path: string, data: string, encoding?: string) => ipcRenderer.invoke('fs:writeFile', path, data, encoding),
     readdir: (path: string) => ipcRenderer.invoke('fs:readdir', path),
+    readdirStat: (path: string) => ipcRenderer.invoke('fs:readdirStat', path),
+    getDrives: () => ipcRenderer.invoke('fs:getDrives'),
     mkdirSync: (path: string, options?: { recursive?: boolean }) => ipcRenderer.invoke('fs:mkdirSync', path, options),
     unlink: (path: string) => ipcRenderer.invoke('fs:unlink', path),
     existsSync: (path: string) => ipcRenderer.invoke('fs:existsSync', path),
+    openFile: (path: string) => ipcRenderer.invoke('fs:openFile', path),
   },
 
   // 路径相关

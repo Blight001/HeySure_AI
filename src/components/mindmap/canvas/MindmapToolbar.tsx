@@ -72,6 +72,8 @@ export const MindmapToolbar: React.FC<MindmapToolbarProps> = ({
         borderColor: currentTheme.gridColor 
       }}
     >
+      <div className="w-px h-6 bg-gray-200 dark:bg-gray-700 mx-1" style={{ backgroundColor: currentTheme.gridColor }} />
+      
       <div className="toolbar-group flex items-center gap-1">
         <Button variant="outline" size="sm" onClick={onAddChild} disabled={!selectedNodeId} title="添加子节点" style={buttonStyle} className="h-8 w-8 p-0"><Plus size={16} /></Button>
         <Button 
@@ -100,26 +102,35 @@ export const MindmapToolbar: React.FC<MindmapToolbarProps> = ({
       
       <div className="toolbar-group flex items-center gap-1">
         <Button variant="outline" size="sm" onClick={onZoomIn} title="放大" style={buttonStyle} className="h-8 w-8 p-0"><ZoomIn size={16} /></Button>
-        <span className="text-xs w-12 text-center select-none" style={{ color: currentTheme.textColor }}>{Math.round(scale * 100)}%</span>
+        <div className="text-xs w-12 text-center select-none" style={{ color: currentTheme.textColor }}>{Math.round(scale * 100)}%</div>
         <Button variant="outline" size="sm" onClick={onZoomOut} title="缩小" style={buttonStyle} className="h-8 w-8 p-0"><ZoomOut size={16} /></Button>
+        <Button variant="outline" size="sm" onClick={onRelayout} title="整理布局" style={buttonStyle} className="h-8 w-8 p-0"><RefreshCw size={16} /></Button>
       </div>
-      
+
       <div className="w-px h-6 bg-gray-200 dark:bg-gray-700 mx-1" style={{ backgroundColor: currentTheme.gridColor }} />
-      
+
       <div className="toolbar-group flex items-center gap-1">
-        <Button variant="outline" size="sm" onClick={onRelayout} title="重新布局" style={buttonStyle} className="h-8 w-8 p-0"><RefreshCw size={16} /></Button>
         <Button 
-          variant={showFullContent ? "secondary" : "outline"} 
+          variant="outline" 
           size="sm" 
           onClick={() => onToggleFullContent(!showFullContent)} 
-          title={showFullContent ? "显示摘要" : "显示全文"} 
-          style={buttonStyle}
+          title={showFullContent ? "收起节点内容" : "显示完整内容"} 
+          style={{ ...buttonStyle, backgroundColor: showFullContent ? currentTheme.nodeBorderColor : currentTheme.nodeBackgroundColor }} 
           className="h-8 w-8 p-0"
         >
           <WrapText size={16} />
         </Button>
         {onOpenAiChat && (
-          <Button variant="outline" size="sm" onClick={onOpenAiChat} title="打开AI对话" style={buttonStyle} className="h-8 w-8 p-0"><MessageSquare size={16} /></Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={onOpenAiChat} 
+            title="AI 助手" 
+            style={{ ...buttonStyle, color: '#8b5cf6' }} 
+            className="h-8 w-8 p-0"
+          >
+            <MessageSquare size={16} />
+          </Button>
         )}
       </div>
     </div>

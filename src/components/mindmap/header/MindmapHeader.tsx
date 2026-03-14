@@ -24,7 +24,8 @@ import {
   Shield,
   ShieldCheck,
   ShieldAlert,
-  X
+  X,
+  HardDrive
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -94,6 +95,11 @@ interface MindmapHeaderProps {
   onAllowReadChange: (value: boolean) => void;
   onAllowEditChange: (value: boolean) => void;
   onSave: () => void;
+  onOpenSystemFolder: () => void;
+  isSystemView: boolean;
+  systemDrives?: string[];
+  onOpenSystemDrive?: (drive: string) => void;
+  currentSystemPath?: string;
 }
 
 export const MindmapHeader: React.FC<MindmapHeaderProps> = ({
@@ -143,7 +149,12 @@ export const MindmapHeader: React.FC<MindmapHeaderProps> = ({
   allowAiEdit,
   onAllowReadChange,
   onAllowEditChange,
-  onSave
+  onSave,
+  onOpenSystemFolder,
+  isSystemView,
+  systemDrives,
+  onOpenSystemDrive,
+  currentSystemPath
 }) => {
   const categoryDropdownRef = useClickOutside<HTMLDivElement>(() => setShowCategoryDropdown(false));
   const mapDropdownRef = useClickOutside<HTMLDivElement>(() => setShowMapDropdown(false));
@@ -189,12 +200,26 @@ export const MindmapHeader: React.FC<MindmapHeaderProps> = ({
             style={buttonStyle}
           >
             <Folder size={16} />
-            <span className="truncate max-w-[100px]">{selectedCategory?.name || '全部分类'}</span>
+            <span className="truncate max-w-[100px]">{isSystemView ? '系统文件夹' : (selectedCategory?.name || '全部分类')}</span>
             <ChevronDown size={14} />
           </button>
           
           {showCategoryDropdown && (
             <div className="absolute top-full left-0 mt-1 w-64 bg-white dark:bg-gray-800 rounded-md shadow-lg border z-50 p-2 max-h-[400px] overflow-y-auto">
+               <div className="mb-2">
+                <div className="text-xs font-medium text-gray-500 mb-1 px-2">系统</div>
+                <div 
+                  className={`group flex items-center gap-2 px-2 py-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer ${isSystemView ? 'bg-gray-100 dark:bg-gray-700' : ''}`}
+                  onClick={() => {
+                    onOpenSystemFolder();
+                    setShowCategoryDropdown(false);
+                  }}
+                >
+                  <HardDrive size={14} className="flex-shrink-0" />
+                  <span className="truncate text-sm">系统文件夹</span>
+                </div>
+              </div>
+              <div className="h-px bg-gray-100 dark:bg-gray-700 my-2" />
                <div className="mb-2">
                 <div className="text-xs font-medium text-gray-500 mb-1 px-2">新建分类</div>
                 <div className="flex gap-1 px-2">
@@ -215,7 +240,7 @@ export const MindmapHeader: React.FC<MindmapHeaderProps> = ({
                 </div>
               </div>
               <div className="h-px bg-gray-100 dark:bg-gray-700 my-2" />
-              {categories.map(category => (
+              {(categories || []).map(category => (
                 <div 
                   key={category.id} 
                   className={`group flex items-center justify-between px-2 py-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer ${selectedCategory?.id === category.id ? 'bg-gray-100 dark:bg-gray-700' : ''}`}
@@ -279,90 +304,118 @@ export const MindmapHeader: React.FC<MindmapHeaderProps> = ({
             style={buttonStyle}
           >
             <FileText size={16} />
-            <span className="truncate max-w-[150px] font-medium">{mapName}</span>
+            <span className="truncate max-w-[150px] font-medium">{isSystemView ? (currentSystemPath || '系统文件夹') : mapName}</span>
             <ChevronDown size={14} />
           </button>
           
           {showMapDropdown && (
             <div className="absolute top-full left-0 mt-1 w-72 bg-white dark:bg-gray-800 rounded-md shadow-lg border z-50 p-2 max-h-[400px] overflow-y-auto">
-              <div className="mb-2">
-                <div className="text-xs font-medium text-gray-500 mb-1 px-2">新建思维导图</div>
-                <div className="flex gap-1 px-2 items-center">
-                  <input
-                    type="text"
-                    value={newMapName}
-                    onChange={(e) => setNewMapName(e.target.value)}
-                    placeholder="输入文件名称"
-                    className="flex-1 text-xs border rounded px-2 py-1"
-                    onClick={(e) => e.stopPropagation()}
-                  />
-                  <Button 
-                    size="sm"
-                    variant="outline"
-                    className="h-7 px-2 text-xs"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleCreateMap();
-                      // Don't close dropdown immediately if we want to show success or keep context?
-                      // User might want to switch to it. handleCreateMap does switch.
-                      setShowMapDropdown(false);
-                    }}
-                  >
-                    新建
-                  </Button>
-                </div>
-              </div>
-              <div className="h-px bg-gray-100 dark:bg-gray-700 my-2" />
-              {mapsInCategory.map(map => (
-                <div 
-                  key={map.id} 
-                  className={`group flex items-center justify-between px-2 py-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer ${map.id === mapId ? 'bg-gray-100 dark:bg-gray-700' : ''}`}
-                  onClick={() => handleSwitchMap(map.id)}
-                >
-                  {editingListMapId === map.id ? (
-                    <div className="flex-1 flex items-center gap-1" onClick={e => e.stopPropagation()}>
-                      <input 
-                        value={editingListMapName}
-                        onChange={e => setEditingListMapName(e.target.value)}
-                        className="flex-1 text-xs border rounded px-1"
-                        autoFocus
+              {isSystemView ? (
+                <>
+                  <div className="mb-2">
+                    <div className="text-xs font-medium text-gray-500 mb-1 px-2">系统磁盘</div>
+                  </div>
+                  <div className="h-px bg-gray-100 dark:bg-gray-700 my-2" />
+                  {(systemDrives || []).map(drive => (
+                    <div 
+                      key={drive} 
+                      className={`group flex items-center justify-between px-2 py-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer ${currentSystemPath === drive ? 'bg-gray-100 dark:bg-gray-700' : ''}`}
+                      onClick={() => {
+                        if (onOpenSystemDrive) {
+                          onOpenSystemDrive(drive);
+                          setShowMapDropdown(false);
+                        }
+                      }}
+                    >
+                      <div className="flex items-center gap-2 flex-1 overflow-hidden">
+                        <HardDrive size={14} className="flex-shrink-0" />
+                        <span className="truncate text-sm">{drive}</span>
+                      </div>
+                    </div>
+                  ))}
+                </>
+              ) : (
+                <>
+                  <div className="mb-2">
+                    <div className="text-xs font-medium text-gray-500 mb-1 px-2">新建思维导图</div>
+                    <div className="flex gap-1 px-2 items-center">
+                      <input
+                        type="text"
+                        value={newMapName}
+                        onChange={(e) => setNewMapName(e.target.value)}
+                        placeholder="输入文件名称"
+                        className="flex-1 text-xs border rounded px-2 py-1"
+                        onClick={(e) => e.stopPropagation()}
                       />
-                      <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => handleSaveListMap(map.id)}>
-                        <Save size={12} />
+                      <Button 
+                        size="sm"
+                        variant="outline"
+                        className="h-7 px-2 text-xs"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleCreateMap();
+                          // Don't close dropdown immediately if we want to show success or keep context?
+                          // User might want to switch to it. handleCreateMap does switch.
+                          setShowMapDropdown(false);
+                        }}
+                      >
+                        新建
                       </Button>
                     </div>
-                  ) : (
-                    <div className="flex items-center gap-2 flex-1 overflow-hidden">
-                      <span className="truncate text-sm">{map.name}</span>
-                    </div>
-                  )}
-                  
-                  <div className="flex items-center opacity-0 group-hover:opacity-100">
-                    <Button 
-                      size="icon" 
-                      variant="ghost" 
-                      className="h-6 w-6" 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        startEditListMap(map);
-                      }}
-                    >
-                      <Edit2 size={12} />
-                    </Button>
-                    <Button 
-                      size="icon" 
-                      variant="ghost" 
-                      className="h-6 w-6 text-red-500 hover:text-red-600"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setDeleteAlert({ type: 'map', id: map.id, name: map.name });
-                      }}
-                    >
-                      <Trash2 size={12} />
-                    </Button>
                   </div>
-                </div>
-              ))}
+                  <div className="h-px bg-gray-100 dark:bg-gray-700 my-2" />
+                  {(mapsInCategory || []).map(map => (
+                    <div 
+                      key={map.id} 
+                      className={`group flex items-center justify-between px-2 py-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer ${map.id === mapId ? 'bg-gray-100 dark:bg-gray-700' : ''}`}
+                      onClick={() => handleSwitchMap(map.id)}
+                    >
+                      {editingListMapId === map.id ? (
+                        <div className="flex-1 flex items-center gap-1" onClick={e => e.stopPropagation()}>
+                          <input 
+                            value={editingListMapName}
+                            onChange={e => setEditingListMapName(e.target.value)}
+                            className="flex-1 text-xs border rounded px-1"
+                            autoFocus
+                          />
+                          <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => handleSaveListMap(map.id)}>
+                            <Save size={12} />
+                          </Button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2 flex-1 overflow-hidden">
+                          <span className="truncate text-sm">{map.name}</span>
+                        </div>
+                      )}
+                      
+                      <div className="flex items-center opacity-0 group-hover:opacity-100">
+                        <Button 
+                          size="icon" 
+                          variant="ghost" 
+                          className="h-6 w-6" 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            startEditListMap(map);
+                          }}
+                        >
+                          <Edit2 size={12} />
+                        </Button>
+                        <Button 
+                          size="icon" 
+                          variant="ghost" 
+                          className="h-6 w-6 text-red-500 hover:text-red-600"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setDeleteAlert({ type: 'map', id: map.id, name: map.name });
+                          }}
+                        >
+                          <Trash2 size={12} />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </>
+              )}
             </div>
           )}
         </div>

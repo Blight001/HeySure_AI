@@ -26,6 +26,24 @@ export async function writeFile(filePath: string, content: string): Promise<void
   return fs.writeFile(filePath, content, 'utf-8');
 }
 
+// 读取目录（带文件类型信息）
+export async function readDirStat(dirPath: string): Promise<Array<{ name: string; isDirectory: boolean; isFile: boolean }>> {
+  const fs = window.electronAPI?.fs;
+  if (!fs?.readdirStat) {
+    throw new Error('文件系统 API 不可用');
+  }
+  return fs.readdirStat(dirPath);
+}
+
+// 获取系统磁盘列表
+export async function getDrives(): Promise<string[]> {
+  const fs = window.electronAPI?.fs;
+  if (!fs?.getDrives) {
+    throw new Error('文件系统 API 不可用');
+  }
+  return fs.getDrives();
+}
+
 // 读取目录
 export async function readDir(dirPath: string): Promise<string[]> {
   const fs = window.electronAPI?.fs;
@@ -66,6 +84,16 @@ export async function fileExists(filePath: string): Promise<boolean> {
     throw new Error('文件系统 API 不可用');
   }
   return fs.existsSync(filePath);
+}
+
+// 打开文件（使用系统默认程序）
+export async function openFile(filePath: string): Promise<boolean> {
+  const fs = window.electronAPI?.fs;
+  if (!fs?.openFile) {
+    console.warn('文件系统 API (openFile) 不可用');
+    return false;
+  }
+  return fs.openFile(filePath);
 }
 
 // 路径拼接

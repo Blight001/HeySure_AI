@@ -20,6 +20,7 @@ export interface MindmapNode {
   fontSize?: number;        // 字体大小
   fontWeight?: 'normal' | 'medium' | 'bold';  // 字体粗细
   duplicateIndex?: number; // 重复节点序号（当存在相同名称时显示）
+  data?: any;               // 节点附加数据（用于系统文件夹等扩展功能）
 }
 
 import { ThemeConfig } from '@/types/theme';

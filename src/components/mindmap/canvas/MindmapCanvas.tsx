@@ -69,6 +69,7 @@ interface MindmapCanvasProps {
   onShowSearchMenu?: (e: React.MouseEvent, nodeName: string) => void;
   onNavigateToNode?: (result: SearchResult) => void;
   showSearchMenu?: boolean;
+  onSystemNodeExpand?: (node: MindmapNode) => void;
 }
 
 export const MindmapCanvas: React.FC<MindmapCanvasProps> = ({
@@ -113,7 +114,8 @@ export const MindmapCanvas: React.FC<MindmapCanvasProps> = ({
   searchResults = [],
   onShowSearchMenu,
   onNavigateToNode,
-  showSearchMenu = false
+  showSearchMenu = false,
+  onSystemNodeExpand
 }) => {
   
   const nodeChangeMap = useMemo(() => {
@@ -144,7 +146,9 @@ export const MindmapCanvas: React.FC<MindmapCanvasProps> = ({
     const isSelected = selectedNodeId === node.id || selectedNodeIds.includes(node.id);
     const isEditing = editingNodeId === node.id;
     const children = getVisibleChildren(node.id);
-    const hasChildren = node.children.length > 0;
+    // Determine if it has children for display purposes.
+    // For system folders, we show the expand button if it's a directory, even if children array is empty (lazy loading).
+    const hasChildren = (node.children || []).length > 0 || (node.data?.isDirectory === true && node.data?.expanded === false);
     const pos = nodePositions[node.id] || { x: 0, y: 0 };
     const pendingChange = nodeChangeMap[node.id];
     
@@ -168,13 +172,19 @@ export const MindmapCanvas: React.FC<MindmapCanvasProps> = ({
           setEditingName={setEditingName}
           onNodeClick={onNodeClick}
           onNodeDoubleClick={(node) => {
-            setEditingNodeId(node.id);
-            setEditingName(node.name);
+            // Let the parent component handle whether to enter edit mode or not
+            // MindmapController handles logic for system nodes vs regular nodes
             onNodeDoubleClick(node);
           }}
           onUpdateNodeName={onUpdateNodeName}
           setEditingNodeId={setEditingNodeId}
-          onToggleCollapse={onToggleCollapse}
+          onToggleCollapse={(id) => {
+            if (onSystemNodeExpand) {
+              onSystemNodeExpand(node);
+            } else {
+              onToggleCollapse(id);
+            }
+          }}
           showFullContent={showFullContent}
           position={pos}
           pendingChange={pendingChange}

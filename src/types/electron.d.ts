@@ -141,9 +141,12 @@ interface Window {
       readFile: (path: string, encoding?: string) => Promise<string>;
       writeFile: (path: string, data: string, encoding?: string) => Promise<void>;
       readdir: (path: string) => Promise<string[]>;
+      readdirStat: (path: string) => Promise<Array<{ name: string; isDirectory: boolean; isFile: boolean }>>;
+      getDrives: () => Promise<string[]>;
       mkdirSync: (path: string, options?: { recursive?: boolean }) => void;
       unlink: (path: string) => Promise<void>;
       existsSync: (path: string) => boolean;
+      openFile: (path: string) => Promise<boolean>;
     };
     path: {
       join: (...paths: string[]) => string;

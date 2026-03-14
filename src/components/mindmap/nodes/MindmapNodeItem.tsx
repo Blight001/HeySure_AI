@@ -113,6 +113,16 @@ export const MindmapNodeItem: React.FC<MindmapNodeItemProps> = ({
   }, [isEditing, node.type, position]);
 
   const handleProcessTriggerBlur = () => {
+    // Only handle blur update if it's a process trigger or if we are not in system view
+    // Since isSystemView isn't passed here, we rely on the parent (MindmapCanvas/Controller) to control editing state.
+    // However, onBlur here unconditionally calls onUpdateNodeName, which might trigger errors for system nodes
+    // because system nodes are not in mindmapStorage.
+
+    // If we are editing, it means we are allowed to edit.
+    // The issue is that onBlur triggers update, and update fails for system nodes.
+    // System nodes should NEVER enter editing state (isEditing should be false).
+    
+    // If we are here, isEditing is true.
     if (node.type !== 'process-trigger') {
        onUpdateNodeName(node.id, editingName);
        return;
@@ -197,6 +207,11 @@ export const MindmapNodeItem: React.FC<MindmapNodeItemProps> = ({
           onContextMenu={(e) => {
             e.preventDefault();
             e.stopPropagation();
+            if (node.data?.isDirectory || node.data?.isDrive || hasChildren) {
+              onToggleCollapse(node.id);
+            } else if (onShowSearchMenu) {
+              onShowSearchMenu(e, node.name);
+            }
           }}
         >
           {isEditing ? (

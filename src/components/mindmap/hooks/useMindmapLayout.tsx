@@ -22,7 +22,7 @@ export const useMindmapLayout = (
     const node = nodeIndex[nodeId];
     if (!node) return [];
     if (node.collapsed) return [];
-    return node.children
+    return (node.children || [])
       .map(childId => nodeIndex[childId])
       .filter(Boolean)
       .sort((a, b) => (a.y || 0) - (b.y || 0));

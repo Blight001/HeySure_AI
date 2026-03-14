@@ -94,6 +94,57 @@ export function fsIPC() {
     }
   });
 
+  // 读取目录（带文件类型信息）
+  ipcMain.handle('fs:readdirStat', async (_, path: string) => {
+    try {
+      console.log('[fsIPC] 读取目录状态请求:', path);
+      const items = readdirSync(path, { withFileTypes: true });
+      const result = items.map(item => ({
+        name: item.name,
+        isDirectory: item.isDirectory(),
+        isFile: item.isFile()
+      }));
+      console.log('[fsIPC] 读取目录状态成功, 数量:', result.length);
+      return result;
+    } catch (error: any) {
+      console.error('[fsIPC] 读取目录状态失败:', path, error);
+      // Return empty array for permission denied errors (EPERM, EACCES)
+      if (error && (error.code === 'EPERM' || error.code === 'EACCES' || (error.message && error.message.includes('EPERM')))) {
+        return [];
+      }
+      const serialized = serializeError(error);
+      throw new Error(`读取目录状态失败: ${serialized.message}`);
+    }
+  });
+
+  // 获取系统磁盘列表
+  ipcMain.handle('fs:getDrives', async () => {
+    try {
+      console.log('[fsIPC] 获取磁盘列表请求');
+      // Windows specific: check drives A-Z
+      const drives: string[] = [];
+      const possibleDrives = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+      
+      for (const letter of possibleDrives) {
+        const drivePath = `${letter}:\\`;
+        try {
+          if (existsSync(drivePath)) {
+            drives.push(drivePath);
+          }
+        } catch (e) {
+          // Ignore errors for non-existent or inaccessible drives
+        }
+      }
+      
+      console.log('[fsIPC] 获取磁盘列表成功:', drives);
+      return drives;
+    } catch (error) {
+      console.error('[fsIPC] 获取磁盘列表失败:', error);
+      const serialized = serializeError(error);
+      throw new Error(`获取磁盘列表失败: ${serialized.message}`);
+    }
+  });
+
   // 创建目录
   ipcMain.handle('fs:mkdirSync', async (_, path: string, options?: { recursive?: boolean }) => {
     try {
@@ -125,6 +176,19 @@ export function fsIPC() {
       return existsSync(path);
     } catch (error) {
       console.error('[fsIPC] 检查文件存在失败:', path, error);
+      return false;
+    }
+  });
+
+  // 打开文件
+  ipcMain.handle('fs:openFile', async (_, path: string) => {
+    try {
+      console.log('[fsIPC] 打开文件:', path);
+      const { shell } = require('electron');
+      await shell.openPath(path);
+      return true;
+    } catch (error) {
+      console.error('[fsIPC] 打开文件失败:', path, error);
       return false;
     }
   });

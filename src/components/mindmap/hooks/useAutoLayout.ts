@@ -1,7 +1,8 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { MindmapNode } from '../types';
+import { MindmapNode, LayoutType } from '../types';
 import type { ThemeConfig } from '@/types/theme';
 import { mindmapStorage } from '../services/mindmap-storage';
+import { layoutEngine, defaultLayoutConfig } from '../services/layout-engine';
 import { NODE_WIDTH, NODE_HEIGHT } from '../constants';
 
 export const useAutoLayout = (
@@ -9,7 +10,9 @@ export const useAutoLayout = (
   setNodes: (nodes: MindmapNode[]) => void,
   setNodeIndex: (index: Record<string, MindmapNode>) => void,
   currentTheme: ThemeConfig,
-  layoutRefreshRef: React.MutableRefObject<number>
+  layoutRefreshRef: React.MutableRefObject<number>,
+  isSystemView: boolean = false,
+  layoutType: LayoutType = 'tree-right'
 ) => {
   const [showFullContent, setShowFullContent] = useState(false);
   const [showLayoutDropdown, setShowLayoutDropdown] = useState(false);
@@ -65,7 +68,7 @@ export const useAutoLayout = (
 
     const fingerprint = generateFingerprint();
     // 将当前主题的字体大小也加入指纹，以便在切换主题时触发重新计算高度
-    const fullFingerprint = `${showFullContent}|${currentTheme.fontSize}|${fingerprint}`;
+    const fullFingerprint = `${showFullContent}|${currentTheme.fontSize}|${fingerprint}|${layoutType}|${isSystemView}`;
 
     if (fullFingerprint === prevFingerprintRef.current) {
       return;
@@ -75,16 +78,41 @@ export const useAutoLayout = (
 
     const updateLayout = async () => {
       const heights = calculateNodeHeights();
-      mindmapStorage.setNodeHeights(heights);
       
-      // 只有在开启全内容显示，或者之前有节点时才重新布局
-      // 如果是刚初始化，可能不需要立即布局，但这里为了安全起见保留逻辑
-      if (showFullContent || (!showFullContent && mindmapStorage.getCurrentMap()?.nodes.length)) {
-          await mindmapStorage.relayoutEntireMap();
-          const updatedMap = mindmapStorage.getCurrentMap();
-          setNodes(updatedMap?.nodes ? [...updatedMap.nodes] : []);
-          setNodeIndex({ ...mindmapStorage.getNodeIndex() });
-          layoutRefreshRef.current++;
+      if (isSystemView) {
+        if (!nodes || nodes.length === 0) return;
+        
+        // Use layout engine directly for system view
+        const config = { 
+            ...defaultLayoutConfig, 
+            type: layoutType,
+            nodeHeights: heights 
+        };
+        
+        const result = layoutEngine.applyLayout(nodes, layoutType, config);
+        
+        // Update nodes with new positions
+        const newNodes = nodes.map(n => {
+            const pos = result.positions.get(n.id);
+            return pos ? { ...n, x: pos.x, y: pos.y } : n;
+        });
+        
+        setNodes(newNodes);
+        // We don't need to update nodeIndex since it's just a position update
+        // but we should ensure setNodes triggers a re-render
+        layoutRefreshRef.current++;
+      } else {
+        mindmapStorage.setNodeHeights(heights);
+        
+        // 只有在开启全内容显示，或者之前有节点时才重新布局
+        // 如果是刚初始化，可能不需要立即布局，但这里为了安全起见保留逻辑
+        if (showFullContent || (!showFullContent && mindmapStorage.getCurrentMap()?.nodes.length)) {
+            await mindmapStorage.relayoutEntireMap();
+            const updatedMap = mindmapStorage.getCurrentMap();
+            setNodes(updatedMap?.nodes ? [...updatedMap.nodes] : []);
+            setNodeIndex({ ...mindmapStorage.getNodeIndex() });
+            layoutRefreshRef.current++;
+        }
       }
     };
 
@@ -92,7 +120,7 @@ export const useAutoLayout = (
     const timer = setTimeout(updateLayout, 100);
     return () => clearTimeout(timer);
 
-  }, [showFullContent, calculateNodeHeights, setNodes, setNodeIndex, layoutRefreshRef, nodes]);
+  }, [showFullContent, calculateNodeHeights, setNodes, setNodeIndex, layoutRefreshRef, nodes, isSystemView, layoutType]);
 
   return {
     showFullContent, setShowFullContent,
